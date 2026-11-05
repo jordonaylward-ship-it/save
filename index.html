@@ -662,7 +662,7 @@ details[open] summary::after{transform:rotate(45deg)}
       else parts.push(".");
       line(parts);
     }
-    if (plan.lump > 0) line(["Big commission lands, ATO first, keep a month of pay in the business, then ", { b: fmtPct(plan.lump) }, " of what's left goes to your pots."]);
+    if (plan.lump > 0) line(["Big commission lands: ATO plan first. Then into Tax, the payout divided by 11 for GST plus $550 for the instalment. Keep four Fridays and bills in the business, then ", { b: fmtPct(plan.lump) }, " of what's left goes to your pots."]);
     const target = weeklyTarget();
     if (wk.pay > 0 && (target || pctTotal(list) > 0)) {
       let next = nextPayday(day, true);
@@ -1127,7 +1127,7 @@ details[open] summary::after{transform:rotate(45deg)}
       { id: "blessings", name: "Random", pct: 15, goal: 0, color: "gold" },
       { id: "tax", name: "Tax", pct: 0, goal: 0, color: "orange" }
     ],
-    weekly: { pay: 21900, day: 5, from: "2026-11-06", pot: "tax" },
+    weekly: { pay: 31000, day: 5, from: "2026-11-13", pot: "tax" },
     plan: { take: 115000, tax: 0, lump: 50, wtax: 33 },
     v: 1
   };
@@ -1172,6 +1172,7 @@ details[open] summary::after{transform:rotate(45deg)}
       localStorage.removeItem(KEY + ".t");
     } catch (e) { ok = false; }
     if (!state.setup) { state.setup = clone(DEFAULT_SETUP); firstRun = true; }
+    if (firstRun && !Object.keys(state.moves).length) state.moves = clone(DEFAULT_MOVES);
     if (!state.personal || !Array.isArray(state.personal.bills)) { state.personal = clone(ME_DEFAULT); try { persist(); } catch (e) {} }
     ensureWeek();
     let tab = "me";
@@ -1230,6 +1231,7 @@ details[open] summary::after{transform:rotate(45deg)}
     weeks: {},
     check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" }
   };
+  const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
   let meOpen = null, meDirty = false, meDraft = null;
 
