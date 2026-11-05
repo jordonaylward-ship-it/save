@@ -7,146 +7,337 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Pots">
-<meta name="theme-color" content="#F1F4F0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1411" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex">
-<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACyklEQVR42u3dsW3yQBiA4cNyzwYoK2QK+jR0DMBA2SFNVskKUSZJgUQTIAbb5/P3PW/7wx8JP7qz4c7ebI/7Il2r8xEIDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITgEhwSH4BAcgkNwCA7BITgEh+AQHBIcgkNwCA7BITgEh+AQHMpXX+0v/bx/+Linanc6VPgrmwoPAMRipUTmxYHFqol0ZKy9+T7njgw+quIgI4YPl7KqiMOwEWbwMHKoFg7DRqTBw8ghOFQa/m1F5z6/v4a87O3l1chBxthXwpFLRiM+4GhURgs+4BAccrVSnlr34Lu7pDiGrIW5vIaSLDieWCJ1fgsikXGMXDmHSNgT0qnWVNZZ4Q3HWlfbJvfRkcFH/HOOIUfx6mnEv2/cnQ45zz/6DDLuH9rLv975T3L66JLLGP7KhPNLb83c37e4Tgkyctw6kGNmgVvvzYbGD28KimOOYcPgEXnkmOqywtfnphVFxLHUCJ9nZunMKWYW04rgEByCQ3AIDsFRLBOEo0S9/2bx5YdpRbYmmFNS4pjvh/X5FgPAITiCDh6GjZJkI/VDR9R5RrRpZaotBVNtcTByNOfj/pakMTve0i7s6CMt8xmysdG3XkmvVuY4ipkXg1kmSIatCWS4lJ1kyysWWTZSP0QEi1y3mhxy+w0mst+klgAnpIJDcITpuScvLfu8Jjja9bH4k7zgaNRHC8948wDAdcwvRg7BoZw4LLMrgTb8GTlUEYfBI8xN0owcqovD4BHjHoed+zGSscC0wsfa74u62R73xUIKLJbCgchKR+V6OORqRXAIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4BAcEhyCQ3AIDsEhOASH4BAcgkOCQ3AIDsEhONRMv3W32GCmsS2JAAAAAElFTkSuQmCC">
-<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACyklEQVR42u3dsW3yQBiA4cNyzwYoK2QK+jR0DMBA2SFNVskKUSZJgUQTIAbb5/P3PW/7wx8JP7qz4c7ebI/7Il2r8xEIDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITgEhwSH4BAcgkNwCA7BITgEh+AQHBIcgkNwCA7BITgEh+AQHMpXX+0v/bx/+Linanc6VPgrmwoPAMRipUTmxYHFqol0ZKy9+T7njgw+quIgI4YPl7KqiMOwEWbwMHKoFg7DRqTBw8ghOFQa/m1F5z6/v4a87O3l1chBxthXwpFLRiM+4GhURgs+4BAccrVSnlr34Lu7pDiGrIW5vIaSLDieWCJ1fgsikXGMXDmHSNgT0qnWVNZZ4Q3HWlfbJvfRkcFH/HOOIUfx6mnEv2/cnQ45zz/6DDLuH9rLv975T3L66JLLGP7KhPNLb83c37e4Tgkyctw6kGNmgVvvzYbGD28KimOOYcPgEXnkmOqywtfnphVFxLHUCJ9nZunMKWYW04rgEByCQ3AIDsFRLBOEo0S9/2bx5YdpRbYmmFNS4pjvh/X5FgPAITiCDh6GjZJkI/VDR9R5RrRpZaotBVNtcTByNOfj/pakMTve0i7s6CMt8xmysdG3XkmvVuY4ipkXg1kmSIatCWS4lJ1kyysWWTZSP0QEi1y3mhxy+w0mst+klgAnpIJDcITpuScvLfu8Jjja9bH4k7zgaNRHC8948wDAdcwvRg7BoZw4LLMrgTb8GTlUEYfBI8xN0owcqovD4BHjHoed+zGSscC0wsfa74u62R73xUIKLJbCgchKR+V6OORqRXAIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4BAcEhyCQ3AIDsEhOASH4BAcgkOCQ3AIDsEhONRMv3W32GCmsS2JAAAAAElFTkSuQmCC">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADnElEQVR42u3dMVbbQBDG8cWPjjYP16lzkSQcAbiCz+Aj5NncINhHSHKFnMLU9NRKQZEilnCEPLva/f2fO6zCOx/z7cyOpItPP34n4BgLS4A+LlPXWQUcFwdpgK2ArUDmAHEgr60ktoK+aoU2wFZAHFDKQuaA9jnYCtgKiANsBTakAFuBgzdMseewCGArYCswzwG2AuKADilkDmifg62ArQDEAR1SOHiDagVsBWwFqhWwFZjnAFsBiAMO3iBzgDgQ2j5nK9AhBVuBDinYCsxzgK2ArUC1ArYC8xzAP5kjM4fbz8LQx8fdr0bFQRYnLlEuieTZcxxuvwj8/0vkZ3i10qXgD2WM/4+KjVR0KXu4o4zZrN6iS13YhzIm0UdYvHRIZ0hXXYf06f6rsM5rJXVIZY/c1crT/Y14Tpo8bgKiZp5D6mAr5GGegzbMc0C1EsLVetP3p5f1qm1boYkTvlO2Sgz7xMri6CVFSaSz5yhBGZNcm+Y5YBxzADx7ZZSnj7NHbdGONqaKayn6qG+eY+7KaMpfmng+x5uxPLrTHL7qar3Juz/tdEjPrYyBAL/+aeDyzPpQrZy1wXVKaIe/Vre/tFWtjG59FtkEU62cIW2Mi3TfVdmSh2oFOW0lZo55voZSrLkERG2hsaHtkfuOt/mnjeKSR8AMaYGlBAppdNiQIpnnqC5v6JDCDCncmgAHbxU3P5qaFKy2QxrZkMjS/NAhNWDs8dYodc9Rbf982kP2aQcAZjLPkdzuxlCatJWX9aovrifexDZ6BLUCW6l/+nxAH8MSGTezXtf0eQMM62Oca7Rwa3Ur8xzTxrIIZYTMkLYy7TNVRIvJGaoVk2A52+ch/XMDxueY5zj3p8Un+7x5n2PjCcM8x994eyaYZ4LJCjqkycEbW0GArZAGabAV6ih1nmP5sBfNCVk+7HVIkRo4eOvScit5TJQ2tvuYkDXxNMHqNhtdbS8ATCldb3dCO6M1jH4j9fWGPt6hjM0u+I3U0e8rv948CvMoZTwGR+oy3+9Mz6s7IT99uVKOU9nMv5lECpTFKxcfvn0XAzh4g0cwwMEb2ApyvowHYCtgK1CtgK3A2yHBVkAcqGXPwVYgc4A44GU80CEFW4EOKdgKzHOArYCtAKoVEAccvEG1ArYCtgKZA8QB8xzQIQXYChy8ga2ArUD7HDqkYCsgDrAV2JCCrQBsBTIHiAPmOeDgDWwFxAGlLGQOaJ8DbAVsBe/mD9/1KbaXkjlBAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADnElEQVR42u3dMVbbQBDG8cWPjjYP16lzkSQcAbiCz+Aj5NncINhHSHKFnMLU9NRKQZEilnCEPLva/f2fO6zCOx/z7cyOpItPP34n4BgLS4A+LlPXWQUcFwdpgK2ArUDmAHEgr60ktoK+aoU2wFZAHFDKQuaA9jnYCtgKiANsBTakAFuBgzdMseewCGArYCswzwG2AuKADilkDmifg62ArQDEAR1SOHiDagVsBWwFqhWwFZjnAFsBiAMO3iBzgDgQ2j5nK9AhBVuBDinYCsxzgK2ArUC1ArYC8xzAP5kjM4fbz8LQx8fdr0bFQRYnLlEuieTZcxxuvwj8/0vkZ3i10qXgD2WM/4+KjVR0KXu4o4zZrN6iS13YhzIm0UdYvHRIZ0hXXYf06f6rsM5rJXVIZY/c1crT/Y14Tpo8bgKiZp5D6mAr5GGegzbMc0C1EsLVetP3p5f1qm1boYkTvlO2Sgz7xMri6CVFSaSz5yhBGZNcm+Y5YBxzADx7ZZSnj7NHbdGONqaKayn6qG+eY+7KaMpfmng+x5uxPLrTHL7qar3Juz/tdEjPrYyBAL/+aeDyzPpQrZy1wXVKaIe/Vre/tFWtjG59FtkEU62cIW2Mi3TfVdmSh2oFOW0lZo55voZSrLkERG2hsaHtkfuOt/mnjeKSR8AMaYGlBAppdNiQIpnnqC5v6JDCDCncmgAHbxU3P5qaFKy2QxrZkMjS/NAhNWDs8dYodc9Rbf982kP2aQcAZjLPkdzuxlCatJWX9aovrifexDZ6BLUCW6l/+nxAH8MSGTezXtf0eQMM62Oca7Rwa3Ur8xzTxrIIZYTMkLYy7TNVRIvJGaoVk2A52+ch/XMDxueY5zj3p8Un+7x5n2PjCcM8x994eyaYZ4LJCjqkycEbW0GArZAGabAV6ih1nmP5sBfNCVk+7HVIkRo4eOvScit5TJQ2tvuYkDXxNMHqNhtdbS8ATCldb3dCO6M1jH4j9fWGPt6hjM0u+I3U0e8rv948CvMoZTwGR+oy3+9Mz6s7IT99uVKOU9nMv5lECpTFKxcfvn0XAzh4g0cwwMEb2ApyvowHYCtgK1CtgK3A2yHBVkAcqGXPwVYgc4A44GU80CEFW4EOKdgKzHOArYCtAKoVEAccvEG1ArYCtgKZA8QB8xzQIQXYChy8ga2ArUD7HDqkYCsgDrAV2JCCrQBsBTIHiAPmOeDgDWwFxAGlLGQOaJ8DbAVsBe/mD9/1KbaXkjlBAAAAAElFTkSuQmCC">
 <title>Pay Day Pots</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one phone column. Savings total up top, pots as banknote coloured rows, two big actions, history, setup tucked at the bottom. */
+/* Layout: one phone column in the iOS grouped style. Frosted bar for the tabs, big balance, white cards on grey, teal as the only colour. */
 :root{
-  --paper:#F1F4F0;
+  --bg:#F2F2F7;
   --card:#FFFFFF;
-  --ink:#13201A;
-  --muted:#5A6961;
-  --line:#D8E0DA;
-  --soft:#E6ECE7;
-  --accent:#0F5E47;
-  --accent-ink:#FFFFFF;
-  --warn:#A3361F;
-  --n-green:#1D8A58;
-  --n-blue:#2D6BD0;
-  --n-mauve:#A9437C;
-  --n-gold:#B07D0C;
-  --n-orange:#CC5A20;
-  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
-  --body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fill:rgba(118,118,128,.12);
+  --fill2:rgba(120,120,128,.2);
+  --label:#000000;
+  --label2:#6E6E73;
+  --label3:#AEAEB2;
+  --sep:rgba(60,60,67,.22);
+  --tint:#0A7F91;
+  --tintsoft:rgba(10,127,145,.11);
+  --btn:#0A7F91;
+  --btnink:#FFFFFF;
+  --red:#D70015;
+  --redsoft:rgba(215,0,21,.09);
+  --bar:rgba(242,242,247,.8);
+  --seg:#FFFFFF;
+  --toastbg:rgba(28,28,30,.94);
+  --toastink:#FFFFFF;
+  --n-green:#075E6B;
+  --n-mauve:#0A8C9F;
+  --n-blue:#3DB4C7;
+  --n-gold:#94D6E1;
+  --n-orange:#8E8E93;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --rounded:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#0E1411;--card:#161F1B;--ink:#E6EEE9;--muted:#9AA9A1;--line:#28342E;--soft:#1E2924;
-    --accent:#4CC497;--accent-ink:#06140E;--warn:#FF9B85;
-    --n-green:#4CC38A;--n-blue:#7AA7F4;--n-mauve:#E281B8;--n-gold:#E8BB4E;--n-orange:#F2965F;
+    --bg:#000000;--card:#1C1C1E;--fill:rgba(118,118,128,.24);--fill2:rgba(120,120,128,.36);
+    --label:#FFFFFF;--label2:#98989F;--label3:#5C5C61;--sep:rgba(84,84,88,.6);
+    --tint:#40C8E0;--tintsoft:rgba(64,200,224,.15);--btn:#40C8E0;--btnink:#00262C;
+    --red:#FF6961;--redsoft:rgba(255,105,97,.15);
+    --bar:rgba(0,0,0,.7);--seg:#636366;--toastbg:rgba(58,58,60,.95);--toastink:#FFFFFF;
+    --n-green:#1C8A9B;--n-mauve:#35B4C7;--n-blue:#72D1DF;--n-gold:#B7E9F0;--n-orange:#8E8E93;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#0E1411;--card:#161F1B;--ink:#E6EEE9;--muted:#9AA9A1;--line:#28342E;--soft:#1E2924;
-  --accent:#4CC497;--accent-ink:#06140E;--warn:#FF9B85;
-  --n-green:#4CC38A;--n-blue:#7AA7F4;--n-mauve:#E281B8;--n-gold:#E8BB4E;--n-orange:#F2965F;
+  --bg:#000000;--card:#1C1C1E;--fill:rgba(118,118,128,.24);--fill2:rgba(120,120,128,.36);
+  --label:#FFFFFF;--label2:#98989F;--label3:#5C5C61;--sep:rgba(84,84,88,.6);
+  --tint:#40C8E0;--tintsoft:rgba(64,200,224,.15);--btn:#40C8E0;--btnink:#00262C;
+  --red:#FF6961;--redsoft:rgba(255,105,97,.15);
+  --bar:rgba(0,0,0,.7);--seg:#636366;--toastbg:rgba(58,58,60,.95);--toastink:#FFFFFF;
+  --n-green:#1C8A9B;--n-mauve:#35B4C7;--n-blue:#72D1DF;--n-gold:#B7E9F0;--n-orange:#8E8E93;
   color-scheme:dark;
 }
-*{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
-.wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 112px;display:flex;flex-direction:column;gap:20px}
-.eyebrow,.h{font-family:var(--display);font-stretch:112%;font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
-.h{margin-bottom:10px}
-.total{font-family:var(--display);font-stretch:120%;font-weight:800;font-size:clamp(42px,13vw,60px);line-height:1;margin:8px 0 0;font-variant-numeric:tabular-nums;letter-spacing:-.01em;overflow-wrap:anywhere}
-.total.loading{opacity:.3}
-.sub{margin:10px 0 0;color:var(--muted);font-size:14px}
-.bar{display:flex;gap:2px;height:10px;border-radius:999px;overflow:hidden;background:var(--soft);margin-top:16px}
-.bar span{display:block;height:100%;background:var(--c);flex:1 1 0px}
-.status{margin:0;font-size:14px;color:var(--muted)}
-.status.warn{color:var(--warn);font-weight:600}
-.rule{margin:0;padding:14px 16px;background:var(--soft);border-radius:12px;display:flex;flex-direction:column;gap:6px}
-.rule p{margin:0;font-size:15px;text-wrap:pretty}
-.rule b{font-family:var(--display);font-stretch:112%;font-weight:800}
-.rule .wk{color:var(--muted)}
-.pots,.hist{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px}
-.pot{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 12px;padding:14px 16px}
-.pot+.pot,.hitem+.hitem{border-top:1px solid var(--line)}
-.pempty,.hempty{padding:18px 16px;color:var(--muted);font-size:15px}
-.note{width:34px;height:22px;border-radius:4px;background:var(--c);position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);flex:none}
-.note::after{content:"";position:absolute;top:4px;bottom:4px;right:5px;width:7px;border-radius:2px;background:var(--card);opacity:.6}
-.pmain{display:flex;flex-direction:column;min-width:0}
-.pname{font-weight:600;font-size:16px;overflow-wrap:anywhere}
-.pmeta{color:var(--muted);font-size:13px}
-.pbal{font-family:var(--display);font-stretch:112%;font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;text-align:right}
-.goal{grid-column:2/4;display:flex;align-items:center;gap:10px}
-.track{flex:1;height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
-.track span{display:block;height:100%;background:var(--c);border-radius:999px}
-.gtext{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 16px/1.15 var(--body);padding:14px 16px;border-radius:12px;cursor:pointer;min-height:52px;text-align:center}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.ghost{background:transparent}
-.btn.small{min-height:44px;font-size:15px;padding:10px 14px;align-self:flex-start}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.link{appearance:none;background:none;border:0;color:var(--accent);font:600 15px var(--body);padding:10px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:flex-start}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}
-label,legend{font-size:14px;font-weight:600;color:var(--ink)}
-.opt{font-weight:500;color:var(--muted)}
-input,select{font:500 17px var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;width:100%;min-width:0}
-input.big{font-family:var(--display);font-stretch:112%;font-weight:700;font-size:26px;padding:10px 12px}
-fieldset{border:0;padding:0;margin:0;min-width:0}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:9px 14px;font:600 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-.chip[aria-pressed="true"]{background:var(--card);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.chip .cb{font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
-.preview,.hdetail{display:flex;flex-direction:column;gap:8px;font-size:15px}
-.prow{display:flex;justify-content:space-between;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
-.pl{display:inline-flex;align-items:center;gap:8px;min-width:0}
-.hint{margin:0;color:var(--muted);font-size:14px}
-.err{margin:0;color:var(--warn);font-size:14px;font-weight:600}
-.cost{margin:0;font-size:16px;text-wrap:pretty}
-.cost b{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px;color:var(--warn);font-variant-numeric:tabular-nums}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row .btn{flex:1 1 auto}
-.hist-wrap{display:flex;flex-direction:column}
-.hrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;color:inherit;font:inherit;text-align:left;padding:13px 16px;cursor:pointer;border-radius:14px}
-.hleft{display:flex;flex-direction:column;min-width:0}
-.htitle{font-weight:600;overflow-wrap:anywhere}
-.hsub{font-size:13px;color:var(--muted)}
-.hright{display:flex;flex-direction:column;align-items:flex-end;flex:none}
-.hamt{font-family:var(--display);font-stretch:110%;font-weight:700;font-variant-numeric:tabular-nums}
-.hamt.in{color:var(--accent)}
-.hdir{font-size:12px;color:var(--muted);letter-spacing:.04em}
-.void .htitle,.void .hamt{text-decoration:line-through;opacity:.55}
-.hdetail{padding:0 16px 14px}
-details{background:var(--card);border:1px solid var(--line);border-radius:14px}
-summary{cursor:pointer;padding:15px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;border-radius:14px}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"Open";font-size:14px;color:var(--accent);font-weight:600}
-details[open] summary::after{content:"Close"}
-.setup{padding:0 16px 16px;display:flex;flex-direction:column;gap:14px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
-.perow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;align-items:start;padding-top:14px;border-top:1px solid var(--line)}
-.perow .note{margin-top:32px}
-.pefields{display:flex;flex-direction:column;gap:10px;min-width:0}
-.toast{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:488px;margin:0 auto;background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:12px;font-size:15px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion: no-preference){.bar span{transition:flex-grow .4s ease}.track span{transition:width .4s ease}}
-
-html{background:var(--paper);-webkit-text-size-adjust:100%}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--label);font:400 17px/1.35 var(--font);letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
 [hidden]{display:none!important}
 img{max-width:100%}
-textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;width:100%;min-width:0;resize:vertical}
-.check{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;cursor:pointer}
-.check input{width:22px;height:22px;padding:0;margin:0;flex:none;accent-color:var(--accent)}
-.backup{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--tint);outline-offset:2px}
+
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px;display:flex;flex-direction:column;gap:24px}
+.view{display:flex;flex-direction:column;gap:24px}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--sep)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:2px;background:var(--fill);border-radius:9px}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--label);font:600 15px/1 var(--font);height:34px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--seg);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)}
+
+.view > header{display:flex;flex-direction:column;padding:4px 4px 0}
+.eyebrow{margin:0;font-size:15px;font-weight:500;color:var(--label2)}
+.total{margin:4px 0 0;font:700 clamp(44px,13vw,58px)/1.05 var(--rounded);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.total.loading{opacity:.3}
+.total.over{color:var(--red)}
+.sub{margin:6px 0 0;font-size:15px;color:var(--label2)}
+.menote{margin:10px 0 0;font-size:13px;line-height:1.4;color:var(--label2);text-wrap:pretty}
+.meter,.bar{height:8px;border-radius:999px;background:var(--fill);overflow:hidden;margin-top:16px}
+.meter span{display:block;height:100%;width:0;background:var(--tint);border-radius:999px}
+.meter.over span{background:var(--red)}
+.bar{display:flex;gap:2px}
+.bar span{display:block;height:100%;background:var(--c);flex:1 1 0px}
+
+.status{margin:0;font-size:15px;color:var(--label2)}
+.status.warn{color:var(--red);font-weight:600}
+
+.h{margin:0 0 8px;padding:0 16px;font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:.02em;color:var(--label2)}
+.panel > .h{margin:0;padding:0;font-size:17px;font-weight:600;text-transform:none;letter-spacing:-.01em;color:var(--label)}
+.setup .h{margin:8px 0 0;padding:0}
+
+.rule{margin:0;padding:14px 16px;background:var(--card);border-radius:14px;display:flex;flex-direction:column;gap:6px}
+.rule p{margin:0;font-size:15px;line-height:1.4;text-wrap:pretty}
+.rule b{font-weight:600}
+.rule .wk{color:var(--label2)}
+
+.pots,.hist{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;overflow:hidden}
+.pempty,.hempty{padding:14px 16px;color:var(--label2);font-size:15px}
+.pot,.hitem{position:relative}
+.pot{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:12px 16px;min-height:58px}
+.pot+.pot::before,.hitem+.hitem::before{content:"";position:absolute;top:0;right:0;height:.5px;background:var(--sep)}
+.pot+.pot::before{left:40px}
+.hitem+.hitem::before{left:16px}
+.note{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.pmain{display:flex;flex-direction:column;min-width:0;gap:1px}
+.pname{font-size:17px;overflow-wrap:anywhere}
+.pmeta{color:var(--label2);font-size:13px}
+.pbal{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.goal{grid-column:2/4;display:flex;align-items:center;gap:10px;margin-top:4px}
+.track{flex:1;height:4px;background:var(--fill);border-radius:999px;overflow:hidden}
+.track span{display:block;height:100%;background:var(--c);border-radius:999px}
+.gtext{font-size:12px;color:var(--label2);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.hrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;color:inherit;font:inherit;text-align:left;padding:11px 16px;min-height:58px;cursor:pointer}
+.hrow:active{background:var(--fill)}
+.brow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 16px;min-height:58px}
+.hleft{display:flex;flex-direction:column;min-width:0;gap:1px}
+.htitle{font-size:17px;overflow-wrap:anywhere}
+.hsub{font-size:13px;color:var(--label2)}
+.hright{display:flex;flex-direction:column;align-items:flex-end;flex:none;gap:1px}
+.hamt{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.hamt.in{color:var(--tint)}
+.hdir{font-size:12px;color:var(--label2)}
+.void .htitle,.void .hamt{text-decoration:line-through;opacity:.5}
+.hdetail{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.hist-wrap{display:flex;flex-direction:column}
+.prev{margin:8px 0 0;padding:0 16px}
+
+.panel{background:var(--card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+label,legend{font-size:15px;color:var(--label2)}
+legend{padding:0;margin-bottom:10px}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+.opt{color:var(--label3)}
+input,select,textarea{font:400 17px var(--font);color:var(--label);background:var(--fill);border:0;border-radius:10px;padding:12px 14px;width:100%;min-width:0;outline:none;letter-spacing:-.01em}
+input::placeholder,textarea::placeholder{color:var(--label3)}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--tint)}
+input.big{font:600 30px/1.15 var(--rounded);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+select{appearance:none;-webkit-appearance:none;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238E8E93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px}
+textarea{font-size:15px;resize:vertical}
+
+.btn{appearance:none;border:0;border-radius:999px;font:600 17px/1.2 var(--font);letter-spacing:-.01em;padding:14px 20px;min-height:50px;cursor:pointer;text-align:center;background:var(--tintsoft);color:var(--tint)}
+.btn.primary{background:var(--btn);color:var(--btnink)}
+.btn.ghost{background:var(--tintsoft);color:var(--tint)}
+.btn.small{min-height:36px;padding:8px 16px;font-size:15px;align-self:flex-start}
+.btn.danger{background:var(--redsoft);color:var(--red)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:not(:disabled):active{opacity:.7}
+.link{appearance:none;background:none;border:0;color:var(--tint);font:400 17px var(--font);padding:6px 0;cursor:pointer;align-self:flex-start;text-align:left}
+.link.danger{color:var(--red)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 auto}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:0;background:var(--fill);color:var(--label);border-radius:999px;padding:8px 14px;min-height:36px;font:500 15px var(--font);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed="true"]{background:var(--btn);color:var(--btnink)}
+.chip .cb{font-weight:400;color:var(--label2);font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"] .cb{color:inherit;opacity:.8}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.chip[aria-pressed="true"] .dot{box-shadow:0 0 0 1.5px var(--btnink)}
+
+.cost{margin:0;font-size:17px;line-height:1.4;text-wrap:pretty}
+.cost b{font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.cost b.ok{color:var(--tint)}
+.should{margin:0;font-size:17px}
+.should b{font-weight:600;font-variant-numeric:tabular-nums}
+.hint{margin:0;color:var(--label2);font-size:13px;line-height:1.4}
+.err{margin:0;color:var(--red);font-size:15px;font-weight:500}
+.preview{display:flex;flex-direction:column;gap:8px;font-size:15px}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+.pl{display:inline-flex;align-items:center;gap:8px;min-width:0}
+
+.check{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:12px;font-size:17px;color:var(--label);cursor:pointer}
+.check input{appearance:none;-webkit-appearance:none;width:51px;height:31px;padding:0;margin:0;border-radius:999px;background:var(--fill2);position:relative;flex:none;cursor:pointer}
+.check input::before{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#FFFFFF;box-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06)}
+.check input:checked{background:var(--btn)}
+.check input:checked::before{transform:translateX(20px)}
+
+details{background:var(--card);border-radius:14px}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:0 16px;min-height:52px;font-size:17px;border-radius:14px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--label3);border-bottom:2px solid var(--label3);transform:rotate(-45deg);margin-right:4px}
+details[open] summary::after{transform:rotate(45deg)}
+.setup{padding:0 16px 16px;display:flex;flex-direction:column;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+.perow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;align-items:start;padding-top:14px;border-top:.5px solid var(--sep)}
+.perow .note{margin-top:40px}
+.pefields{display:flex;flex-direction:column;gap:10px;min-width:0}
+.billrow,.backup{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:.5px solid var(--sep)}
+
+.toast{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));max-width:420px;margin:0 auto;background:var(--toastbg);color:var(--toastink);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:13px 18px;border-radius:16px;font-size:15px;line-height:1.35;text-align:center;z-index:40;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+
+.lock{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lockin{width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.lockicon{width:68px;height:68px;border-radius:16px;background:linear-gradient(180deg,#2BB6C9,#0A7F91);display:grid;place-items:center;box-shadow:0 6px 16px rgba(10,127,145,.28)}
+.lockicon span{width:40px;height:24px;border-radius:5px;background:#FFFFFF;position:relative}
+.lockicon span::after{content:"";position:absolute;top:5px;left:13px;width:14px;height:14px;border-radius:50%;border:2.5px solid #0A7F91;box-sizing:border-box}
+.locktitle{margin:6px 0 0;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.lockmsg{margin:0;font-size:17px;color:var(--label)}
+.dots{display:flex;gap:22px;justify-content:center;padding:10px 0 0}
+.dots span{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--label)}
+.dots span.on{background:var(--label)}
+.lockerr{margin:0;min-height:20px;color:var(--red);font-size:15px}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:16px 24px;justify-content:center;margin-top:6px}
+.pad button{appearance:none;border:0;width:76px;height:76px;border-radius:50%;background:var(--fill);color:var(--label);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+.pad button:active{background:var(--fill2)}
+.pad .d{font:400 34px/1 var(--font);font-variant-numeric:tabular-nums}
+.pad .l{font-size:10px;font-weight:600;letter-spacing:.14em;margin-top:2px;min-height:12px}
+.pad .cell{display:flex;align-items:center;justify-content:center}
+.pad .txt{background:none;font:400 17px var(--font);color:var(--label)}
+.pad .txt:active{background:none;opacity:.5}
+.pad .face{color:var(--tint)}
+.pad .face svg{width:34px;height:34px}
+.lockalt{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:8px}
+.lock .btn{width:100%}
+
+@media (prefers-reduced-motion: no-preference){
+  .meter span{transition:width .4s ease}
+  .track span{transition:width .4s ease}
+  .bar span{transition:flex-grow .4s ease}
+  summary::after{transition:transform .2s ease}
+  .check input,.check input::before{transition:all .2s ease}
+  .dots.shake{animation:shake .35s}
+}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
+<div class="lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="lockin">
+    <div class="lockicon" aria-hidden="true"><span></span></div>
+    <h1 class="locktitle" id="lockTitle">Pay Day Pots</h1>
+    <p class="lockmsg" id="lockMsg">Locked</p>
+    <div class="dots" id="lockDots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <p class="lockerr" id="lockErr" role="alert"></p>
+    <div class="pad" id="lockPad"><button type="button" data-k="1" aria-label="1"><span class="d">1</span><span class="l"></span></button><button type="button" data-k="2" aria-label="2"><span class="d">2</span><span class="l">ABC</span></button><button type="button" data-k="3" aria-label="3"><span class="d">3</span><span class="l">DEF</span></button><button type="button" data-k="4" aria-label="4"><span class="d">4</span><span class="l">GHI</span></button><button type="button" data-k="5" aria-label="5"><span class="d">5</span><span class="l">JKL</span></button><button type="button" data-k="6" aria-label="6"><span class="d">6</span><span class="l">MNO</span></button><button type="button" data-k="7" aria-label="7"><span class="d">7</span><span class="l">PQRS</span></button><button type="button" data-k="8" aria-label="8"><span class="d">8</span><span class="l">TUV</span></button><button type="button" data-k="9" aria-label="9"><span class="d">9</span><span class="l">WXYZ</span></button><span class="cell"><button type="button" class="txt face" id="lockFace" aria-label="Unlock with Face ID" hidden><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10V7a5 5 0 0 1 5-5h3M24 2h3a5 5 0 0 1 5 5v3M32 24v3a5 5 0 0 1-5 5h-3M10 32H7a5 5 0 0 1-5-5v-3"/><path d="M11 12v3M23 12v3M17 12v7h-2M12 23c3 2.6 7 2.6 10 0"/></svg></button><button type="button" class="txt" id="lockCancel" hidden>Cancel</button></span><button type="button" data-k="0" aria-label="0"><span class="d">0</span><span class="l"></span></button><button type="button" class="txt" data-k="del" aria-label="Delete">Delete</button></div>
+    <div class="lockalt" id="lockAlt" hidden>
+      <button class="btn primary" id="lockFaceOn" type="button">Turn on Face ID</button>
+      <button class="btn ghost" id="lockFaceSkip" type="button">Not now</button>
+    </div>
+  </div>
+</div>
 
-<main class="wrap">
+<main class="wrap" id="app" hidden>
+  <div class="topbar">
+    <div class="tabs" role="tablist" aria-label="Accounts">
+      <button type="button" role="tab" id="tabMe" aria-selected="true" aria-controls="meView">Personal</button>
+      <button type="button" role="tab" id="tabBiz" aria-selected="false" aria-controls="bizView">Business</button>
+    </div>
+  </div>
+
+  <p class="status" id="status" role="status" hidden></p>
+
+  <section class="view" id="meView" role="tabpanel" aria-labelledby="tabMe">
+    <header>
+      <p class="eyebrow" id="meEyebrow">Spending money</p>
+      <p class="total" id="meLeft">$0.00</p>
+      <p class="sub" id="meSub"></p>
+      <div class="meter" id="meMeterWrap" aria-hidden="true"><span id="meMeter"></span></div>
+      <p class="menote" id="meNote" hidden></p>
+    </header>
+
+    <form class="panel" id="meSpendForm" novalidate>
+      <h2 class="h">Before you spend</h2>
+      <div class="field">
+        <label for="meAmt">How much</label>
+        <input class="big" id="meAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+      </div>
+      <div class="field">
+        <label for="meWhat">What for <span class="opt">optional</span></label>
+        <input id="meWhat" autocomplete="off" maxlength="60" placeholder="Uber Eats">
+      </div>
+      <p class="cost" id="meVerdict" aria-live="polite"></p>
+      <div class="row">
+        <button class="btn primary" id="meSpent" type="submit" disabled>Spent it</button>
+        <button class="btn ghost" id="meGot" type="button" disabled>Got money in</button>
+      </div>
+    </form>
+
+    <section class="hist-wrap" id="meWeekWrap" aria-labelledby="meWeekH">
+      <h2 class="h" id="meWeekH">This week</h2>
+      <ul class="hist" id="meWeek"></ul>
+      <p class="hint prev" id="mePrev" hidden></p>
+    </section>
+
+    <section class="hist-wrap" aria-labelledby="meBillsH">
+      <h2 class="h" id="meBillsH">Coming out of Greater</h2>
+      <ul class="hist" id="meBills"></ul>
+    </section>
+
+    <details id="meCheckBox">
+      <summary>Check against Greater</summary>
+      <div class="setup">
+        <p class="should" id="meShould" hidden></p>
+        <div class="field">
+          <label for="meBal">What's actually in Greater</label>
+          <input class="big" id="meBal" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <p class="cost" id="meCheckOut" aria-live="polite"></p>
+        <button class="btn ghost small" id="meSaveBal" type="button">Save balance</button>
+        <p class="hint" id="meCheckHint"></p>
+      </div>
+    </details>
+
+    <details id="meSetupBox">
+      <summary>Setup</summary>
+      <div class="setup">
+        <div class="field">
+          <label for="mePay">Weekly pay into Greater</label>
+          <input id="mePay" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <p class="hint" id="meAllowHint"></p>
+        <h3 class="h">Bills that come out of Greater</h3>
+        <div id="meBillEdit"></div>
+        <button class="btn ghost small" id="meAddBill" type="button">Add a bill</button>
+        <h3 class="h">Lock</h3>
+        <div class="row">
+          <button class="btn ghost small" id="lockChange" type="button">Change code</button>
+          <button class="btn ghost small" id="lockFaceToggle" type="button" hidden>Turn on Face ID</button>
+        </div>
+        <p class="err" id="meSetupErr" hidden></p>
+        <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="view" id="bizView" role="tabpanel" aria-labelledby="tabBiz" hidden>
   <header>
     <p class="eyebrow">In savings</p>
     <p class="total loading" id="total">$0.00</p>
@@ -154,7 +345,6 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
     <div class="bar" id="bar" aria-hidden="true"></div>
   </header>
 
-  <p class="status" id="status" role="status">Loading your pots</p>
 
   <div class="rule" id="rule" hidden></div>
 
@@ -286,6 +476,7 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
       </div>
     </div>
   </details>
+  </section>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -408,11 +599,12 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
     s.classList.toggle("warn", !!warn);
   }
   function toast(msg) {
+    if (!$("lock").hidden) { pendingToast = msg; return; }
     const t = $("toast");
     t.textContent = msg;
     t.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
+    toastTimer = setTimeout(() => { t.hidden = true; }, msg.length > 80 ? 6500 : 4200);
   }
   function failToast(e) {
     if (e && e.code === "quota_exceeded") toast("Your pots history is full. Ask Claude to tidy it up.");
@@ -427,6 +619,7 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
     if (!$("panelIn").hidden) renderIn();
     if (!$("panelOut").hidden) renderOut();
     renderSetup();
+    renderMe();
     const ready = !!(movesCol && gotSetup && gotMoves && setup && pots().length);
     $("btnIn").disabled = !ready;
     $("btnOut").disabled = !ready;
@@ -729,7 +922,7 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
       outPot = null;
       $("panelOut").hidden = true;
       $("outBiz").checked = false;
-      toast(biz ? "Done. Move " + money(amt) + " from the business savings to the business account and pay it from there." : "Done. Move " + money(amt) + " from your business savings to your Greater account" + (extra > 0 ? ". The " + money(extra) + " tax stays put." : "."));
+      toast((!biz && pot === "blessings") ? "Done. Move " + money(amt) + " from your business savings to Greater, then tap Got money in on Personal." : biz ? "Done. Move " + money(amt) + " from the business savings to the business account and pay it from there." : "Done. Move " + money(amt) + " from your business savings to your Greater account" + (extra > 0 ? ". The " + money(extra) + " tax stays put." : "."));
     } catch (e) { failToast(e); btn.disabled = false; }
   }
 
@@ -801,7 +994,7 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
       gf.append(gl, gi);
       two.append(pf, gf);
 
-      const rm = el("button", "link", "Remove " + (p.name || "this pot"));
+      const rm = el("button", "link danger", "Remove " + (p.name || "this pot"));
       rm.type = "button";
       rm.addEventListener("click", () => removePot(i));
 
@@ -938,7 +1131,7 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
     plan: { take: 115000, tax: 0, lump: 50, wtax: 33 },
     v: 1
   };
-  let state = { setup: null, moves: {} };
+  let state = { setup: null, moves: {}, personal: null };
   let firstRun = false;
 
   function persist() { localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -973,12 +1166,17 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const s = JSON.parse(raw);
-        if (s && s.setup && Array.isArray(s.setup.pots)) state = { setup: s.setup, moves: s.moves || {} };
+        if (s && s.setup && Array.isArray(s.setup.pots)) state = { setup: s.setup, moves: s.moves || {}, personal: s.personal || null };
       }
       localStorage.setItem(KEY + ".t", "1");
       localStorage.removeItem(KEY + ".t");
     } catch (e) { ok = false; }
     if (!state.setup) { state.setup = clone(DEFAULT_SETUP); firstRun = true; }
+    if (!state.personal || !Array.isArray(state.personal.bills)) { state.personal = clone(ME_DEFAULT); try { persist(); } catch (e) {} }
+    ensureWeek();
+    let tab = "me";
+    try { tab = localStorage.getItem(KEY + ".tab") || "me"; } catch (e) {}
+    showTab(tab);
     setupRef = localSetupRef;
     movesCol = localMoves;
     if (!ok) setStatus("This browser won't save your pots. Open it in Safari or Chrome, not a private tab.", true);
@@ -1005,9 +1203,484 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
     try { data = JSON.parse($("restoreText").value); } catch (e) { toast("That backup didn't read properly. Copy it again."); return; }
     if (!data || !data.setup || !Array.isArray(data.setup.pots) || typeof data.moves !== "object") { toast("That doesn't look like a Pay Day Pots backup."); return; }
     if (!window.confirm("Replace everything on this phone with this backup?")) return;
-    guarded(() => { state.setup = data.setup; state.moves = data.moves || {}; })
+    guarded(() => { state.setup = data.setup; state.moves = data.moves || {}; if (data.personal && Array.isArray(data.personal.bills)) state.personal = data.personal; })
       .then(() => { $("restoreText").value = ""; setupDirty = false; firstRun = false; setStatus(""); toast("Restored."); })
       .catch(failToast);
+  }
+
+  // Personal: weekly spending money out of the main Greater account
+  const ME_DEFAULT = {
+    start: "2026-11-06",
+    bills: [
+      { id: "rent", name: "Rent", amount: 43750, often: "week", wd: 5 },
+      { id: "luna", name: "Luna", amount: 25000, often: "week", wd: 5 },
+      { id: "insurance", name: "Insurance", amount: 3600, often: "week", wd: 5 },
+      { id: "parking", name: "Parking", amount: 1500, often: "week", wd: 5 },
+      { id: "swim", name: "Swimming", amount: 4600, often: "fortnight", from: "2026-11-05" },
+      { id: "broadband", name: "Broadband", amount: 10095, often: "month", dom: 8 },
+      { id: "energy", name: "Energy", amount: 26600, often: "month", dom: 10 },
+      { id: "wix", name: "Wix", amount: 5300, often: "month", dom: 12 },
+      { id: "telstra", name: "Telstra", amount: 18349, often: "month", dom: 21 },
+      { id: "spotify", name: "Spotify", amount: 1599, often: "month", dom: 23 },
+      { id: "stan", name: "Stan", amount: 999, often: "month", dom: 24 },
+      { id: "wix2", name: "Wix", amount: 1320, often: "month", dom: 24 },
+      { id: "netflix", name: "Netflix", amount: 2099, often: "month", dom: 31 }
+    ],
+    spends: {},
+    weeks: {},
+    check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" }
+  };
+  const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
+  let meOpen = null, meDirty = false, meDraft = null;
+
+  const P = () => state.personal;
+  const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+  const mePayDay = () => payDayOf((state.setup && state.setup.weekly) || {});
+  const mePay = () => Math.max(0, Number((state.setup && state.setup.plan && state.setup.plan.take) || 0));
+  const signed = (x) => (x.kind === "in" ? -1 : 1) * (Number(x.amount) || 0);
+  const sumAmt = (list) => list.reduce((a, x) => a + x.amount, 0);
+
+  function parseBal(v) {
+    const t = String(v == null ? "" : v).replace(/[$,\s]/g, "");
+    if (t.startsWith("-")) { const c = parseMoney(t.slice(1)); return c === null ? null : -c; }
+    return parseMoney(t);
+  }
+  function weekStartOf(s) {
+    const d = parseYmd(s);
+    const pd = mePayDay();
+    let n = 0;
+    while (d.getDay() !== pd && n < 7) { d.setDate(d.getDate() - 1); n++; }
+    return ymd(d);
+  }
+  function billDates(b, from, to) {
+    const out = [];
+    if (from > to) return out;
+    if (b.often === "week") {
+      const d = parseYmd(from);
+      const wd = Number(b.wd);
+      let n = 0;
+      while (d.getDay() !== wd && n < 7) { d.setDate(d.getDate() + 1); n++; }
+      for (let x = ymd(d); x <= to; x = addDays(x, 7)) out.push(x);
+    } else if (b.often === "fortnight") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return out;
+      const diff = Math.round((parseYmd(from) - parseYmd(b.from)) / 86400000);
+      for (let x = addDays(b.from, Math.ceil(diff / 14) * 14); x <= to; x = addDays(x, 14)) out.push(x);
+    } else {
+      const f = parseYmd(from);
+      const t = parseYmd(to);
+      let y = f.getFullYear(), m = f.getMonth();
+      while (new Date(y, m, 1) <= t) {
+        const last = new Date(y, m + 1, 0).getDate();
+        const x = ymd(new Date(y, m, Math.min(Math.max(1, Number(b.dom) || 1), last)));
+        if (x >= from && x <= to) out.push(x);
+        m += 1;
+        if (m > 11) { m = 0; y += 1; }
+      }
+    }
+    return out;
+  }
+  function billsBetween(from, to, list) {
+    const out = [];
+    (list || P().bills || []).forEach((b) => billDates(b, from, to).forEach((d) => out.push({ date: d, name: b.name, amount: Number(b.amount) || 0 })));
+    return out.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  function meRaw(bills, pay) {
+    let w = 0;
+    (bills || []).forEach((b) => {
+      const a = Number(b.amount) || 0;
+      if (b.often === "week") w += a;
+      else if (b.often === "fortnight") w += a / 2;
+      else w += (a * 12) / 52;
+    });
+    return pay - w;
+  }
+  const meAllow = (bills, pay) => Math.max(0, Math.floor(meRaw(bills, pay) / 500) * 500);
+  function allowFor(ws) {
+    const wk = P().weeks || {};
+    if (wk[ws] && Number.isFinite(wk[ws].allow)) return wk[ws].allow;
+    const earlier = Object.keys(wk).filter((k) => k < ws).sort();
+    if (earlier.length) return wk[earlier[earlier.length - 1]].allow;
+    return meAllow(P().bills, mePay());
+  }
+  function ensureWeek() {
+    const p = P();
+    if (!p) return;
+    const ws = weekStartOf(today());
+    if (ws < p.start) return;
+    p.weeks = p.weeks || {};
+    if (!p.weeks[ws]) {
+      p.weeks[ws] = { allow: meAllow(p.bills, mePay()) };
+      try { persist(); } catch (e) {}
+    }
+  }
+  function netSpent(from, to) {
+    let n = 0;
+    Object.values(P().spends || {}).forEach((x) => { if (x.date >= from && x.date <= to) n += signed(x); });
+    return n;
+  }
+  function meWeek() {
+    const p = P();
+    const t = today();
+    if (t < p.start) return { pre: true, start: p.start, allow: meAllow(p.bills, mePay()) };
+    const first = weekStartOf(p.start);
+    const ws = weekStartOf(t);
+    let carry = 0;
+    for (let w = first, n = 0; w < ws && n < 600; w = addDays(w, 7), n++) {
+      carry = Math.min(0, allowFor(w) + carry - netSpent(w, addDays(w, 6)));
+    }
+    const allow = allowFor(ws);
+    const spent = netSpent(ws, addDays(ws, 6));
+    const pw = addDays(ws, -7);
+    const prev = pw >= first ? { allow: allowFor(pw), spent: netSpent(pw, addDays(pw, 6)) } : null;
+    return { pre: false, ws: ws, next: addDays(ws, 7), allow: allow, carry: carry, spent: spent, left: allow + carry - spent, prev: prev };
+  }
+  function meEstimate() {
+    const c = P().check;
+    const t = today();
+    if (!c || !c.date || !Number.isFinite(c.bal) || c.date > t) return null;
+    const pd = mePayDay();
+    let bal = c.bal;
+    for (let d = addDays(c.date, 1), n = 0; d <= t && n < 800; d = addDays(d, 1), n++) if (parseYmd(d).getDay() === pd) bal += mePay();
+    bal -= sumAmt(billsBetween(addDays(c.date, 1), t));
+    Object.values(P().spends || {}).forEach((x) => { if (String(x.at) > String(c.at)) bal -= signed(x); });
+    return bal;
+  }
+  const dueBeforePayday = () => sumAmt(billsBetween(addDays(today(), 1), addDays(nextPayday(mePayDay(), false), -1)));
+  function meRoom() {
+    const est = meEstimate();
+    return est === null ? null : { est: est, room: est - dueBeforePayday() };
+  }
+  function meShown(st) {
+    const r = meRoom();
+    if (st.pre) return { shown: 0, byBank: false };
+    if (r && r.room < st.left) return { shown: r.room, byBank: true };
+    return { shown: st.left, byBank: false };
+  }
+  const randomPot = () => pots().find((p) => p.id === "blessings") || null;
+  function grabCost(amt) {
+    const rate = Number((setup && setup.plan && setup.plan.wtax) || 0);
+    return amt + (rate > 0 ? Math.round((amt * rate) / 100) : 0);
+  }
+
+  function renderMe() {
+    const p = P();
+    if (!p) return;
+    const st = meWeek();
+    const pdName = DAYS[mePayDay()];
+    const big = $("meLeft"), eb = $("meEyebrow"), sub = $("meSub"), note = $("meNote");
+    const mw = $("meMeterWrap"), meter = $("meMeter");
+    $("meSpendForm").hidden = st.pre;
+    $("meWeekWrap").hidden = st.pre;
+    big.classList.remove("over");
+    mw.classList.remove("over");
+    const notes = [];
+    if (st.pre) {
+      eb.textContent = "Spending money";
+      big.textContent = money(st.allow);
+      sub.textContent = "a week for food, fun and anything that isn't a bill.";
+      notes.push(st.start === addDays(today(), 1) ? "Starts tomorrow." : "Starts " + niceDate(st.start) + ".");
+      mw.hidden = true;
+    } else {
+      const s = meShown(st);
+      mw.hidden = false;
+      if (s.shown >= 0) {
+        eb.textContent = "Left to spend till " + pdName;
+        big.textContent = money(s.shown);
+      } else {
+        eb.textContent = "Over this week by";
+        big.textContent = money(-s.shown);
+        big.classList.add("over");
+        mw.classList.add("over");
+        notes.push("It comes off next week's money.");
+      }
+      sub.textContent = money(st.allow) + " a week. Resets " + niceDate(st.next) + ".";
+      if (st.carry < 0) notes.push("Less " + money(-st.carry) + " you went over last week.");
+      if (s.byBank) notes.push("Going by what's in Greater.");
+      const budget = Math.max(0, st.allow + st.carry);
+      const used = budget > 0 ? Math.min(1, Math.max(0, (budget - s.shown) / budget)) : 1;
+      meter.style.width = (used * 100).toFixed(1) + "%";
+    }
+    note.textContent = notes.join(" ");
+    note.hidden = !notes.length;
+    renderMeVerdict(st);
+    renderMeWeek(st);
+    renderMeBills();
+    renderMeCheck(st);
+    renderMeSetup();
+  }
+
+  function renderMeVerdict(st) {
+    const v = $("meVerdict"), sb = $("meSpent"), gb = $("meGot");
+    v.textContent = "";
+    sb.textContent = "Spent it";
+    gb.textContent = "Got money in";
+    if (st.pre) { sb.disabled = true; gb.disabled = true; return; }
+    const amt = parseMoney($("meAmt").value);
+    if (!amt || amt <= 0) {
+      v.textContent = "Type an amount to see what's left.";
+      sb.disabled = true;
+      gb.disabled = true;
+      return;
+    }
+    sb.disabled = false;
+    gb.disabled = false;
+    sb.textContent = "Spent " + money(amt);
+    gb.textContent = "Got " + money(amt) + " in";
+    const after = meShown(st).shown - amt;
+    if (after >= 0) {
+      v.append(document.createTextNode("Leaves you "), el("b", "ok", money(after)), document.createTextNode(" till " + DAYS[mePayDay()] + "."));
+      return;
+    }
+    v.append(document.createTextNode("That puts you "), el("b", null, money(-after)), document.createTextNode(" over. It comes off next week's money."));
+    const r = randomPot();
+    if (r) v.append(document.createTextNode(" Grab it from " + r.name + " and it really costs "), el("b", null, money(grabCost(-after))), document.createTextNode("."));
+  }
+
+  function renderMeWeek(st) {
+    const ul = $("meWeek");
+    const pv = $("mePrev");
+    ul.textContent = "";
+    pv.hidden = true;
+    if (st.pre) return;
+    const sp = P().spends || {};
+    const items = Object.keys(sp).map((id) => Object.assign({ id: id }, sp[id]))
+      .filter((x) => x.date >= st.ws && x.date < st.next)
+      .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    if (!items.length) ul.append(el("li", "hempty", "Nothing yet. Each time you tap Spent it, it shows up here."));
+    items.forEach((x) => ul.append(meRow(x)));
+    if (st.prev) {
+      pv.textContent = "Last week you spent " + money(Math.max(0, st.prev.spent)) + " of " + money(st.prev.allow) + ".";
+      pv.hidden = false;
+    }
+  }
+  function meRow(x) {
+    const li = el("li", "hitem");
+    const btn = el("button", "hrow");
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", meOpen === x.id ? "true" : "false");
+    const left = el("div", "hleft");
+    left.append(el("span", "htitle", x.note || (x.kind === "in" ? "Money in" : "Spent")), el("span", "hsub", niceDate(x.date)));
+    const right = el("div", "hright");
+    right.append(el("span", "hamt" + (x.kind === "in" ? " in" : ""), (x.kind === "in" ? "+" : "") + money(x.amount)), el("span", "hdir", x.kind === "in" ? "in" : "spent"));
+    btn.append(left, right);
+    btn.addEventListener("click", () => { meOpen = meOpen === x.id ? null : x.id; renderMe(); });
+    li.append(btn);
+    if (meOpen === x.id) {
+      const d = el("div", "hdetail");
+      const del = el("button", "btn small danger", "Delete");
+      del.type = "button";
+      del.addEventListener("click", () => {
+        meOpen = null;
+        guarded(() => { delete state.personal.spends[x.id]; }).then(() => toast("Deleted.")).catch(failToast);
+      });
+      d.append(del);
+      li.append(d);
+    }
+    return li;
+  }
+
+  function renderMeBills() {
+    const ul = $("meBills");
+    ul.textContent = "";
+    const t = today();
+    const pd = mePayDay();
+    const list = billsBetween(t, nextPayday(pd, false));
+    if (!list.length) { ul.append(el("li", "hempty", "Nothing due before payday.")); return; }
+    const groups = {};
+    list.forEach((b) => { (groups[b.date] = groups[b.date] || []).push(b); });
+    Object.keys(groups).sort().forEach((d) => {
+      const g = groups[d];
+      const when = d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d);
+      const li = el("li", "hitem");
+      const row = el("div", "brow");
+      const left = el("div", "hleft");
+      left.append(el("span", "htitle", g.map((x) => x.name).join(", ")), el("span", "hsub", when + (parseYmd(d).getDay() === pd ? " · payday" : "")));
+      row.append(left, el("span", "hamt", money(sumAmt(g))));
+      li.append(row);
+      ul.append(li);
+    });
+  }
+
+  function renderMeCheck(st) {
+    const c = P().check;
+    const r = meRoom();
+    const pdName = DAYS[mePayDay()];
+    const sh = $("meShould");
+    sh.textContent = "";
+    if (r) {
+      sh.append(document.createTextNode("Greater should have about "), el("b", null, money(r.est)), document.createTextNode(" now."));
+      sh.hidden = false;
+    } else sh.hidden = true;
+    const raw = $("meBal").value.trim();
+    const typed = raw ? parseBal(raw) : null;
+    const base = typed !== null ? typed : r ? r.est : null;
+    const out = $("meCheckOut");
+    out.textContent = "";
+    if (base !== null) {
+      const room = base - dueBeforePayday();
+      if (room < 0) out.append(document.createTextNode("You're "), el("b", null, money(-room)), document.createTextNode(" short for bills before " + pdName + ". Don't spend."));
+      else if (!st.pre && room < st.left) out.append(document.createTextNode("Careful. Going by Greater you've only got "), el("b", null, money(room)), document.createTextNode(" to spend till " + pdName + "."));
+      else out.append(document.createTextNode("All good. Bills before " + pdName + " are covered."));
+    }
+    $("meSaveBal").disabled = typed === null;
+    $("meCheckHint").textContent = (c && c.date ? "Last saved " + niceDate(c.date) + ". " : "") + "On a " + pdName + ", check after your pay lands.";
+  }
+  function meSaveBal() {
+    const raw = $("meBal").value.trim();
+    const bal = raw ? parseBal(raw) : null;
+    if (bal === null) { toast("Type your Greater balance, like 617.05."); return; }
+    guarded(() => { state.personal.check = { bal: bal, date: today(), at: new Date().toISOString() }; })
+      .then(() => { $("meBal").value = ""; renderMe(); toast("Saved. Greater has " + money(bal) + "."); })
+      .catch(failToast);
+  }
+
+  function renderMeSetup() {
+    if (meDirty) return;
+    meDraft = clone(P().bills || []);
+    $("mePay").value = centsToInput(mePay());
+    drawMeBills();
+    meHint();
+  }
+  function meHint() {
+    const pay = parseMoney($("mePay").value) || 0;
+    const raw = meRaw(meDraft || [], pay);
+    $("meAllowHint").textContent = raw < 0
+      ? "Your bills come to more than your pay."
+      : "That leaves " + money(Math.floor(raw / 500) * 500) + " a week for food, fun and anything not on this list.";
+  }
+  function drawMeBills() {
+    const box = $("meBillEdit");
+    box.textContent = "";
+    (meDraft || []).forEach((b, i) => {
+      const row = el("div", "billrow");
+      const mk = (label, id, input) => { const f = el("div", "field"); const l = el("label", null, label); l.htmlFor = id; input.id = id; f.append(l, input); return f; };
+      const ni = el("input");
+      ni.value = b.name || "";
+      ni.maxLength = 30;
+      ni.autocomplete = "off";
+      ni.addEventListener("input", () => { b.name = ni.value; meDirty = true; });
+      const ai = el("input");
+      ai.inputMode = "decimal";
+      ai.autocomplete = "off";
+      ai.value = centsToInput(Number(b.amount) || 0);
+      ai.addEventListener("input", () => { b.amount = parseMoney(ai.value) || 0; meDirty = true; meHint(); });
+      const os = el("select");
+      [["week", "Weekly"], ["fortnight", "Fortnightly"], ["month", "Monthly"]].forEach((o) => { const op = el("option", null, o[1]); op.value = o[0]; os.append(op); });
+      os.value = b.often || "month";
+      os.addEventListener("change", () => {
+        b.often = os.value;
+        if (b.often === "week" && !Number.isInteger(Number(b.wd))) b.wd = mePayDay();
+        if (b.often === "fortnight" && !b.from) b.from = today();
+        if (b.often === "month" && !b.dom) b.dom = 1;
+        meDirty = true;
+        drawMeBills();
+        meHint();
+      });
+      const two = el("div", "two");
+      two.append(mk("Amount", "mba-" + b.id, ai), mk("How often", "mbo-" + b.id, os));
+      let when;
+      if (b.often === "week") {
+        const ws = el("select");
+        WD_LIST.forEach((o) => { const op = el("option", null, o[1]); op.value = String(o[0]); ws.append(op); });
+        ws.value = String(Number.isInteger(Number(b.wd)) ? Number(b.wd) : mePayDay());
+        ws.addEventListener("change", () => { b.wd = Number(ws.value); meDirty = true; });
+        when = mk("Day", "mbw-" + b.id, ws);
+      } else if (b.often === "fortnight") {
+        const di = el("input");
+        di.type = "date";
+        di.value = b.from || "";
+        const upd = () => { b.from = di.value; meDirty = true; };
+        di.addEventListener("input", upd);
+        di.addEventListener("change", upd);
+        when = mk("Next one", "mbw-" + b.id, di);
+      } else {
+        const mi = el("input");
+        mi.inputMode = "numeric";
+        mi.autocomplete = "off";
+        mi.placeholder = "1 to 31";
+        mi.value = b.dom ? String(b.dom) : "";
+        mi.addEventListener("input", () => { b.dom = Number(mi.value) || 0; meDirty = true; });
+        when = mk("Day of the month", "mbw-" + b.id, mi);
+      }
+      const rm = el("button", "link danger", "Remove " + (b.name || "this bill"));
+      rm.type = "button";
+      rm.addEventListener("click", () => { meDraft.splice(i, 1); meDirty = true; drawMeBills(); meHint(); });
+      row.append(mk("Bill", "mbn-" + b.id, ni), two, when, rm);
+      box.append(row);
+    });
+  }
+  function meAddBill() {
+    if (!meDraft) meDraft = clone(P().bills || []);
+    const id = "b" + Date.now().toString(36);
+    meDraft.push({ id: id, name: "", amount: 0, often: "month", dom: 1 });
+    meDirty = true;
+    drawMeBills();
+    meHint();
+    const n = $("mbn-" + id);
+    if (n) n.focus();
+  }
+  function meSaveSetup() {
+    const err = $("meSetupErr");
+    err.hidden = true;
+    const fail = (m) => { err.textContent = m; err.hidden = false; };
+    const pay = parseMoney($("mePay").value.trim());
+    if (!pay || pay <= 0) return fail("Weekly pay needs to be a number, like 1150.");
+    const bills = [];
+    for (const b of meDraft || []) {
+      const name = String(b.name || "").trim().slice(0, 30);
+      const amount = Math.round(Number(b.amount) || 0);
+      if (!name) return fail("Give every bill a name.");
+      if (!(amount > 0)) return fail(name + " needs an amount.");
+      const nb = { id: b.id, name: name, amount: amount, often: b.often };
+      if (b.often === "week") {
+        const wd = Number(b.wd);
+        if (!Number.isInteger(wd) || wd < 0 || wd > 6) return fail("Pick a day for " + name + ".");
+        nb.wd = wd;
+      } else if (b.often === "fortnight") {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return fail("Pick the next date for " + name + ".");
+        nb.from = b.from;
+      } else {
+        const dom = Number(b.dom);
+        if (!Number.isInteger(dom) || dom < 1 || dom > 31) return fail(name + " needs a day of the month from 1 to 31.");
+        nb.dom = dom;
+      }
+      bills.push(nb);
+    }
+    if (meRaw(bills, pay) < 0) return fail("Your bills come to more than your pay.");
+    guarded(() => {
+      state.setup.plan = Object.assign({}, state.setup.plan || {}, { take: pay });
+      state.personal.bills = bills;
+      const ws = weekStartOf(today());
+      if (ws >= state.personal.start) {
+        state.personal.weeks = state.personal.weeks || {};
+        state.personal.weeks[ws] = { allow: meAllow(bills, pay) };
+      }
+    }).then(() => { meDirty = false; renderMe(); toast("Setup saved."); }).catch(failToast);
+  }
+  function meLog(kind) {
+    const st = meWeek();
+    if (st.pre) return;
+    const amt = parseMoney($("meAmt").value);
+    if (!amt || amt <= 0) return;
+    const id = newId();
+    const rec = { date: today(), at: new Date().toISOString(), kind: kind, amount: amt, note: $("meWhat").value.trim().slice(0, 60) };
+    guarded(() => { state.personal.spends[id] = rec; })
+      .then(() => {
+        $("meAmt").value = "";
+        $("meWhat").value = "";
+        renderMe();
+        const n = meShown(meWeek()).shown;
+        toast((kind === "in" ? "Added. " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : money(-n) + " over this week."));
+      })
+      .catch(failToast);
+  }
+  function showTab(which) {
+    const mine = which !== "biz";
+    $("meView").hidden = !mine;
+    $("bizView").hidden = mine;
+    $("tabMe").setAttribute("aria-selected", mine ? "true" : "false");
+    $("tabBiz").setAttribute("aria-selected", mine ? "false" : "true");
+    try { localStorage.setItem(KEY + ".tab", mine ? "me" : "biz"); } catch (e) {}
   }
 
   $("btnIn").addEventListener("click", () => {
@@ -1039,9 +1712,189 @@ textarea{font:500 15px var(--body);color:var(--ink);background:var(--paper);bord
 
   $("copyBackup").addEventListener("click", copyBackup);
   $("doRestore").addEventListener("click", restoreBackup);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && movesCol) { runAuto(); render(); } });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && movesCol) { ensureWeek(); runAuto(); render(); } });
+
+  // Lock: Face ID first, 4 digit code as backup. The code is set on the phone and only a salted hash is kept there.
+  const LOCK_KEY = KEY + ".lock";
+  const RELOCK_MS = 60000;
+  let pendingToast = null, lockCfg = null, lockMode = "unlock", lockEntry = "", lockFirst = "", lockFails = 0, lockUntil = 0;
+  let lockBusy = false, faceBusy = false, faceOk = false, unlocked = false, hiddenAt = 0, lockFromSetup = false;
+  const b64 = (buf) => btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+  const unb64 = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+  function readLock() {
+    try { const v = JSON.parse(localStorage.getItem(LOCK_KEY) || "null"); return v && v.salt && v.hash ? v : null; } catch (e) { return null; }
+  }
+  function writeLock(v) { try { localStorage.setItem(LOCK_KEY, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  async function hashCode(code, salt) {
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: unb64(salt), iterations: 250000, hash: "SHA-256" }, key, 256);
+    return b64(bits);
+  }
+  async function faceAvailable() {
+    try { return !!(window.PublicKeyCredential && navigator.credentials && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (e) { return false; }
+  }
+  async function faceRegister() {
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: "Pay Day Pots" },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: "Pay Day Pots", displayName: "Pay Day Pots" },
+      pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required", residentKey: "preferred" },
+      timeout: 60000,
+      attestation: "none"
+    } });
+    if (!cred) throw new Error("no credential");
+    return b64(cred.rawId);
+  }
+  async function faceCheck(id) {
+    const a = await navigator.credentials.get({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials: [{ type: "public-key", id: unb64(id), transports: ["internal"] }],
+      userVerification: "required",
+      timeout: 60000
+    } });
+    if (!a || b64(a.rawId) !== id) return false;
+    const ad = new Uint8Array(a.response.authenticatorData);
+    return ad.length > 32 && (ad[32] & 4) !== 0;
+  }
+  function drawDots() { Array.from($("lockDots").children).forEach((d, i) => d.classList.toggle("on", i < lockEntry.length)); }
+  function lockUI(mode, msg) {
+    lockMode = mode;
+    lockEntry = "";
+    $("lockMsg").textContent = msg;
+    $("lockErr").textContent = "";
+    $("lockFace").hidden = !(mode === "unlock" && lockCfg && lockCfg.face);
+    $("lockPad").hidden = mode === "offer";
+    $("lockDots").hidden = mode === "offer";
+    $("lockAlt").hidden = mode !== "offer";
+    $("lockCancel").hidden = !(lockFromSetup && (mode === "set" || mode === "confirm"));
+    drawDots();
+  }
+  function showLock() {
+    unlocked = false;
+    $("lock").hidden = false;
+    $("app").hidden = true;
+    $("toast").hidden = true;
+  }
+  function hideLock() {
+    unlocked = true;
+    lockFromSetup = false;
+    $("lock").hidden = true;
+    $("app").hidden = false;
+    lockSettingsUI();
+    if (pendingToast) { const m = pendingToast; pendingToast = null; toast(m); }
+  }
+  function lockErr(msg) {
+    $("lockErr").textContent = msg;
+    const d = $("lockDots");
+    d.classList.remove("shake");
+    void d.offsetWidth;
+    d.classList.add("shake");
+    lockEntry = "";
+    drawDots();
+  }
+  async function onKey(k) {
+    if (lockMode === "offer" || lockBusy) return;
+    if (k === "del") { lockEntry = lockEntry.slice(0, -1); drawDots(); return; }
+    if (lockEntry.length >= 4) return;
+    lockEntry += k;
+    drawDots();
+    if (lockEntry.length < 4) return;
+    const code = lockEntry;
+    lockBusy = true;
+    try {
+      if (lockMode === "set") { lockFirst = code; lockUI("confirm", "Enter it again"); return; }
+      if (lockMode === "confirm") {
+        if (code !== lockFirst) { lockFirst = ""; lockUI("set", "Set a 4 digit code"); lockErr("Codes didn't match. Try again."); return; }
+        const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
+        const hash = await hashCode(code, salt);
+        const face = lockCfg && lockCfg.face ? lockCfg.face : null;
+        lockCfg = { salt: salt, hash: hash, face: face };
+        lockFirst = "";
+        if (!writeLock(lockCfg)) { lockErr("Couldn't save the code on this phone."); return; }
+        if (!face && faceOk) { lockUI("offer", "Use Face ID to unlock next time?"); return; }
+        hideLock();
+        toast("Code set.");
+        return;
+      }
+      if (Date.now() < lockUntil) { lockErr("Too many tries. Wait a bit."); return; }
+      if ((await hashCode(code, lockCfg.salt)) === lockCfg.hash) { lockFails = 0; hideLock(); return; }
+      lockFails += 1;
+      if (lockFails >= 5) { lockFails = 0; lockUntil = Date.now() + 30000; lockErr("Wrong code. Wait 30 seconds."); }
+      else lockErr("Wrong code.");
+    } finally {
+      lockBusy = false;
+    }
+  }
+  async function tryFace(tapped) {
+    if (!lockCfg || !lockCfg.face || faceBusy || unlocked) return;
+    faceBusy = true;
+    try {
+      if (await faceCheck(lockCfg.face)) hideLock();
+      else if (tapped) $("lockErr").textContent = "Face ID didn't work. Use your code.";
+    } catch (e) {
+      if (tapped) $("lockErr").textContent = "Face ID didn't work. Use your code.";
+    }
+    faceBusy = false;
+  }
+  function lockStart() {
+    lockCfg = readLock();
+    showLock();
+    if (!lockCfg) { lockUI("set", "Set a 4 digit code"); return; }
+    lockUI("unlock", lockCfg.face ? "Use Face ID or enter your code" : "Enter your code");
+    if (lockCfg.face) tryFace(false);
+  }
+  function lockSettingsUI() {
+    const b = $("lockFaceToggle");
+    b.hidden = !faceOk && !(lockCfg && lockCfg.face);
+    b.textContent = lockCfg && lockCfg.face ? "Turn off Face ID" : "Turn on Face ID";
+  }
+  async function bootLock() {
+    lockStart();
+    faceOk = await faceAvailable();
+    lockSettingsUI();
+  }
+
+  $("tabMe").addEventListener("click", () => { showTab("me"); window.scrollTo(0, 0); });
+  $("tabBiz").addEventListener("click", () => { showTab("biz"); window.scrollTo(0, 0); });
+  $("meAmt").addEventListener("input", () => renderMeVerdict(meWeek()));
+  $("meSpendForm").addEventListener("submit", (e) => { e.preventDefault(); meLog("spend"); });
+  $("meGot").addEventListener("click", () => meLog("in"));
+  $("meBal").addEventListener("input", () => renderMeCheck(meWeek()));
+  $("meSaveBal").addEventListener("click", meSaveBal);
+  $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
+  $("meAddBill").addEventListener("click", meAddBill);
+  $("meSaveSetup").addEventListener("click", meSaveSetup);
+
+  $("lockPad").addEventListener("click", (e) => { const b = e.target.closest("button[data-k]"); if (b) onKey(b.dataset.k); });
+  document.addEventListener("keydown", (e) => {
+    if ($("lock").hidden) return;
+    if (/^[0-9]$/.test(e.key)) onKey(e.key);
+    else if (e.key === "Backspace") onKey("del");
+  });
+  $("lockFace").addEventListener("click", () => tryFace(true));
+  $("lockFaceOn").addEventListener("click", async () => {
+    try { lockCfg.face = await faceRegister(); writeLock(lockCfg); hideLock(); toast("Face ID is on."); }
+    catch (e) { hideLock(); toast("Face ID didn't set up. Your code still works."); }
+  });
+  $("lockFaceSkip").addEventListener("click", () => { hideLock(); toast("Code set."); });
+  $("lockCancel").addEventListener("click", () => { lockFirst = ""; hideLock(); });
+  $("lockChange").addEventListener("click", () => { lockFromSetup = true; showLock(); lockUI("set", "Set a new 4 digit code"); });
+  $("lockFaceToggle").addEventListener("click", async () => {
+    if (!lockCfg) return;
+    if (lockCfg.face) { lockCfg.face = null; writeLock(lockCfg); lockSettingsUI(); toast("Face ID is off. Your code still works."); return; }
+    try { lockCfg.face = await faceRegister(); writeLock(lockCfg); lockSettingsUI(); toast("Face ID is on."); }
+    catch (e) { toast("Face ID didn't set up. Your code still works."); }
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { hiddenAt = Date.now(); if (unlocked) $("app").hidden = true; return; }
+    if (!unlocked) return;
+    if (Date.now() - hiddenAt > RELOCK_MS) lockStart();
+    else $("app").hidden = false;
+  });
 
   init();
+  bootLock();
 })();
 </script>
 </body>
