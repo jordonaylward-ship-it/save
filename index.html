@@ -340,9 +340,10 @@ details[open] summary::after{transform:rotate(45deg)}
         </div>
         <p class="err" id="meSetupErr" hidden></p>
         <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
-        <p class="hint">App updated 11 Nov 2026, v3.</p>
+        <p class="hint" id="appVer"></p>
       </div>
     </details>
+    <button class="btn ghost" id="meCopyAll" type="button">Copy everything for Claude</button>
   </section>
 
   <section class="view" id="bizView" role="tabpanel" aria-labelledby="tabBiz" hidden>
@@ -484,6 +485,7 @@ details[open] summary::after{transform:rotate(45deg)}
       </div>
     </div>
   </details>
+  <button class="btn ghost" id="bizCopyAll" type="button">Copy everything for Claude</button>
   </section>
 </main>
 
@@ -1221,6 +1223,93 @@ details[open] summary::after{transform:rotate(45deg)}
     runAuto();
   }
 
+  // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
+  const APP_VERSION = "11 Nov 2026, v4";
+  function allText() {
+    const out = [];
+    const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
+    const gap = () => out.push("");
+    const tx = (id) => { const e = $(id); return e && !e.hidden ? e.textContent.replace(/\s+/g, " ").trim() : ""; };
+    const rows = (id) => Array.from($(id).children).map((li) => {
+      const bits = Array.from(li.querySelectorAll(".htitle,.hsub,.hamt,.hdir,.pname,.pmeta,.pamt")).map((e) => e.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
+      return bits.length ? bits.join(" | ") : li.textContent.replace(/\s+/g, " ").trim();
+    });
+    const now = new Date();
+    add("PAY DAY POTS, EVERYTHING");
+    add("Copied " + niceDate(today()) + " " + now.getFullYear() + " at " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ". App " + APP_VERSION + ".");
+    try {
+      const p = P();
+      const st = meWeek();
+      const sh = meShown(st);
+      gap();
+      add("PERSONAL, WHAT THE SCREEN SHOWS");
+      add([tx("meEyebrow"), tx("meLeft")].filter(Boolean).join(": "));
+      add(tx("meSub"));
+      add(tx("meNote"));
+      add("This week: " + (rows("meWeek").join(" // ") || "nothing"));
+      add(tx("mePrev"));
+      add("Coming out of Greater: " + (rows("meBills").join(" // ") || "nothing"));
+      add(tx("meShould"));
+      add(tx("meCheckHint"));
+      gap();
+      add("PERSONAL, THE NUMBERS BEHIND IT");
+      add("Pay into Greater " + money(mePay()) + " a week, payday " + DAYS[mePayDay()] + ".");
+      if (!st.pre) add("Week from " + niceDate(st.ws) + ": allowed " + money(st.allow) + ", carried over " + money(st.carry) + ", spent " + money(st.spent) + ", left " + money(st.left) + ".");
+      const c = p.check;
+      if (c && c.date) add("Balance last saved: " + money(c.bal) + " on " + niceDate(c.date) + (Array.isArray(c.wait) && c.wait.length ? ", not gone yet: " + c.wait.join(", ") : "") + (c.payWait ? ", pay not landed" : "") + ".");
+      else add("No balance saved.");
+      if (sh.bank) add("Greater worked out now: " + money(sh.bank.est) + ". Still to come out before " + DAYS[mePayDay()] + ": " + money(sh.bank.due) + ". Pay still to land: " + money(sh.bank.payDue) + ". Spare in the bank: " + money(sh.bank.room) + ".");
+      add("Top number comes from " + (st.pre ? "before the start date" : sh.byBank ? "the bank" : "the week's money") + ".");
+      add(tx("meAllowHint"));
+      if (p.fixNote) add("App note: " + p.fixNote);
+      add("Bills: " + (p.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b) + (b.often === "week" ? " on " + DAYS[Number(b.wd)] : b.often === "month" ? " on day " + b.dom : " from " + b.from) + (b.since ? " counting from " + b.since : "")).join(" // "));
+      const sp = Object.keys(p.spends || {}).map((k) => p.spends[k]).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      add("Everything logged, newest first: " + (sp.map((x) => x.date + " " + (x.kind === "in" ? "money in " : "spent ") + money(x.amount) + (x.note ? " " + x.note : "")).join(" // ") || "nothing"));
+      add("Weeks: " + (Object.keys(p.weeks || {}).sort().map((k) => k + " " + money(p.weeks[k].allow)).join(" // ") || "none"));
+      if (p.was) add("Before the reset on " + p.was.at + ": pay " + money(p.was.take) + ", week " + (p.was.allow == null ? "not set" : money(p.was.allow)) + ", bills " + ((p.was.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") || "not kept") + ".");
+    } catch (e) { add("Personal part failed: " + (e && e.message)); }
+    try {
+      const b = balances();
+      gap();
+      add("BUSINESS, WHAT THE SCREEN SHOWS");
+      add("In savings: " + tx("total"));
+      Array.from($("rule").children).forEach((x) => add(x.textContent.replace(/\s+/g, " ").trim()));
+      add("Pots: " + pots().map((x) => x.name + " " + money(b[x.id] || 0) + " (" + potMeta(x) + (Number(x.goal) > 0 ? ", goal " + money(x.goal) : "") + ")").join(" // "));
+      const mv = moves.slice().sort((x, y) => String(y.at).localeCompare(String(x.at)));
+      add("History, newest first: " + (mv.map((m) => m.date + " " + m.kind + " " + money(m.amount) + " " + Object.keys(m.split || {}).map((k) => potName(k) + " " + money(m.split[k])).join(", ") + (m.taxMove && Number(m.taxMove.amount) > 0 ? ", tax moved " + money(m.taxMove.amount) : "") + (m.note ? ", " + m.note : "") + (m.void ? ", UNDONE" : "")).join(" // ") || "nothing"));
+    } catch (e) { add("Business part failed: " + (e && e.message)); }
+    gap();
+    add("DATA");
+    add(JSON.stringify(state));
+    return out.join("\n");
+  }
+  function copyAll() {
+    let text;
+    try { text = allText(); } catch (e) { text = "PAY DAY POTS, EVERYTHING\nDATA\n" + JSON.stringify(state); }
+    const ok = "Copied. Paste it into Claude.";
+    const fallback = () => {
+      let done = false;
+      try {
+        const ta = el("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        done = document.execCommand("copy");
+        ta.remove();
+      } catch (e) {}
+      if (done) { toast(ok); return; }
+      const t = $("restoreText");
+      t.value = text;
+      toast("Couldn't copy by itself. It's in the Restore box in Business Setup. Select it all and copy.");
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => toast(ok), fallback);
+    else fallback();
+  }
+
   function copyBackup() {
     const text = JSON.stringify(state);
     const fallback = () => {
@@ -1941,6 +2030,9 @@ details[open] summary::after{transform:rotate(45deg)}
   $("saveSetup").addEventListener("click", saveSetup);
 
   $("copyBackup").addEventListener("click", copyBackup);
+  $("meCopyAll").addEventListener("click", copyAll);
+  $("bizCopyAll").addEventListener("click", copyAll);
+  $("appVer").textContent = "App updated " + APP_VERSION + ".";
   $("doRestore").addEventListener("click", restoreBackup);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden || !movesCol) return;
