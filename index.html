@@ -329,6 +329,7 @@ details[open] summary::after{transform:rotate(45deg)}
           <input id="mePay" inputmode="decimal" autocomplete="off" placeholder="$0.00">
         </div>
         <p class="hint" id="meAllowHint"></p>
+        <p class="hint" id="meFixNote" hidden></p>
         <h3 class="h">Bills that come out of Greater</h3>
         <div id="meBillEdit"></div>
         <button class="btn ghost small" id="meAddBill" type="button">Add a bill</button>
@@ -339,7 +340,7 @@ details[open] summary::after{transform:rotate(45deg)}
         </div>
         <p class="err" id="meSetupErr" hidden></p>
         <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
-        <p class="hint">App updated 10 Nov 2026.</p>
+        <p class="hint">App updated 11 Nov 2026, v3.</p>
       </div>
     </details>
   </section>
@@ -663,6 +664,7 @@ details[open] summary::after{transform:rotate(45deg)}
       parts.forEach((x) => p.append(typeof x === "string" ? document.createTextNode(x) : el("b", null, x.b)));
       rule.append(p);
     };
+    novPlan().forEach((parts) => line(parts));
     if (plan.take > 0) {
       const parts = ["Every " + DAYS[day] + " take ", { b: money(plan.take) }, " from the business"];
       if (plan.tax > 0) parts.push(" and put ", { b: money(plan.tax) }, " in the business savings for tax.");
@@ -677,7 +679,32 @@ details[open] summary::after{transform:rotate(45deg)}
       if (wk.from && wk.from > next) next = wk.from;
       line(["Every " + DAYS[day] + " " + money(wk.pay) + " goes into " + (target ? potName(target) : "your pots") + " by itself. Next one " + niceDate(next) + "."], "wk");
     }
+    // until the Friday switch has happened, say that it's coming
+    const me = P();
+    if (me && (Number(me.fix) || 0) < 3 && today() < FIX.from && (Number(plan.take) === FIX.payOld || FIX.taxOld.includes(Number(wk.pay)))) {
+      line(["From " + niceDate(FIX.from) + " it's " + money(FIX.payNew) + " pay and " + money(FIX.taxNew) + " Friday tax. The app switches by itself."], "wk");
+    }
     rule.hidden = !rule.childNodes.length;
+  }
+
+  // The split for the RCTI that lands mid November 2026: $8,270.57. Tax is GST $1,206, instalment $550, loan catch up $1,350 and $64 GST on the Drive $700.
+  // Shows what's still to do, counts what has been logged with Money in since 12 Nov, and drops off by itself.
+  const NOV = { from: "2026-11-12", to: "2026-11-30", atoDay: "2026-11-16", ato: 60000, tax: 317000, pots: 112500 };
+  function novPlan() {
+    const t = today();
+    const taxPot = weeklyTarget() || (pots().find((p) => p.id === "tax") ? "tax" : null);
+    if (t > NOV.to || !taxPot) return [];
+    let tax = 0, other = 0;
+    moves.forEach((m) => {
+      if (m.void || m.kind !== "in" || !(m.date >= NOV.from)) return;
+      Object.keys(m.split || {}).forEach((k) => { const v = Number(m.split[k]) || 0; if (k === taxPot) tax += v; else other += v; });
+    });
+    const out = [];
+    if (t <= NOV.atoDay) out.push(["Pay the ATO ", { b: money(NOV.ato) }, " by BPAY on " + niceDate(NOV.atoDay) + "."]);
+    if (tax < NOV.tax) out.push(["Move ", { b: money(NOV.tax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
+    if (other < NOV.pots) out.push(["Move ", { b: money(NOV.pots - other) }, " to savings and log it as Money in, Split across pots."]);
+    if (out.length) out.unshift([{ b: "When this month's RCTI lands" }]);
+    return out;
   }
 
   function weeklyTarget() {
@@ -1134,7 +1161,7 @@ details[open] summary::after{transform:rotate(45deg)}
       { id: "blessings", name: "Random", pct: 15, goal: 0, color: "gold" },
       { id: "tax", name: "Tax", pct: 0, goal: 0, color: "orange" }
     ],
-    weekly: { pay: 31000, day: 5, from: "2026-11-13", pot: "tax" },
+    weekly: { pay: 34300, day: 5, from: "2026-11-13", pot: "tax" },
     plan: { take: 115000, tax: 0, lump: 50, wtax: 33 },
     v: 1
   };
@@ -1218,28 +1245,36 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Personal: weekly spending money out of the main Greater account
+  // The bills as they really come out of Greater. Checked against the bank statement on 10 Nov 2026 and the bills in his email on 11 Nov 2026.
+  // Power is Metered Energy, billed monthly and due the 11th. The five payments on record from Jun to Nov 2026 average $266. Bonnie pays half, so his half is $133.
+  // November's was paid from another account, so it counts from December.
+  // Water is invoiced by Sky Broadwater every 3 months: $161.24 in Aug 2026, $296.28 paid 9 Nov 2026. Bonnie pays half, so his half is $148.
+  // Jordy went through the list on 11 Nov: rent and insurance are already his share, everything else is his alone.
+  const ME_BILLS = [
+    { id: "rent", name: "Rent", amount: 43750, often: "week", wd: 5 },
+    { id: "luna", name: "Luna", amount: 25000, often: "week", wd: 5 },
+    { id: "insurance", name: "Insurance", amount: 3600, often: "week", wd: 5 },
+    { id: "parking", name: "Parking", amount: 1500, often: "week", wd: 5 },
+    { id: "cleaner", name: "Cleaner", amount: 7500, often: "week", wd: 5 },
+    { id: "swim", name: "Swimming", amount: 4600, often: "fortnight", from: "2026-11-05" },
+    { id: "broadband", name: "Broadband", amount: 10095, often: "month", dom: 8 },
+    { id: "energy", name: "Power half", amount: 13300, often: "month", dom: 11, since: "2026-11-12" },
+    { id: "wix", name: "Wix", amount: 5300, often: "month", dom: 12 },
+    { id: "telstra", name: "Telstra", amount: 18349, often: "month", dom: 21 },
+    { id: "spotify", name: "Spotify", amount: 1599, often: "month", dom: 23 },
+    { id: "stan", name: "Stan", amount: 999, often: "month", dom: 24 },
+    { id: "wix2", name: "Wix", amount: 1320, often: "month", dom: 24 },
+    { id: "netflix", name: "Netflix", amount: 2099, often: "month", dom: 31 },
+    { id: "water", name: "Water half", amount: 14800, often: "quarter", from: "2027-02-09" }
+  ];
   const ME_DEFAULT = {
     start: "2026-11-06",
-    bills: [
-      { id: "rent", name: "Rent", amount: 43750, often: "week", wd: 5 },
-      { id: "luna", name: "Luna", amount: 25000, often: "week", wd: 5 },
-      { id: "insurance", name: "Insurance", amount: 3600, often: "week", wd: 5 },
-      { id: "parking", name: "Parking", amount: 1500, often: "week", wd: 5 },
-      { id: "cleaner", name: "Cleaner", amount: 7500, often: "week", wd: 5 },
-      { id: "swim", name: "Swimming", amount: 4600, often: "fortnight", from: "2026-11-05" },
-      { id: "broadband", name: "Broadband", amount: 10095, often: "month", dom: 8 },
-      { id: "energy", name: "Energy", amount: 29600, often: "month", dom: 9 },
-      { id: "wix", name: "Wix", amount: 5300, often: "month", dom: 12 },
-      { id: "telstra", name: "Telstra", amount: 18349, often: "month", dom: 21 },
-      { id: "spotify", name: "Spotify", amount: 1599, often: "month", dom: 23 },
-      { id: "stan", name: "Stan", amount: 999, often: "month", dom: 24 },
-      { id: "wix2", name: "Wix", amount: 1320, often: "month", dom: 24 },
-      { id: "netflix", name: "Netflix", amount: 2099, often: "month", dom: 31 }
-    ],
+    bills: ME_BILLS,
     spends: {},
     weeks: {},
     check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" },
-    fix: 1
+    fix: 2,
+    half: 2
   };
   const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
@@ -1278,6 +1313,18 @@ details[open] summary::after{transform:rotate(45deg)}
       if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return out;
       const diff = Math.round((parseYmd(from) - parseYmd(b.from)) / 86400000);
       for (let x = addDays(b.from, Math.ceil(diff / 14) * 14); x <= to; x = addDays(x, 14)) out.push(x);
+    } else if (b.often === "quarter") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return out;
+      const base = parseYmd(b.from);
+      const f0 = parseYmd(from);
+      let k = Math.floor(((f0.getFullYear() - base.getFullYear()) * 12 + f0.getMonth() - base.getMonth()) / 3) - 1;
+      for (let n = 0; n < 400; n++, k++) {
+        const first = new Date(base.getFullYear(), base.getMonth() + 3 * k, 1);
+        const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+        const x = ymd(new Date(first.getFullYear(), first.getMonth(), Math.min(base.getDate(), last)));
+        if (x > to) break;
+        if (x >= from) out.push(x);
+      }
     } else {
       const f = parseYmd(from);
       const t = parseYmd(to);
@@ -1290,7 +1337,7 @@ details[open] summary::after{transform:rotate(45deg)}
         if (m > 11) { m = 0; y += 1; }
       }
     }
-    return out;
+    return b.since ? out.filter((x) => x >= b.since) : out;
   }
   function billsBetween(from, to, list) {
     const out = [];
@@ -1304,6 +1351,7 @@ details[open] summary::after{transform:rotate(45deg)}
       const a = Number(b.amount) || 0;
       if (b.often === "week") w += a;
       else if (b.often === "fortnight") w += a / 2;
+      else if (b.often === "quarter") w += (a * 4) / 52;
       else w += (a * 12) / 52;
     });
     return pay - w;
@@ -1316,24 +1364,98 @@ details[open] summary::after{transform:rotate(45deg)}
     if (earlier.length) return wk[earlier[earlier.length - 1]].allow;
     return meAllow(P().bills, mePay());
   }
-  // One-off fixes to what's saved on the phone. Fix 1, 10 Nov 2026: the weekly cleaner was missing and energy comes out on the 9th at about $296.
-  // This week's spending money is left alone. The new bills count from the next payday.
+  // One-off fixes to what's saved on the phone. Each step runs once. personal.fix is how far the numbered ones have got.
+  // Fix 2, 11 Nov 2026. The phone showed $105 a week and nobody could say why, so anything that doesn't fit goes:
+  //   the bills go back to the checked list above, pay goes back to $1,150 if it's anything odd, and the week of 6 Nov is worked out again on $1,150.
+  //   What was there before is kept in personal.was. personal.fixNote says what changed in plain words and shows in Personal Setup for a month.
+  // Halves, 11 Nov 2026, kept in personal.half: 1 once power is halved, 2 once water is too. Bonnie pays half of both.
+  //   A phone that took the reset while they were in at the full $266 and $296 gets them halved. Only if the amount is still exactly that.
+  // Fix 3, from Fri 13 Nov 2026. Pay into Greater becomes $1,250 and the Friday tax saver becomes $343, the day the CommBank transfers change.
+  const FIX = { payOld: 115000, payNew: 125000, taxOld: [21900, 31000], taxNew: 34300, week: "2026-11-06", from: "2026-11-13", powerFull: 26600, powerHalf: 13300, waterFull: 29600, waterHalf: 14800 };
+  const billPer = (b) => (b.often === "week" ? " a week" : b.often === "fortnight" ? " a fortnight" : b.often === "quarter" ? " every 3 months" : " a month");
+  function billDiff(old, want) {
+    const gone = [], changed = [], back = [], rest = [];
+    const used = {};
+    (old || []).forEach((o) => {
+      const w = want.find((x) => x.id === o.id);
+      if (!w) { rest.push(o); return; }
+      used[w.id] = true;
+      if ((Number(o.amount) || 0) !== w.amount || o.often !== w.often) changed.push(w.name + " from " + money(o.amount) + billPer(o) + " to " + money(w.amount) + billPer(w));
+    });
+    rest.forEach((o) => {
+      const w = want.find((x) => !used[x.id] && x.amount === (Number(o.amount) || 0) && x.often === o.often);
+      if (w) { used[w.id] = true; return; }
+      gone.push((String(o.name || "").trim() || "No name") + " " + money(o.amount) + billPer(o));
+    });
+    want.forEach((w) => { if (!used[w.id]) back.push(w.name + " " + money(w.amount) + billPer(w)); });
+    return { gone: gone, changed: changed, back: back };
+  }
   function meFix() {
     const p = P();
-    if (!p || !Array.isArray(p.bills) || (Number(p.fix) || 0) >= 1) return;
-    const did = [];
-    const park = p.bills.findIndex((b) => b.id === "parking");
-    const hasCleaner = p.bills.some((b) => b.id === "cleaner" || /clean|bonnie/i.test(String(b.name || "")) || (b.often === "week" && Number(b.amount) === 7500));
-    if (park >= 0 && !hasCleaner) {
-      const wd = Number(p.bills[park].wd);
-      p.bills.splice(park + 1, 0, { id: "cleaner", name: "Cleaner", amount: 7500, often: "week", wd: Number.isInteger(wd) && wd >= 0 && wd <= 6 ? wd : 5 });
-      did.push("added Cleaner $75 a week");
+    const su = state.setup;
+    if (!p || !su || !Array.isArray(p.bills)) return false;
+    let lvl = Number(p.fix) || 0;
+    const hv = Number(p.half) || 0;
+    if (lvl >= 3 && hv >= 2) return false;
+    const t = today();
+    const ws = weekStartOf(t);
+    const inWeek = ws >= p.start;
+    const plan = su.plan || (su.plan = {});
+    const said = [];
+    const oldAllow = inWeek ? allowFor(ws) : null;
+    let reset = false, halved = false, did = false, bits = null;
+    const halves = [];
+    if (lvl < 2) {
+      const oldTake = Number(plan.take) || 0;
+      const d = billDiff(p.bills, ME_BILLS);
+      p.was = { at: t, bills: clone(p.bills), take: oldTake, allow: oldAllow };
+      p.bills = clone(ME_BILLS);
+      bits = [];
+      if (d.gone.length) bits.push("Taken out: " + d.gone.join(", ") + ".");
+      if (d.changed.length) bits.push("Changed: " + d.changed.join(", ") + ".");
+      if (d.back.length) bits.push("Put back: " + d.back.join(", ") + ".");
+      if (oldTake !== FIX.payOld && oldTake !== FIX.payNew) { plan.take = FIX.payOld; bits.push("Pay was " + money(oldTake) + ", now " + money(FIX.payOld) + "."); }
+      lvl = 2; reset = true; did = true;
     }
-    const en = p.bills.find((b) => b.id === "energy" && b.often === "month" && Number(b.amount) === 26600 && Number(b.dom) === 10);
-    if (en) { en.amount = 29600; en.dom = 9; did.push("Energy is now $296 on the 9th"); }
-    p.fix = 1;
+    if (hv < 2) {
+      if (!reset) {
+        const en = hv < 1 ? p.bills.find((b) => b.id === "energy" && b.often === "month" && Number(b.amount) === FIX.powerFull) : null;
+        if (en) { en.amount = FIX.powerHalf; if (en.name === "Energy") en.name = "Power half"; halves.push("Power is now your half, " + money(FIX.powerHalf) + " a month."); }
+        const wa = p.bills.find((b) => b.id === "water" && b.often === "quarter" && Number(b.amount) === FIX.waterFull);
+        if (wa) { wa.amount = FIX.waterHalf; if (wa.name === "Water") wa.name = "Water half"; halves.push("Water is now your half, " + money(FIX.waterHalf) + " every 3 months."); }
+        halved = halves.length > 0;
+      }
+      p.half = 2; did = true;
+    }
+    if (lvl < 3 && t >= FIX.from) {
+      const now = [];
+      if ((Number(plan.take) || 0) === FIX.payOld) { plan.take = FIX.payNew; now.push("pay " + money(FIX.payNew)); }
+      const wk = su.weekly;
+      if (wk && FIX.taxOld.includes(Number(wk.pay))) { wk.pay = FIX.taxNew; now.push("Friday tax " + money(FIX.taxNew)); }
+      if (now.length) said.push("From " + niceDate(FIX.from) + ": " + now.join(", ") + ".");
+      lvl = 3; did = true;
+    }
+    if (!did) return false;
+    // the week of 6 Nov was paid at $1,150. Any later week that's already been opened gets worked out again on the fixed numbers.
+    p.weeks = p.weeks || {};
+    if ((reset || halved) && (p.weeks[FIX.week] || ws === FIX.week)) p.weeks[FIX.week] = { allow: meAllow(p.bills, FIX.payOld) };
+    if (inWeek && ws > FIX.week && (reset || halved || p.weeks[ws])) p.weeks[ws] = { allow: meAllow(p.bills, mePay()) };
+    const newAllow = inWeek ? allowFor(ws) : null;
+    const weekBit = oldAllow !== null && newAllow !== null && oldAllow !== newAllow ? "This week's money was " + money(oldAllow) + ", now " + money(newAllow) + "." : "";
+    if (reset) {
+      if (weekBit) bits.push(weekBit);
+      p.fixNote = "Bills were put back to the right list on " + niceDate(t) + ". " + (bits.length ? bits.join(" ") : "Nothing was out of place.");
+      said.unshift(p.fixNote.length <= 150 ? p.fixNote : "Bills were put back to the right list. Personal Setup shows what changed.");
+    } else if (halved) {
+      const line = halves.join(" ") + " Bonnie pays the rest." + (weekBit ? " " + weekBit : "");
+      p.fixNote = (p.fixNote ? p.fixNote + " " : "") + line;
+      if (!p.was || !p.was.at) p.was = Object.assign({}, p.was || {}, { at: t });
+      said.unshift(line);
+    }
+    p.fix = lvl;
     try { persist(); } catch (e) {}
-    if (did.length) toast("Bills fixed: " + did.join(", ") + ".");
+    if (said.length) toast(said.join(" "));
+    return true;
   }
   function ensureWeek() {
     const p = P();
@@ -1636,6 +1758,11 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   function renderMeSetup() {
+    const p = P();
+    const note = $("meFixNote");
+    const show = !!(p.fixNote && p.was && p.was.at && today() <= addDays(p.was.at, 30));
+    note.textContent = show ? p.fixNote : "";
+    note.hidden = !show;
     if (meDirty) return;
     meDraft = clone(P().bills || []);
     $("mePay").value = centsToInput(mePay());
@@ -1666,12 +1793,12 @@ details[open] summary::after{transform:rotate(45deg)}
       ai.value = centsToInput(Number(b.amount) || 0);
       ai.addEventListener("input", () => { b.amount = parseMoney(ai.value) || 0; meDirty = true; meHint(); });
       const os = el("select");
-      [["week", "Weekly"], ["fortnight", "Fortnightly"], ["month", "Monthly"]].forEach((o) => { const op = el("option", null, o[1]); op.value = o[0]; os.append(op); });
+      [["week", "Weekly"], ["fortnight", "Fortnightly"], ["month", "Monthly"], ["quarter", "3 monthly"]].forEach((o) => { const op = el("option", null, o[1]); op.value = o[0]; os.append(op); });
       os.value = b.often || "month";
       os.addEventListener("change", () => {
         b.often = os.value;
         if (b.often === "week" && !Number.isInteger(Number(b.wd))) b.wd = mePayDay();
-        if (b.often === "fortnight" && !b.from) b.from = today();
+        if ((b.often === "fortnight" || b.often === "quarter") && !b.from) b.from = today();
         if (b.often === "month" && !b.dom) b.dom = 1;
         meDirty = true;
         drawMeBills();
@@ -1686,7 +1813,7 @@ details[open] summary::after{transform:rotate(45deg)}
         ws.value = String(Number.isInteger(Number(b.wd)) ? Number(b.wd) : mePayDay());
         ws.addEventListener("change", () => { b.wd = Number(ws.value); meDirty = true; });
         when = mk("Day", "mbw-" + b.id, ws);
-      } else if (b.often === "fortnight") {
+      } else if (b.often === "fortnight" || b.often === "quarter") {
         const di = el("input");
         di.type = "date";
         di.value = b.from || "";
@@ -1733,11 +1860,12 @@ details[open] summary::after{transform:rotate(45deg)}
       if (!name) return fail("Give every bill a name.");
       if (!(amount > 0)) return fail(name + " needs an amount.");
       const nb = { id: b.id, name: name, amount: amount, often: b.often };
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(b.since || ""))) nb.since = b.since;
       if (b.often === "week") {
         const wd = Number(b.wd);
         if (!Number.isInteger(wd) || wd < 0 || wd > 6) return fail("Pick a day for " + name + ".");
         nb.wd = wd;
-      } else if (b.often === "fortnight") {
+      } else if (b.often === "fortnight" || b.often === "quarter") {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return fail("Pick the next date for " + name + ".");
         nb.from = b.from;
       } else {
@@ -1814,7 +1942,10 @@ details[open] summary::after{transform:rotate(45deg)}
 
   $("copyBackup").addEventListener("click", copyBackup);
   $("doRestore").addEventListener("click", restoreBackup);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && movesCol) { ensureWeek(); runAuto(); render(); } });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || !movesCol) return;
+    setTimeout(() => { if (meFix()) emit(); ensureWeek(); runAuto(); render(); }, 0);
+  });
 
   // Lock: Face ID first, 4 digit code as backup. The code is set on the phone and only a salted hash is kept there.
   const LOCK_KEY = KEY + ".lock";
