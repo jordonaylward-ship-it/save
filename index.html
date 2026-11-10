@@ -338,6 +338,7 @@ details[open] summary::after{transform:rotate(45deg)}
           <button class="btn ghost small" id="lockChange" type="button">Change code</button>
           <button class="btn ghost small" id="lockFaceToggle" type="button" hidden>Turn on Face ID</button>
         </div>
+        <p class="hint">Asks for Face ID or your code once a day.</p>
         <p class="err" id="meSetupErr" hidden></p>
         <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
         <p class="hint" id="appVer"></p>
@@ -511,7 +512,7 @@ details[open] summary::after{transform:rotate(45deg)}
   let gotSetup = false, gotMoves = false, setupReady = false, movesReady = false;
   let autoDone = false, showAll = false, openId = null, openedSetupOnce = false;
   let inWhere = "split", outPot = null, setupDirty = false, draft = null;
-  let loadTimer = null, toastTimer = null;
+  let loadTimer = null, toastTimer = null, toastGo = "";
 
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const pad = (n) => String(n).padStart(2, "0");
@@ -610,6 +611,10 @@ details[open] summary::after{transform:rotate(45deg)}
   }
   function toast(msg) {
     if (!$("lock").hidden) { pendingToast = pendingToast && pendingToast !== msg ? pendingToast + " " + msg : msg; return; }
+    // Messages that fire in the same go, like the Friday switch and the Friday tax, join up. Otherwise the last one wipes the first before it can be read.
+    if (toastGo) msg = toastGo.includes(msg) ? toastGo : toastGo + " " + msg;
+    else setTimeout(() => { toastGo = ""; }, 0);
+    toastGo = msg;
     const t = $("toast");
     t.textContent = msg;
     t.hidden = false;
@@ -1224,7 +1229,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "11 Nov 2026, v4";
+  const APP_VERSION = "11 Nov 2026, v5";
   function allText() {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2040,10 +2045,16 @@ details[open] summary::after{transform:rotate(45deg)}
   });
 
   // Lock: Face ID first, 4 digit code as backup. The code is set on the phone and only a salted hash is kept there.
+  // Face ID in a web app always goes through Apple's own "use your passkey?" box, which can't be skipped.
+  // So the app asks once a day: after a real unlock it stays open on this phone for STAY_OPEN_MS, even if it's closed and reopened.
   const LOCK_KEY = KEY + ".lock";
-  const RELOCK_MS = 60000;
+  const OPEN_KEY = KEY + ".open";
+  const STAY_OPEN_MS = 24 * 60 * 60 * 1000;
+  function openRecently() {
+    try { const t = Number(localStorage.getItem(OPEN_KEY)) || 0; const d = Date.now() - t; return t > 0 && d >= 0 && d < STAY_OPEN_MS; } catch (e) { return false; }
+  }
   let pendingToast = null, lockCfg = null, lockMode = "unlock", lockEntry = "", lockFirst = "", lockFails = 0, lockUntil = 0;
-  let lockBusy = false, faceBusy = false, faceOk = false, unlocked = false, hiddenAt = 0, lockFromSetup = false;
+  let lockBusy = false, faceBusy = false, faceOk = false, unlocked = false, lockFromSetup = false;
   const b64 = (buf) => btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
   const unb64 = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
   function readLock() {
@@ -2101,7 +2112,8 @@ details[open] summary::after{transform:rotate(45deg)}
     $("app").hidden = true;
     $("toast").hidden = true;
   }
-  function hideLock() {
+  function hideLock(fresh) {
+    if (fresh !== false) { try { localStorage.setItem(OPEN_KEY, String(Date.now())); } catch (e) {} }
     unlocked = true;
     lockFromSetup = false;
     $("lock").hidden = true;
@@ -2175,7 +2187,9 @@ details[open] summary::after{transform:rotate(45deg)}
     b.textContent = lockCfg && lockCfg.face ? "Turn off Face ID" : "Turn on Face ID";
   }
   async function bootLock() {
-    lockStart();
+    lockCfg = readLock();
+    if (lockCfg && openRecently()) hideLock(false);
+    else lockStart();
     faceOk = await faceAvailable();
     lockSettingsUI();
   }
@@ -2203,7 +2217,7 @@ details[open] summary::after{transform:rotate(45deg)}
     catch (e) { hideLock(); toast("Face ID didn't set up. Your code still works."); }
   });
   $("lockFaceSkip").addEventListener("click", () => { hideLock(); toast("Code set."); });
-  $("lockCancel").addEventListener("click", () => { lockFirst = ""; hideLock(); });
+  $("lockCancel").addEventListener("click", () => { lockFirst = ""; hideLock(false); });
   $("lockChange").addEventListener("click", () => { lockFromSetup = true; showLock(); lockUI("set", "Set a new 4 digit code"); });
   $("lockFaceToggle").addEventListener("click", async () => {
     if (!lockCfg) return;
@@ -2212,9 +2226,9 @@ details[open] summary::after{transform:rotate(45deg)}
     catch (e) { toast("Face ID didn't set up. Your code still works."); }
   });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { hiddenAt = Date.now(); if (unlocked) $("app").hidden = true; return; }
+    if (document.hidden) { if (unlocked) $("app").hidden = true; return; }
     if (!unlocked) return;
-    if (Date.now() - hiddenAt > RELOCK_MS) lockStart();
+    if (!openRecently()) lockStart();
     else $("app").hidden = false;
   });
 
