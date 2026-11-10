@@ -177,6 +177,11 @@ textarea{font-size:15px;resize:vertical}
 .cost b.ok{color:var(--tint)}
 .should{margin:0;font-size:17px}
 .should b{font-weight:600;font-variant-numeric:tabular-nums}
+.ask{display:flex;flex-direction:column;gap:8px}
+.askrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--fill);border:0;border-radius:10px;color:inherit;font:inherit;text-align:left;padding:9px 14px;min-height:54px;cursor:pointer}
+.askrow:active{opacity:.7}
+.pill{flex:none;font-size:13px;font-weight:600;line-height:1;padding:7px 11px;border-radius:999px;background:var(--btn);color:var(--btnink)}
+.askrow[aria-pressed="false"] .pill{background:var(--redsoft);color:var(--red)}
 .hint{margin:0;color:var(--label2);font-size:13px;line-height:1.4}
 .err{margin:0;color:var(--red);font-size:15px;font-weight:500}
 .preview{display:flex;flex-direction:column;gap:8px;font-size:15px}
@@ -306,9 +311,10 @@ details[open] summary::after{transform:rotate(45deg)}
       <div class="setup">
         <p class="should" id="meShould" hidden></p>
         <div class="field">
-          <label for="meBal">What's actually in Greater</label>
+          <label for="meBal">What's available in Greater</label>
           <input class="big" id="meBal" inputmode="decimal" autocomplete="off" placeholder="$0.00">
         </div>
+        <div class="ask" id="meAsk" hidden></div>
         <p class="cost" id="meCheckOut" aria-live="polite"></p>
         <button class="btn ghost small" id="meSaveBal" type="button">Save balance</button>
         <p class="hint" id="meCheckHint"></p>
@@ -333,6 +339,7 @@ details[open] summary::after{transform:rotate(45deg)}
         </div>
         <p class="err" id="meSetupErr" hidden></p>
         <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
+        <p class="hint">App updated 10 Nov 2026.</p>
       </div>
     </details>
   </section>
@@ -599,7 +606,7 @@ details[open] summary::after{transform:rotate(45deg)}
     s.classList.toggle("warn", !!warn);
   }
   function toast(msg) {
-    if (!$("lock").hidden) { pendingToast = msg; return; }
+    if (!$("lock").hidden) { pendingToast = pendingToast && pendingToast !== msg ? pendingToast + " " + msg : msg; return; }
     const t = $("toast");
     t.textContent = msg;
     t.hidden = false;
@@ -1174,6 +1181,7 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!state.setup) { state.setup = clone(DEFAULT_SETUP); firstRun = true; }
     if (firstRun && !Object.keys(state.moves).length) state.moves = clone(DEFAULT_MOVES);
     if (!state.personal || !Array.isArray(state.personal.bills)) { state.personal = clone(ME_DEFAULT); try { persist(); } catch (e) {} }
+    meFix();
     ensureWeek();
     let tab = "me";
     try { tab = localStorage.getItem(KEY + ".tab") || "me"; } catch (e) {}
@@ -1205,7 +1213,7 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!data || !data.setup || !Array.isArray(data.setup.pots) || typeof data.moves !== "object") { toast("That doesn't look like a Pay Day Pots backup."); return; }
     if (!window.confirm("Replace everything on this phone with this backup?")) return;
     guarded(() => { state.setup = data.setup; state.moves = data.moves || {}; if (data.personal && Array.isArray(data.personal.bills)) state.personal = data.personal; })
-      .then(() => { $("restoreText").value = ""; setupDirty = false; firstRun = false; setStatus(""); toast("Restored."); })
+      .then(() => { $("restoreText").value = ""; setupDirty = false; meDirty = false; firstRun = false; setStatus(""); toast("Restored."); meFix(); ensureWeek(); emit(); })
       .catch(failToast);
   }
 
@@ -1217,9 +1225,10 @@ details[open] summary::after{transform:rotate(45deg)}
       { id: "luna", name: "Luna", amount: 25000, often: "week", wd: 5 },
       { id: "insurance", name: "Insurance", amount: 3600, often: "week", wd: 5 },
       { id: "parking", name: "Parking", amount: 1500, often: "week", wd: 5 },
+      { id: "cleaner", name: "Cleaner", amount: 7500, often: "week", wd: 5 },
       { id: "swim", name: "Swimming", amount: 4600, often: "fortnight", from: "2026-11-05" },
       { id: "broadband", name: "Broadband", amount: 10095, often: "month", dom: 8 },
-      { id: "energy", name: "Energy", amount: 26600, often: "month", dom: 10 },
+      { id: "energy", name: "Energy", amount: 29600, often: "month", dom: 9 },
       { id: "wix", name: "Wix", amount: 5300, often: "month", dom: 12 },
       { id: "telstra", name: "Telstra", amount: 18349, often: "month", dom: 21 },
       { id: "spotify", name: "Spotify", amount: 1599, often: "month", dom: 23 },
@@ -1229,11 +1238,13 @@ details[open] summary::after{transform:rotate(45deg)}
     ],
     spends: {},
     weeks: {},
-    check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" }
+    check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" },
+    fix: 1
   };
   const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
-  let meOpen = null, meDirty = false, meDraft = null;
+  const ASK_BACK = 2;
+  let meOpen = null, meDirty = false, meDraft = null, meWait = {};
 
   const P = () => state.personal;
   const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
@@ -1283,9 +1294,10 @@ details[open] summary::after{transform:rotate(45deg)}
   }
   function billsBetween(from, to, list) {
     const out = [];
-    (list || P().bills || []).forEach((b) => billDates(b, from, to).forEach((d) => out.push({ date: d, name: b.name, amount: Number(b.amount) || 0 })));
+    (list || P().bills || []).forEach((b) => billDates(b, from, to).forEach((d) => out.push({ date: d, id: b.id, often: b.often, name: b.name, amount: Number(b.amount) || 0 })));
     return out.sort((a, b) => a.date.localeCompare(b.date));
   }
+  const occKey = (o) => o.id + "|" + o.date;
   function meRaw(bills, pay) {
     let w = 0;
     (bills || []).forEach((b) => {
@@ -1303,6 +1315,25 @@ details[open] summary::after{transform:rotate(45deg)}
     const earlier = Object.keys(wk).filter((k) => k < ws).sort();
     if (earlier.length) return wk[earlier[earlier.length - 1]].allow;
     return meAllow(P().bills, mePay());
+  }
+  // One-off fixes to what's saved on the phone. Fix 1, 10 Nov 2026: the weekly cleaner was missing and energy comes out on the 9th at about $296.
+  // This week's spending money is left alone. The new bills count from the next payday.
+  function meFix() {
+    const p = P();
+    if (!p || !Array.isArray(p.bills) || (Number(p.fix) || 0) >= 1) return;
+    const did = [];
+    const park = p.bills.findIndex((b) => b.id === "parking");
+    const hasCleaner = p.bills.some((b) => b.id === "cleaner" || /clean|bonnie/i.test(String(b.name || "")) || (b.often === "week" && Number(b.amount) === 7500));
+    if (park >= 0 && !hasCleaner) {
+      const wd = Number(p.bills[park].wd);
+      p.bills.splice(park + 1, 0, { id: "cleaner", name: "Cleaner", amount: 7500, often: "week", wd: Number.isInteger(wd) && wd >= 0 && wd <= 6 ? wd : 5 });
+      did.push("added Cleaner $75 a week");
+    }
+    const en = p.bills.find((b) => b.id === "energy" && b.often === "month" && Number(b.amount) === 26600 && Number(b.dom) === 10);
+    if (en) { en.amount = 29600; en.dom = 9; did.push("Energy is now $296 on the 9th"); }
+    p.fix = 1;
+    try { persist(); } catch (e) {}
+    if (did.length) toast("Bills fixed: " + did.join(", ") + ".");
   }
   function ensureWeek() {
     const p = P();
@@ -1336,27 +1367,58 @@ details[open] summary::after{transform:rotate(45deg)}
     const prev = pw >= first ? { allow: allowFor(pw), spent: netSpent(pw, addDays(pw, 6)) } : null;
     return { pre: false, ws: ws, next: addDays(ws, 7), allow: allow, carry: carry, spent: spent, left: allow + carry - spent, prev: prev };
   }
-  function meEstimate() {
-    const c = P().check;
+  // Where Greater stands, worked forward from a saved balance.
+  // Bills dated on or before the day the balance was saved count as already out of it, unless they were marked "not yet" when it was saved (check.wait).
+  // A bill or pay marked "not yet" is still expected on the day of the save, and is taken as gone through from the next day.
+  function meBank(c) {
     const t = today();
     if (!c || !c.date || !Number.isFinite(c.bal) || c.date > t) return null;
     const pd = mePayDay();
-    let bal = c.bal;
-    for (let d = addDays(c.date, 1), n = 0; d <= t && n < 800; d = addDays(d, 1), n++) if (parseYmd(d).getDay() === pd) bal += mePay();
-    bal -= sumAmt(billsBetween(addDays(c.date, 1), t));
-    Object.values(P().spends || {}).forEach((x) => { if (String(x.at) > String(c.at)) bal -= signed(x); });
-    return bal;
+    const nextPd = nextPayday(pd, false);
+    const wait = Array.isArray(c.wait) ? c.wait : [];
+    let est = c.bal, due = 0, payDue = 0;
+    const coming = [];
+    for (let d = addDays(c.date, 1), n = 0; d <= t && n < 800; d = addDays(d, 1), n++) if (parseYmd(d).getDay() === pd) est += mePay();
+    if (c.payWait) { if (t > c.date) est += mePay(); else payDue = mePay(); }
+    billsBetween(addDays(c.date, -ASK_BACK), nextPd).forEach((o) => {
+      const late = o.date <= c.date;
+      if (late && !wait.includes(occKey(o))) return;
+      if (late ? t > c.date : o.date <= t) {
+        est -= o.amount;
+        if (o.date === t) coming.push(Object.assign({ state: "today" }, o));
+        return;
+      }
+      if (late || o.date < nextPd) due += o.amount;
+      coming.push(Object.assign({ state: late ? "late" : "soon" }, o));
+    });
+    Object.values(P().spends || {}).forEach((x) => { if (String(x.at) > String(c.at)) est -= signed(x); });
+    return { est: est, due: due, payDue: payDue, room: est + payDue - due, coming: coming };
   }
-  const dueBeforePayday = () => sumAmt(billsBetween(addDays(today(), 1), addDays(nextPayday(mePayDay(), false), -1)));
-  function meRoom() {
-    const est = meEstimate();
-    return est === null ? null : { est: est, room: est - dueBeforePayday() };
+  const meRoom = () => meBank(P().check);
+  // Pay and bills from the last couple of days that might not have gone through yet when a balance is typed.
+  // Weekly bills only show on their day, unless they were marked "not yet" on the last save. Same for pay.
+  function meAsk() {
+    const t = today();
+    const c = P().check || {};
+    const back = addDays(t, -ASK_BACK);
+    const fresh = !!c.date && c.date >= back && c.date <= t;
+    const was = fresh && Array.isArray(c.wait) ? c.wait : [];
+    const rows = [];
+    const payOn = parseYmd(t).getDay() === mePayDay() ? t : (fresh && c.payWait ? weekStartOf(c.date) : null);
+    if (payOn && mePay() > 0) rows.push({ pay: true, key: "pay|" + payOn, name: "Pay in", date: payOn, amount: mePay(), done: !meWait["pay|" + payOn] });
+    billsBetween(back, t).forEach((o) => {
+      const k = occKey(o);
+      if (o.often === "week" && o.date !== t && !was.includes(k)) return;
+      rows.push(Object.assign({ key: k, done: !meWait[k] }, o));
+    });
+    return rows;
   }
+  const meDraftCheck = (bal, rows) => ({ bal: bal, date: today(), at: "9999", wait: rows.filter((x) => !x.pay && !x.done).map((x) => x.key), payWait: rows.some((x) => x.pay && !x.done) });
   function meShown(st) {
     const r = meRoom();
-    if (st.pre) return { shown: 0, byBank: false };
-    if (r && r.room < st.left) return { shown: r.room, byBank: true };
-    return { shown: st.left, byBank: false };
+    if (st.pre) return { shown: 0, byBank: false, bank: r };
+    if (r && r.room < st.left) return { shown: r.room, byBank: true, bank: r };
+    return { shown: st.left, byBank: false, bank: r };
   }
   const randomPot = () => pots().find((p) => p.id === "blessings") || null;
   function grabCost(amt) {
@@ -1389,15 +1451,22 @@ details[open] summary::after{transform:rotate(45deg)}
         eb.textContent = "Left to spend till " + pdName;
         big.textContent = money(s.shown);
       } else {
-        eb.textContent = "Over this week by";
         big.textContent = money(-s.shown);
         big.classList.add("over");
         mw.classList.add("over");
-        notes.push("It comes off next week's money.");
+        if (s.byBank) {
+          eb.textContent = "Greater is short by";
+          notes.push(s.bank.due > 0
+            ? "Bills before " + pdName + " come to " + money(s.bank.due) + (s.bank.payDue > 0 ? " and Greater will have about " : " and Greater has about ") + money(s.bank.est + s.bank.payDue) + ". Top it up or a bill bounces."
+            : "Greater is in the red. Top it up.");
+        } else {
+          eb.textContent = "Over this week by";
+          notes.push("It comes off next week's money.");
+        }
       }
       sub.textContent = money(st.allow) + " a week. Resets " + niceDate(st.next) + ".";
       if (st.carry < 0) notes.push("Less " + money(-st.carry) + " you went over last week.");
-      if (s.byBank) notes.push("Going by what's in Greater.");
+      if (s.byBank && s.shown >= 0) notes.push("Going by what's in Greater.");
       const budget = Math.max(0, st.allow + st.carry);
       const used = budget > 0 ? Math.min(1, Math.max(0, (budget - s.shown) / budget)) : 1;
       meter.style.width = (used * 100).toFixed(1) + "%";
@@ -1428,12 +1497,14 @@ details[open] summary::after{transform:rotate(45deg)}
     gb.disabled = false;
     sb.textContent = "Spent " + money(amt);
     gb.textContent = "Got " + money(amt) + " in";
-    const after = meShown(st).shown - amt;
+    const s = meShown(st);
+    const after = s.shown - amt;
     if (after >= 0) {
       v.append(document.createTextNode("Leaves you "), el("b", "ok", money(after)), document.createTextNode(" till " + DAYS[mePayDay()] + "."));
       return;
     }
-    v.append(document.createTextNode("That puts you "), el("b", null, money(-after)), document.createTextNode(" over. It comes off next week's money."));
+    if (s.byBank) v.append(document.createTextNode("That leaves Greater "), el("b", null, money(-after)), document.createTextNode(" short for bills before " + DAYS[mePayDay()] + "."));
+    else v.append(document.createTextNode("That puts you "), el("b", null, money(-after)), document.createTextNode(" over. It comes off next week's money."));
     const r = randomPot();
     if (r) v.append(document.createTextNode(" Grab it from " + r.name + " and it really costs "), el("b", null, money(grabCost(-after))), document.createTextNode("."));
   }
@@ -1486,17 +1557,20 @@ details[open] summary::after{transform:rotate(45deg)}
     ul.textContent = "";
     const t = today();
     const pd = mePayDay();
-    const list = billsBetween(t, nextPayday(pd, false));
+    const r = meRoom();
+    const list = r ? r.coming : billsBetween(t, nextPayday(pd, false)).map((o) => Object.assign({ state: o.date === t ? "today" : "soon" }, o));
     if (!list.length) { ul.append(el("li", "hempty", "Nothing due before payday.")); return; }
     const groups = {};
-    list.forEach((b) => { (groups[b.date] = groups[b.date] || []).push(b); });
-    Object.keys(groups).sort().forEach((d) => {
-      const g = groups[d];
-      const when = d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d);
+    list.forEach((b) => { const k = b.state === "late" ? "0" : b.date; (groups[k] = groups[k] || []).push(b); });
+    Object.keys(groups).sort().forEach((k) => {
+      const g = groups[k];
+      const late = k === "0";
+      const d = g[0].date;
+      const when = late ? "Not gone yet" : d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d);
       const li = el("li", "hitem");
       const row = el("div", "brow");
       const left = el("div", "hleft");
-      left.append(el("span", "htitle", g.map((x) => x.name).join(", ")), el("span", "hsub", when + (parseYmd(d).getDay() === pd ? " · payday" : "")));
+      left.append(el("span", "htitle", g.map((x) => x.name).join(", ")), el("span", "hsub", when + (!late && parseYmd(d).getDay() === pd ? " · payday" : "")));
       row.append(left, el("span", "hamt", money(sumAmt(g))));
       li.append(row);
       ul.append(li);
@@ -1515,24 +1589,49 @@ details[open] summary::after{transform:rotate(45deg)}
     } else sh.hidden = true;
     const raw = $("meBal").value.trim();
     const typed = raw ? parseBal(raw) : null;
-    const base = typed !== null ? typed : r ? r.est : null;
+    const rows = typed !== null ? meAsk() : [];
+    const ask = $("meAsk");
+    ask.textContent = "";
+    if (rows.length) {
+      ask.append(el("p", "hint", "Due lately. Tap any that haven't gone through yet."));
+      rows.forEach((x) => {
+        const btn = el("button", "askrow");
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", x.done ? "true" : "false");
+        const left = el("div", "hleft");
+        left.append(el("span", "htitle", x.name), el("span", "hsub", (x.date === today() ? "Today" : niceDate(x.date)) + " · " + money(x.amount)));
+        btn.append(left, el("span", "pill", x.done ? (x.pay ? "Landed" : "Gone") : "Not yet"));
+        btn.addEventListener("click", () => {
+          if (meWait[x.key]) delete meWait[x.key];
+          else meWait[x.key] = true;
+          renderMe();
+        });
+        ask.append(btn);
+      });
+    }
+    ask.hidden = !rows.length;
+    const bank = typed !== null ? meBank(meDraftCheck(typed, rows)) : r;
     const out = $("meCheckOut");
     out.textContent = "";
-    if (base !== null) {
-      const room = base - dueBeforePayday();
+    if (bank) {
+      const room = bank.room;
       if (room < 0) out.append(document.createTextNode("You're "), el("b", null, money(-room)), document.createTextNode(" short for bills before " + pdName + ". Don't spend."));
       else if (!st.pre && room < st.left) out.append(document.createTextNode("Careful. Going by Greater you've only got "), el("b", null, money(room)), document.createTextNode(" to spend till " + pdName + "."));
       else out.append(document.createTextNode("All good. Bills before " + pdName + " are covered."));
     }
     $("meSaveBal").disabled = typed === null;
-    $("meCheckHint").textContent = (c && c.date ? "Last saved " + niceDate(c.date) + ". " : "") + "On a " + pdName + ", check after your pay lands.";
+    $("meCheckHint").textContent = (c && c.date ? "Last saved " + niceDate(c.date) + ". " : "") + "Use the big number on your card account, not the Balance under it.";
   }
   function meSaveBal() {
     const raw = $("meBal").value.trim();
     const bal = raw ? parseBal(raw) : null;
     if (bal === null) { toast("Type your Greater balance, like 617.05."); return; }
-    guarded(() => { state.personal.check = { bal: bal, date: today(), at: new Date().toISOString() }; })
-      .then(() => { $("meBal").value = ""; renderMe(); toast("Saved. Greater has " + money(bal) + "."); })
+    const d = meDraftCheck(bal, meAsk());
+    const check = { bal: bal, date: today(), at: new Date().toISOString() };
+    if (d.wait.length) check.wait = d.wait;
+    if (d.payWait) check.payWait = true;
+    guarded(() => { state.personal.check = check; })
+      .then(() => { $("meBal").value = ""; meWait = {}; renderMe(); toast("Saved. Greater has " + money(bal) + "."); })
       .catch(failToast);
   }
 
@@ -1671,8 +1770,9 @@ details[open] summary::after{transform:rotate(45deg)}
         $("meAmt").value = "";
         $("meWhat").value = "";
         renderMe();
-        const n = meShown(meWeek()).shown;
-        toast((kind === "in" ? "Added. " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : money(-n) + " over this week."));
+        const s = meShown(meWeek());
+        const n = s.shown;
+        toast((kind === "in" ? "Added. " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : s.byBank ? "Greater is " + money(-n) + " short for bills." : money(-n) + " over this week."));
       })
       .catch(failToast);
   }
@@ -1862,7 +1962,7 @@ details[open] summary::after{transform:rotate(45deg)}
   $("meAmt").addEventListener("input", () => renderMeVerdict(meWeek()));
   $("meSpendForm").addEventListener("submit", (e) => { e.preventDefault(); meLog("spend"); });
   $("meGot").addEventListener("click", () => meLog("in"));
-  $("meBal").addEventListener("input", () => renderMeCheck(meWeek()));
+  $("meBal").addEventListener("input", () => { if (!$("meBal").value.trim()) meWait = {}; renderMeCheck(meWeek()); });
   $("meSaveBal").addEventListener("click", meSaveBal);
   $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
   $("meAddBill").addEventListener("click", meAddBill);
