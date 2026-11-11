@@ -676,6 +676,9 @@ details[open] summary::after{transform:rotate(45deg)}
       const parts = ["Every " + DAYS[day] + " take ", { b: money(plan.take) }, " from the business"];
       if (plan.tax > 0) parts.push(" and put ", { b: money(plan.tax) }, " in the business savings for tax.");
       else parts.push(".");
+      // He sees his pay as two CommBank transfers, never as one total, so name them.
+      const pp = PAY_PARTS[Number(plan.take)];
+      if (pp) parts.push(" That's Wages " + money(pp[0]) + " plus Director Loan " + money(pp[1]) + ".");
       line(parts);
     }
     if (plan.lump > 0) line(["Big commission lands: ATO plan first. Then into Tax, the payout divided by 11 for GST plus $550 for the instalment. Keep four Fridays and bills in the business, then ", { b: fmtPct(plan.lump) }, " of what's left goes to your pots."]);
@@ -696,6 +699,7 @@ details[open] summary::after{transform:rotate(45deg)}
 
   // The split for the RCTI that lands mid November 2026: $8,270.57. Tax is GST $1,206, instalment $550, loan catch up $1,350 and $64 GST on the Drive $700.
   // Shows what's still to do, counts what has been logged with Money in since 12 Nov, and drops off by itself.
+  const PAY_PARTS = { 115000: [77088, 37912], 125000: [77088, 47912] };
   const NOV = { from: "2026-11-12", to: "2026-11-30", atoDay: "2026-11-16", ato: 60000, tax: 317000, pots: 112500 };
   function novPlan() {
     const t = today();
@@ -1229,7 +1233,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "11 Nov 2026, v5";
+  const APP_VERSION = "11 Nov 2026, v6";
   function allText() {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -1271,6 +1275,7 @@ details[open] summary::after{transform:rotate(45deg)}
       const sp = Object.keys(p.spends || {}).map((k) => p.spends[k]).sort((a, b) => String(b.at).localeCompare(String(a.at)));
       add("Everything logged, newest first: " + (sp.map((x) => x.date + " " + (x.kind === "in" ? "money in " : "spent ") + money(x.amount) + (x.note ? " " + x.note : "")).join(" // ") || "nothing"));
       add("Weeks: " + (Object.keys(p.weeks || {}).sort().map((k) => k + " " + money(p.weeks[k].allow)).join(" // ") || "none"));
+      if (p.toBiz && Array.isArray(p.toBiz.bills) && p.toBiz.bills.length) add("Moved to the business on " + p.toBiz.at + ": " + p.toBiz.bills.map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") + ".");
       if (p.was) add("Before the reset on " + p.was.at + ": pay " + money(p.was.take) + ", week " + (p.was.allow == null ? "not set" : money(p.was.allow)) + ", bills " + ((p.was.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") || "not kept") + ".");
     } catch (e) { add("Personal part failed: " + (e && e.message)); }
     try {
@@ -1361,14 +1366,18 @@ details[open] summary::after{transform:rotate(45deg)}
     { id: "netflix", name: "Netflix", amount: 2099, often: "month", dom: 31 },
     { id: "water", name: "Water half", amount: 14800, often: "quarter", from: "2027-02-09" }
   ];
+  // From 11 Nov 2026 the business pays the home internet and the phone, so they are not personal bills any more.
+  // ME_BILLS stays as the list checked on 11 Nov because the reset in meFix puts a phone back to it first, then these two come off.
+  const BIZ_IDS = ["broadband", "telstra"];
   const ME_DEFAULT = {
     start: "2026-11-06",
-    bills: ME_BILLS,
+    bills: ME_BILLS.filter((b) => !BIZ_IDS.includes(b.id)),
     spends: {},
     weeks: {},
     check: { bal: 20555, date: "2026-11-05", at: "2026-11-05T02:00:00.000Z" },
     fix: 2,
-    half: 2
+    half: 2,
+    biz: 1
   };
   const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
@@ -1465,6 +1474,8 @@ details[open] summary::after{transform:rotate(45deg)}
   // Halves, 11 Nov 2026, kept in personal.half: 1 once power is halved, 2 once water is too. Bonnie pays half of both.
   //   A phone that took the reset while they were in at the full $266 and $296 gets them halved. Only if the amount is still exactly that.
   // Fix 3, from Fri 13 Nov 2026. Pay into Greater becomes $1,250 and the Friday tax saver becomes $343, the day the CommBank transfers change.
+  // To the business, 11 Nov 2026, kept in personal.biz. Jordy moved the home internet and the phone to the business account that day.
+  //   Broadband and Telstra come off the personal list, the week it happens in is worked out again, and what came off is kept in personal.toBiz.
   const FIX = { payOld: 115000, payNew: 125000, taxOld: [21900, 31000], taxNew: 34300, week: "2026-11-06", from: "2026-11-13", powerFull: 26600, powerHalf: 13300, waterFull: 29600, waterHalf: 14800 };
   const billPer = (b) => (b.often === "week" ? " a week" : b.often === "fortnight" ? " a fortnight" : b.often === "quarter" ? " every 3 months" : " a month");
   function billDiff(old, want) {
@@ -1490,7 +1501,8 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!p || !su || !Array.isArray(p.bills)) return false;
     let lvl = Number(p.fix) || 0;
     const hv = Number(p.half) || 0;
-    if (lvl >= 3 && hv >= 2) return false;
+    const bz = Number(p.biz) || 0;
+    if (lvl >= 3 && hv >= 2 && bz >= 1) return false;
     const t = today();
     const ws = weekStartOf(t);
     const inWeek = ws >= p.start;
@@ -1499,6 +1511,7 @@ details[open] summary::after{transform:rotate(45deg)}
     const oldAllow = inWeek ? allowFor(ws) : null;
     let reset = false, halved = false, did = false, bits = null;
     const halves = [];
+    let moved = [];
     if (lvl < 2) {
       const oldTake = Number(plan.take) || 0;
       const d = billDiff(p.bills, ME_BILLS);
@@ -1521,6 +1534,16 @@ details[open] summary::after{transform:rotate(45deg)}
       }
       p.half = 2; did = true;
     }
+    if (bz < 1) {
+      // the business pays these now. What came off is kept in personal.toBiz.
+      moved = p.bills.filter((b) => BIZ_IDS.includes(b.id));
+      if (moved.length) {
+        p.bills = p.bills.filter((b) => !BIZ_IDS.includes(b.id));
+        p.toBiz = { at: t, bills: clone(moved) };
+      }
+      p.biz = 1; did = true;
+    }
+    const shifted = moved.length > 0;
     if (lvl < 3 && t >= FIX.from) {
       const now = [];
       if ((Number(plan.take) || 0) === FIX.payOld) { plan.take = FIX.payNew; now.push("pay " + money(FIX.payNew)); }
@@ -1532,16 +1555,21 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!did) return false;
     // the week of 6 Nov was paid at $1,150. Any later week that's already been opened gets worked out again on the fixed numbers.
     p.weeks = p.weeks || {};
+    // Bills moving to the business is a change from that day on, so it only reworks the week it happens in, never one that's finished.
     if ((reset || halved) && (p.weeks[FIX.week] || ws === FIX.week)) p.weeks[FIX.week] = { allow: meAllow(p.bills, FIX.payOld) };
-    if (inWeek && ws > FIX.week && (reset || halved || p.weeks[ws])) p.weeks[ws] = { allow: meAllow(p.bills, mePay()) };
+    else if (shifted && ws === FIX.week) p.weeks[FIX.week] = { allow: meAllow(p.bills, FIX.payOld) };
+    if (inWeek && ws > FIX.week && (reset || halved || shifted || p.weeks[ws])) p.weeks[ws] = { allow: meAllow(p.bills, mePay()) };
     const newAllow = inWeek ? allowFor(ws) : null;
     const weekBit = oldAllow !== null && newAllow !== null && oldAllow !== newAllow ? "This week's money was " + money(oldAllow) + ", now " + money(newAllow) + "." : "";
+    const names = moved.map((b) => String(b.name || "").trim() || "No name");
+    const movedLine = shifted ? names.join(" and ") + (names.length > 1 ? " are" : " is") + " paid by the business now, so " + (names.length > 1 ? "they" : "it") + " came off your list." : "";
     if (reset) {
+      if (movedLine) bits.push(movedLine);
       if (weekBit) bits.push(weekBit);
       p.fixNote = "Bills were put back to the right list on " + niceDate(t) + ". " + (bits.length ? bits.join(" ") : "Nothing was out of place.");
       said.unshift(p.fixNote.length <= 150 ? p.fixNote : "Bills were put back to the right list. Personal Setup shows what changed.");
-    } else if (halved) {
-      const line = halves.join(" ") + " Bonnie pays the rest." + (weekBit ? " " + weekBit : "");
+    } else if (halved || shifted) {
+      const line = [halved ? halves.join(" ") + " Bonnie pays the rest." : "", movedLine, weekBit].filter(Boolean).join(" ");
       p.fixNote = (p.fixNote ? p.fixNote + " " : "") + line;
       if (!p.was || !p.was.at) p.was = Object.assign({}, p.was || {}, { at: t });
       said.unshift(line);
