@@ -177,6 +177,11 @@ textarea{font-size:15px;resize:vertical}
 .cost b.ok{color:var(--tint)}
 .should{margin:0;font-size:17px}
 .should b{font-weight:600;font-variant-numeric:tabular-nums}
+.bank{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--tintsoft);border-radius:14px}
+.bank p{margin:0;min-width:0;font-size:15px;line-height:1.35}
+.bank .btn{flex:none;align-self:center}
+.lockset{display:flex;flex-direction:column;gap:14px}
+.cloudwait .view,.cloudwait .topbar{opacity:.45;pointer-events:none}
 .ask{display:flex;flex-direction:column;gap:8px}
 .askrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--fill);border:0;border-radius:10px;color:inherit;font:inherit;text-align:left;padding:9px 14px;min-height:54px;cursor:pointer}
 .askrow:active{opacity:.7}
@@ -278,6 +283,11 @@ details[open] summary::after{transform:rotate(45deg)}
       <p class="menote" id="meNote" hidden></p>
     </header>
 
+    <div class="bank" id="meBank" hidden>
+      <p id="meBankText"></p>
+      <button class="btn primary small" id="meBankUse" type="button">Use it</button>
+    </div>
+
     <form class="panel" id="meSpendForm" novalidate>
       <h2 class="h">Before you spend</h2>
       <div class="field">
@@ -333,15 +343,29 @@ details[open] summary::after{transform:rotate(45deg)}
         <h3 class="h">Bills that come out of Greater</h3>
         <div id="meBillEdit"></div>
         <button class="btn ghost small" id="meAddBill" type="button">Add a bill</button>
-        <h3 class="h">Lock</h3>
-        <div class="row">
-          <button class="btn ghost small" id="lockChange" type="button">Change code</button>
-          <button class="btn ghost small" id="lockFaceToggle" type="button" hidden>Turn on Face ID</button>
+        <div class="lockset" id="lockSet">
+          <h3 class="h">Lock</h3>
+          <div class="row">
+            <button class="btn ghost small" id="lockChange" type="button">Change code</button>
+            <button class="btn ghost small" id="lockFaceToggle" type="button" hidden>Turn on Face ID</button>
+          </div>
+          <p class="hint">Asks for Face ID or your code once a day.</p>
         </div>
-        <p class="hint">Asks for Face ID or your code once a day.</p>
         <p class="err" id="meSetupErr" hidden></p>
         <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
         <p class="hint" id="appVer"></p>
+        <div class="lockset" id="cloudSet">
+          <h3 class="h">Cloud</h3>
+          <p class="hint" id="cloudLine"></p>
+          <div class="field" id="cloudKeyField">
+            <label for="cloudKey">Cloud key</label>
+            <input id="cloudKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste the key from GitHub">
+          </div>
+          <div class="row">
+            <button class="btn ghost small" id="cloudOn" type="button">Turn on</button>
+            <button class="btn ghost small" id="cloudOff" type="button">Turn off</button>
+          </div>
+        </div>
       </div>
     </details>
     <button class="btn ghost" id="meCopyAll" type="button">Copy everything for Claude</button>
@@ -476,7 +500,7 @@ details[open] summary::after{transform:rotate(45deg)}
       <p class="err" id="setupErr" hidden></p>
       <button class="btn primary" id="saveSetup" type="button">Save setup</button>
       <div class="backup">
-        <p class="hint">Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.</p>
+        <p class="hint" id="backupHint">Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.</p>
         <button class="btn ghost small" id="copyBackup" type="button">Copy backup</button>
         <div class="field">
           <label for="restoreText">Restore from a backup</label>
@@ -1179,7 +1203,13 @@ details[open] summary::after{transform:rotate(45deg)}
   let state = { setup: null, moves: {}, personal: null };
   let firstRun = false;
 
-  function persist() { localStorage.setItem(KEY, JSON.stringify(state)); }
+  // Saves to this phone, and to the cloud copy when the page runs as a Claude artifact. It only fails if neither can take it.
+  function persist() {
+    let ok = false;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); ok = true; } catch (e) {}
+    if (cloudTouch()) ok = true;
+    if (!ok) throw new Error("save");
+  }
   function emit() {
     setup = state.setup ? clone(state.setup) : null;
     moves = Object.keys(state.moves).map((id) => Object.assign(clone(state.moves[id]), { id: id }));
@@ -1232,9 +1262,415 @@ details[open] summary::after{transform:rotate(45deg)}
     runAuto();
   }
 
+  // The cloud copy. Everything lives on the phone. The app can keep a second copy somewhere Claude can reach,
+  // so Claude can read what the phone holds and send changes back. Two places are supported:
+  //   GitHub   a private repo, jordonaylward-ship-it/pots-data, reached with a key he pastes into Personal Setup once. This is the one he uses.
+  //            state.json holds rev, at, dev, app, applied, view and state. inbox/<id>.json are changes from Claude.
+  //   Claude   only when the page runs as a Claude artifact: the artifact's own database, pots/state, pots/view and inbox/<id>.
+  // Either way only the page writes the saved state, rev goes up by one each save, and Claude sends changes as inbox items.
+  // The page applies each item once, oldest first by its at field, and records the result.
+  //   replace: json holds the whole saved state. With baseRev it only goes in if the app is still at that rev.
+  //   bank: avail in cents and alertAt, the time of a bank alert. Shows on Personal with a Use it button.
+  //   spend: amount in cents, note, kind spend or in, and spentAt if it wasn't just now. Logs it on Personal.
+  //   note: a message that pops up.
+  const CLOUD = !!(window.claude && typeof window.claude.use === "function");
+  const SYNC_KEY = KEY + ".sync";
+  const GH_KEY = KEY + ".gh";
+  const GH_REPO = "jordonaylward-ship-it/pots-data";
+  const cloud = { kind: CLOUD ? "art" : "", phase: "none", db: null, ref: null, view: null, rev: 0, known: false, gen: 0, sent: -1, busy: false, again: false, timer: null, at: null, err: "", why: "", tries: 0, clash: 0, dev: "", ops: {}, opBusy: false, bootDirty: false, gh: null, applied: {}, poll: null, pollTimer: null, polling: false };
+  function ghCfg() {
+    try {
+      const v = JSON.parse(localStorage.getItem(GH_KEY) || "null");
+      if (!v || typeof v.token !== "string" || !v.token) return null;
+      return { token: v.token, repo: typeof v.repo === "string" && /^[\w.-]+\/[\w.-]+$/.test(v.repo) ? v.repo : GH_REPO };
+    } catch (e) { return null; }
+  }
+  (() => {
+    let m = null;
+    try { m = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); } catch (e) {}
+    if (m && typeof m === "object" && Number.isFinite(m.rev) && m.rev > 0) { cloud.rev = m.rev; cloud.known = true; cloud.sent = m.clean ? 0 : -1; cloud.bootDirty = !m.clean; }
+    if (m && m.applied && typeof m.applied === "object") cloud.applied = m.applied;
+    cloud.dev = m && typeof m.dev === "string" && m.dev ? m.dev : "d" + Math.random().toString(36).slice(2, 10);
+    if (!CLOUD) { cloud.gh = ghCfg(); if (cloud.gh) cloud.kind = "gh"; }
+    cloud.phase = cloud.kind ? "wait" : "none";
+  })();
+  const cloudDirty = () => cloud.sent !== cloud.gen;
+  function writeSync() {
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify({ rev: cloud.rev, dev: cloud.dev, clean: !cloudDirty(), applied: cloud.applied })); } catch (e) {}
+  }
+  function niceTime(d) {
+    return d.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, "").toLowerCase();
+  }
+  // Called on every save. True means the cloud has it or will get it.
+  function cloudTouch() {
+    if (!cloud.kind) return false;
+    cloud.gen += 1;
+    writeSync();
+    if (cloud.phase === "on") cloudLater();
+    cloudUI();
+    return cloud.phase !== "off";
+  }
+  function cloudLater(ms) { clearTimeout(cloud.timer); cloud.timer = setTimeout(cloudPush, ms || 700); }
+  function cloudUI() {
+    const l = $("cloudLine");
+    if (!l) return;
+    const has = !!cloud.kind;
+    let msg;
+    if (!has) msg = "Cloud: off. Paste your key and turn it on, then Claude can see your app and update it.";
+    else if (cloud.phase === "wait") msg = "Cloud: connecting.";
+    else if (cloud.phase === "off") msg = "Cloud: " + (cloud.why || "off right now. This copy only lives on this phone.");
+    else if (cloud.err) msg = "Cloud: the last save didn't go through. It tries again by itself.";
+    else if (cloudDirty() || cloud.busy) msg = "Cloud: saving.";
+    else msg = "Cloud: saved" + (cloud.at ? " " + niceTime(new Date(cloud.at)) : "") + ". Claude can see this and update it.";
+    l.textContent = msg;
+    const on = has && cloud.phase === "on";
+    const ask = !CLOUD && (!has || cloud.phase === "off");
+    $("cloudKeyField").hidden = !ask;
+    $("cloudOn").hidden = !ask;
+    $("cloudOff").hidden = CLOUD || !has;
+    $("backupHint").textContent = on ? "Everything saves to your cloud copy as you go. A backup in your Notes never hurts." : "Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.";
+    $("meCopyAll").hidden = on;
+    $("bizCopyAll").hidden = on;
+  }
+  function ghWhy(e) {
+    const c = e && e.code;
+    if (c === "auth") return "GitHub refused that key. Make a new one and paste it in.";
+    if (c === "notfound") return "that key can't see pots-data. Make a new one and pick pots-data.";
+    if (c === "denied") return "that key isn't allowed to save. It needs Contents set to Read and write.";
+    return "";
+  }
+  function cloudBoot() {
+    cloudUI();
+    if (!cloud.kind) return;
+    cloud.phase = "wait";
+    cloud.why = "";
+    cloudUI();
+    // A phone that has never met the cloud is held until the cloud answers, so nothing gets typed in the middle of the two copies meeting.
+    if (!cloud.known) { $("app").classList.add("cloudwait"); setStatus("Getting your pots from the cloud."); }
+    let settled = false;
+    const done = (phase, why) => {
+      if (settled) return false;
+      settled = true;
+      clearTimeout(timer);
+      cloud.phase = phase;
+      cloud.err = "";
+      cloud.why = why || "";
+      $("app").classList.remove("cloudwait");
+      if (phase === "off") setStatus(why ? "Cloud: " + why : "Can't reach the cloud right now. This copy only lives on this phone until it can.", true);
+      else setStatus("");
+      cloudUI();
+      return true;
+    };
+    const timer = setTimeout(() => done("off"), 11000);
+    let p;
+    try { p = cloud.kind === "gh" ? ghDb() : window.claude.use("db"); } catch (e) { done("off"); return; }
+    Promise.resolve(p).then(async (db) => {
+      if (settled) return;
+      if (!db) { done("off"); return; }
+      try {
+        const ref = db.doc("pots/state");
+        const snap = await ref.get();
+        if (settled) return;
+        cloud.db = db; cloud.ref = ref; cloud.view = db.doc("pots/view");
+        done("on");
+        cloudMeet(snap);
+        ref.onSnapshot(cloudSeen, () => {});
+        db.collection("inbox").onSnapshot(cloudInbox, () => {});
+      } catch (e) { done("off", cloud.kind === "gh" ? ghWhy(e) : ""); }
+    }, () => { done("off"); });
+  }
+  // The phone's copy and the cloud's copy meet.
+  function cloudMeet(snap) {
+    const d = snap && snap.exists ? snap.data() : null;
+    const rrev = d ? Number(d.rev) || 0 : 0;
+    if (d && (!cloud.known || rrev !== cloud.rev)) {
+      // The cloud holds a copy this phone hasn't seen, so the cloud wins. What was on this phone is kept aside, just in case.
+      const real = !firstRun;
+      const fresh = !cloud.known;
+      if (real) { try { localStorage.setItem(KEY + ".aside", JSON.stringify(state)); } catch (e) {} }
+      if (cloudAdopt(d)) { if (fresh && real) toast("Took the copy from the cloud. What was on this phone is kept aside."); return; }
+    }
+    if (rrev > cloud.rev) cloud.rev = rrev;
+    if (d && typeof d.at === "string" && !cloud.at) cloud.at = d.at;
+    if (!d || !cloud.known || cloudDirty()) { cloud.sent = -1; cloudPush(); }
+    else cloudUI();
+  }
+  function cloudAdopt(d) {
+    let s = null;
+    try { s = JSON.parse(d.json); } catch (e) { return false; }
+    if (!s || !s.setup || !Array.isArray(s.setup.pots) || !s.moves || typeof s.moves !== "object") return false;
+    state = { setup: s.setup, moves: s.moves, personal: s.personal && Array.isArray(s.personal.bills) ? s.personal : clone(ME_DEFAULT) };
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    cloud.rev = Number(d.rev) || 0;
+    cloud.known = true;
+    cloud.sent = cloud.gen;
+    cloud.at = typeof d.at === "string" ? d.at : null;
+    writeSync();
+    firstRun = false; setupDirty = false; meDirty = false;
+    meFix();
+    ensureWeek();
+    emit();
+    runAuto();
+    cloudUI();
+    return true;
+  }
+  async function cloudPush() {
+    if (!cloud.kind || cloud.phase !== "on" || !cloudDirty()) return;
+    if (cloud.busy) { cloud.again = true; return; }
+    cloud.busy = true;
+    const g = cloud.gen;
+    const rev = cloud.rev + 1;
+    const at = new Date().toISOString();
+    let text = "";
+    try { text = allText(true); } catch (e) {}
+    let clash = false;
+    try {
+      await cloud.ref.set({ rev: rev, at: at, dev: cloud.dev, app: APP_VERSION, json: JSON.stringify(state) });
+      cloud.rev = rev; cloud.sent = g; cloud.at = at; cloud.err = ""; cloud.tries = 0; cloud.clash = 0; cloud.known = true;
+      writeSync();
+      try { await cloud.view.set({ rev: rev, at: at, text: text }); } catch (e) {}
+    } catch (e) {
+      cloud.err = (e && e.code) || "error";
+      cloud.tries += 1;
+      clash = cloud.err === "conflict" && cloud.clash < 2;
+    }
+    cloud.busy = false;
+    if (clash) {
+      // Something else saved since this phone last looked. Look again and let the two copies meet.
+      cloud.clash += 1;
+      cloud.err = "";
+      cloud.again = false;
+      try { cloudMeet(await cloud.ref.get()); } catch (e) { cloud.err = (e && e.code) || "error"; }
+      cloudUI();
+      return;
+    }
+    cloudUI();
+    if (cloud.err) { if (cloud.tries <= 3 && cloud.err !== "revoked" && cloud.err !== "invalid_argument" && cloud.err !== "auth" && cloud.err !== "notfound" && cloud.err !== "denied") cloudLater(4000 * cloud.tries); }
+    else if (cloud.again || cloudDirty()) cloudLater();
+    cloud.again = false;
+  }
+  // The saved state changed in the cloud while this page was open, from another phone or tab.
+  function cloudSeen(snap) {
+    if (!snap || !snap.exists || (snap.metadata && snap.metadata.hasPendingWrites)) return;
+    const d = snap.data();
+    const rrev = Number(d && d.rev) || 0;
+    if (!d || d.dev === cloud.dev || rrev <= cloud.rev || cloud.busy) return;
+    if (cloudDirty()) { cloud.rev = rrev; cloudLater(); return; }
+    if (cloudAdopt(d)) toast("Updated from the cloud.");
+  }
+  function cloudInbox(snap) {
+    if (!snap || !Array.isArray(snap.docs)) return;
+    snap.docs.forEach((doc) => {
+      const d = doc.data();
+      if (!d || d.done || cloud.ops[doc.id]) return;
+      cloud.ops[doc.id] = { id: doc.id, d: clone(d), todo: true };
+    });
+    cloudRunOps();
+  }
+  async function cloudRunOps() {
+    if (cloud.opBusy || cloud.phase !== "on") return;
+    cloud.opBusy = true;
+    try {
+      for (;;) {
+        const next = Object.values(cloud.ops).filter((o) => o.todo).sort((a, b) => String(a.d.at || "").localeCompare(String(b.d.at || "")) || a.id.localeCompare(b.id))[0];
+        if (!next) break;
+        next.todo = false;
+        const result = applyOp(next.id, next.d);
+        try { await cloud.db.collection("inbox").doc(next.id).update({ done: true, doneAt: new Date().toISOString(), result: result }); } catch (e) {}
+      }
+    } finally { cloud.opBusy = false; }
+  }
+  // GitHub as the cloud. It's made to look like the small part of the artifact database the code above uses, so both run the same way.
+  const b64e = (str) => { const by = new TextEncoder().encode(str); let bin = ""; for (let i = 0; i < by.length; i += 0x8000) bin += String.fromCharCode.apply(null, by.subarray(i, i + 0x8000)); return btoa(bin); };
+  const b64d = (s) => new TextDecoder().decode(Uint8Array.from(atob(String(s).replace(/\s/g, "")), (c) => c.charCodeAt(0)));
+  async function ghCall(method, path, body) {
+    const g = cloud.gh;
+    if (!g) throw { code: "auth" };
+    let res;
+    try {
+      res = await fetch("https://api.github.com/repos/" + g.repo + (path ? "/contents/" + path : ""), { method: method, cache: "no-store", headers: { Authorization: "Bearer " + g.token, Accept: "application/vnd.github+json" }, body: body ? JSON.stringify(body) : undefined });
+    } catch (e) { throw { code: "offline" }; }
+    if (res.status === 401) throw { code: "auth" };
+    if (res.status === 404) return null;
+    if (res.status === 409 || res.status === 422) throw { code: "conflict" };
+    if (res.status === 403 || res.status === 429) throw { code: "denied" };
+    if (!res.ok) throw { code: "unavailable" };
+    return res.json();
+  }
+  function ghDb() {
+    let sha = null;
+    const snapOf = (f) => ({ id: "state", exists: !!f, data: () => f, metadata: { fromCache: false, hasPendingWrites: false } });
+    const stateDoc = {
+      get: async () => {
+        const r = await ghCall("GET", "state.json");
+        if (!r) {
+          // No file yet, or the key can't see the repo at all. Asking for the repo itself tells the two apart.
+          if (!(await ghCall("GET", ""))) throw { code: "notfound" };
+          sha = null;
+          return snapOf(null);
+        }
+        sha = r.sha || null;
+        let f = null;
+        try { f = JSON.parse(b64d(r.content)); } catch (e) { f = null; }
+        if (!f || typeof f !== "object") return snapOf({ rev: 0, json: "" });
+        if (f.applied && typeof f.applied === "object") cloud.applied = Object.assign({}, f.applied, cloud.applied);
+        return snapOf({ rev: f.rev, at: f.at, dev: f.dev, app: f.app, json: JSON.stringify(f.state || null) });
+      },
+      set: async (b) => {
+        let text = "";
+        try { text = allText(true); } catch (e) {}
+        const file = { rev: b.rev, at: b.at, dev: b.dev, app: b.app, applied: cloud.applied, view: text, state: JSON.parse(b.json) };
+        const body = { message: "Pay Day Pots save, rev " + b.rev, content: b64e(JSON.stringify(file, null, 1)) };
+        if (sha) body.sha = sha;
+        const r = await ghCall("PUT", "state.json", body);
+        if (!r) throw { code: "notfound" };
+        sha = (r.content && r.content.sha) || null;
+      },
+      onSnapshot: () => () => {}
+    };
+    const inbox = {
+      onSnapshot: (fn) => {
+        cloud.poll = async () => {
+          if (cloud.kind !== "gh" || cloud.phase !== "on" || cloud.polling) return;
+          cloud.polling = true;
+          try {
+            const list = await ghCall("GET", "inbox");
+            const docs = [];
+            for (const it of Array.isArray(list) ? list : []) {
+              if (!it || it.type !== "file" || !/\.json$/.test(String(it.name))) continue;
+              const id = it.name.slice(0, -5);
+              if (cloud.applied[id] || cloud.ops[id]) continue;
+              const r = await ghCall("GET", "inbox/" + encodeURIComponent(it.name));
+              let d = null;
+              try { d = r ? JSON.parse(b64d(r.content)) : null; } catch (e) { d = null; }
+              docs.push({ id: id, data: () => (d && typeof d === "object" ? d : { op: "unreadable" }) });
+            }
+            if (docs.length) fn({ docs: docs });
+          } catch (e) {}
+          cloud.polling = false;
+        };
+        cloud.poll();
+        clearInterval(cloud.pollTimer);
+        cloud.pollTimer = setInterval(() => { if (!document.hidden && cloud.poll) cloud.poll(); }, 90000);
+        return () => {};
+      },
+      doc: (id) => ({
+        update: async (p) => {
+          cloud.applied[id] = { at: p.doneAt, result: p.result };
+          const keys = Object.keys(cloud.applied);
+          if (keys.length > 200) keys.sort((x, y) => String(cloud.applied[x].at).localeCompare(String(cloud.applied[y].at))).slice(0, keys.length - 200).forEach((k) => { delete cloud.applied[k]; });
+          cloud.gen += 1;
+          writeSync();
+          cloudLater();
+          cloudUI();
+        }
+      })
+    };
+    return { doc: (path) => (path === "pots/state" ? stateDoc : { set: async () => {} }), collection: () => inbox };
+  }
+  function ghTurnOn() {
+    const v = $("cloudKey").value.trim();
+    if (v.length < 20 || /\s/.test(v)) { toast("That doesn't look like a key. Copy the whole thing from GitHub."); return; }
+    try { localStorage.setItem(GH_KEY, JSON.stringify({ token: v, repo: GH_REPO })); } catch (e) { toast("Couldn't save the key on this phone."); return; }
+    $("cloudKey").value = "";
+    cloud.gh = ghCfg();
+    cloud.kind = "gh";
+    cloud.sent = -1;
+    cloudBoot();
+  }
+  function ghTurnOff() {
+    try { localStorage.removeItem(GH_KEY); } catch (e) {}
+    clearTimeout(cloud.timer);
+    clearInterval(cloud.pollTimer);
+    cloud.kind = ""; cloud.gh = null; cloud.phase = "none"; cloud.db = null; cloud.ref = null; cloud.poll = null; cloud.err = ""; cloud.why = "";
+    $("app").classList.remove("cloudwait");
+    setStatus("");
+    cloudUI();
+    toast("Cloud is off. Everything is still on this phone.");
+  }
+  function opSave(fn, msg) {
+    const before = JSON.stringify(state);
+    try { fn(); persist(); } catch (e) { state = JSON.parse(before); emit(); return "error: couldn't save"; }
+    emit();
+    if (msg) toast(msg);
+    return "ok";
+  }
+  function applyOp(id, o) {
+    try {
+      const kind = String((o && o.op) || "");
+      const note = o && typeof o.note === "string" ? o.note.trim().slice(0, 220) : "";
+      if (kind === "replace") {
+        let s = null;
+        try { s = typeof o.json === "string" ? JSON.parse(o.json) : null; } catch (e) { s = null; }
+        if (!s || !s.setup || !Array.isArray(s.setup.pots) || !s.moves || typeof s.moves !== "object") return "error: that isn't Pay Day Pots data";
+        if (o.baseRev != null && (Number(o.baseRev) !== cloud.rev || cloudDirty())) return "stale: the app is at rev " + cloud.rev + (cloudDirty() ? " with changes still saving" : "");
+        const before = JSON.stringify(state);
+        state = { setup: s.setup, moves: s.moves, personal: s.personal && Array.isArray(s.personal.bills) ? s.personal : state.personal };
+        try { persist(); } catch (e) { state = JSON.parse(before); return "error: couldn't save"; }
+        setupDirty = false; meDirty = false; firstRun = false;
+        meFix();
+        ensureWeek();
+        emit();
+        runAuto();
+        toast(note || "Claude updated your app.");
+        return "ok";
+      }
+      if (kind === "bank") {
+        const avail = Math.round(Number(o.avail));
+        // at is when Claude sent it and sets the order things are applied in. alertAt is when the bank says the money moved. Without alertAt, at is taken as that.
+        const t = typeof o.alertAt === "string" ? o.alertAt : o.at;
+        if (!Number.isFinite(avail) || o.avail == null || typeof t !== "string" || Number.isNaN(Date.parse(t))) return "error: needs avail in cents and the time of the alert";
+        const cur = P().bank;
+        if (cur && Date.parse(cur.at) >= Date.parse(t)) return "skipped: an alert as new as that is already there";
+        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; }, null);
+      }
+      if (kind === "spend") {
+        const amt = Math.round(Number(o.amount));
+        if (!(amt > 0)) return "error: needs an amount in cents";
+        // at sets the order things are applied in. spentAt is when the money was spent, if that was earlier.
+        const t = typeof o.spentAt === "string" ? o.spentAt : o.at;
+        const at = typeof t === "string" && !Number.isNaN(Date.parse(t)) ? new Date(t).toISOString() : new Date().toISOString();
+        const date = /^\d{4}-\d{2}-\d{2}$/.test(String(o.date || "")) ? o.date : ymd(new Date(at));
+        const k = o.kind === "in" ? "in" : "spend";
+        return opSave(() => { state.personal.spends = state.personal.spends || {}; state.personal.spends["c" + id] = { date: date, at: at, kind: k, amount: amt, note: note.slice(0, 60) }; },
+          "Claude logged " + money(amt) + (k === "in" ? " in" : " spent") + (note ? ", " + note.slice(0, 60) : "") + ".");
+      }
+      if (kind === "note") {
+        if (!note) return "error: no message";
+        toast(note);
+        return "ok";
+      }
+      return "skipped: don't know that one";
+    } catch (e) { return "error: " + ((e && e.message) || "failed"); }
+  }
+  // The newest bank alert, if it's from today and newer than the last balance saved.
+  function bankOffer() {
+    const p = P();
+    const b = p && p.bank;
+    if (!b || !Number.isFinite(b.avail) || typeof b.at !== "string") return null;
+    const when = Date.parse(b.at);
+    if (Number.isNaN(when) || ymd(new Date(when)) !== today()) return null;
+    const c = p.check || {};
+    const saved = c.at ? Date.parse(c.at) : NaN;
+    if (!Number.isNaN(saved) && saved >= when) return null;
+    return b;
+  }
+  function bankUse() {
+    const b = bankOffer();
+    if (!b) { renderMe(); return; }
+    $("meBal").value = (b.avail / 100).toFixed(2);
+    meWait = {};
+    meBankAt = b.at;
+    if (!meAsk().length) { meSaveBal(); return; }
+    $("meCheckBox").open = true;
+    renderMe();
+    try { $("meCheckBox").scrollIntoView({ block: "start" }); } catch (e) {}
+    toast("Tap any bill that hasn't gone through yet, then Save balance.");
+  }
+
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "11 Nov 2026, v6";
-  function allText() {
+  const APP_VERSION = "11 Nov 2026, v8";
+  function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
     const gap = () => out.push("");
@@ -1288,9 +1724,11 @@ details[open] summary::after{transform:rotate(45deg)}
       const mv = moves.slice().sort((x, y) => String(y.at).localeCompare(String(x.at)));
       add("History, newest first: " + (mv.map((m) => m.date + " " + m.kind + " " + money(m.amount) + " " + Object.keys(m.split || {}).map((k) => potName(k) + " " + money(m.split[k])).join(", ") + (m.taxMove && Number(m.taxMove.amount) > 0 ? ", tax moved " + money(m.taxMove.amount) : "") + (m.note ? ", " + m.note : "") + (m.void ? ", UNDONE" : "")).join(" // ") || "nothing"));
     } catch (e) { add("Business part failed: " + (e && e.message)); }
-    gap();
-    add("DATA");
-    add(JSON.stringify(state));
+    if (!noData) {
+      gap();
+      add("DATA");
+      add(JSON.stringify(state));
+    }
     return out.join("\n");
   }
   function copyAll() {
@@ -1333,11 +1771,21 @@ details[open] summary::after{transform:rotate(45deg)}
       navigator.clipboard.writeText(text).then(() => toast("Backup copied. Paste it into your Notes."), fallback);
     } else fallback();
   }
+  let restoreArmed = 0;
   function restoreBackup() {
     let data;
     try { data = JSON.parse($("restoreText").value); } catch (e) { toast("That backup didn't read properly. Copy it again."); return; }
     if (!data || !data.setup || !Array.isArray(data.setup.pots) || typeof data.moves !== "object") { toast("That doesn't look like a Pay Day Pots backup."); return; }
-    if (!window.confirm("Replace everything on this phone with this backup?")) return;
+    // Two taps instead of a pop up box. Pop ups don't show when the app runs inside Claude.
+    const rb = $("doRestore");
+    if (Date.now() - restoreArmed > 6000) {
+      restoreArmed = Date.now();
+      rb.textContent = "Tap again to replace everything";
+      setTimeout(() => { if (restoreArmed && Date.now() - restoreArmed >= 6000) { restoreArmed = 0; rb.textContent = "Restore"; } }, 6200);
+      return;
+    }
+    restoreArmed = 0;
+    rb.textContent = "Restore";
     guarded(() => { state.setup = data.setup; state.moves = data.moves || {}; if (data.personal && Array.isArray(data.personal.bills)) state.personal = data.personal; })
       .then(() => { $("restoreText").value = ""; setupDirty = false; meDirty = false; firstRun = false; setStatus(""); toast("Restored."); meFix(); ensureWeek(); emit(); })
       .catch(failToast);
@@ -1382,7 +1830,7 @@ details[open] summary::after{transform:rotate(45deg)}
   const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
   const ASK_BACK = 2;
-  let meOpen = null, meDirty = false, meDraft = null, meWait = {};
+  let meOpen = null, meDirty = false, meDraft = null, meWait = {}, meBankAt = null;
 
   const P = () => state.personal;
   const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
@@ -1717,6 +2165,9 @@ details[open] summary::after{transform:rotate(45deg)}
     }
     note.textContent = notes.join(" ");
     note.hidden = !notes.length;
+    const bo = st.pre ? null : bankOffer();
+    $("meBank").hidden = !bo;
+    if (bo) $("meBankText").textContent = "Greater says " + money(bo.avail) + " available at " + niceTime(new Date(bo.at)) + ".";
     renderMeVerdict(st);
     renderMeWeek(st);
     renderMeBills();
@@ -1871,11 +2322,14 @@ details[open] summary::after{transform:rotate(45deg)}
     const bal = raw ? parseBal(raw) : null;
     if (bal === null) { toast("Type your Greater balance, like 617.05."); return; }
     const d = meDraftCheck(bal, meAsk());
-    const check = { bal: bal, date: today(), at: new Date().toISOString() };
+    // A balance that came from a bank alert is saved as at the alert's time, so anything logged after it still comes off.
+    const bo = meBankAt ? bankOffer() : null;
+    const fromBank = !!(bo && bo.at === meBankAt && bal === bo.avail);
+    const check = { bal: bal, date: today(), at: fromBank ? new Date(bo.at).toISOString() : new Date().toISOString() };
     if (d.wait.length) check.wait = d.wait;
     if (d.payWait) check.payWait = true;
     guarded(() => { state.personal.check = check; })
-      .then(() => { $("meBal").value = ""; meWait = {}; renderMe(); toast("Saved. Greater has " + money(bal) + "."); })
+      .then(() => { $("meBal").value = ""; meWait = {}; meBankAt = null; renderMe(); toast("Saved. Greater has " + money(bal) + "."); })
       .catch(failToast);
   }
 
@@ -2069,7 +2523,7 @@ details[open] summary::after{transform:rotate(45deg)}
   $("doRestore").addEventListener("click", restoreBackup);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden || !movesCol) return;
-    setTimeout(() => { if (meFix()) emit(); ensureWeek(); runAuto(); render(); }, 0);
+    setTimeout(() => { if (meFix()) emit(); ensureWeek(); runAuto(); render(); if (cloud.kind && cloud.phase === "on") { if (cloudDirty()) cloudLater(); if (cloud.poll) cloud.poll(); } else if (cloud.kind === "gh" && cloud.phase === "off" && !cloud.why) cloudBoot(); }, 0);
   });
 
   // Lock: Face ID first, 4 digit code as backup. The code is set on the phone and only a salted hash is kept there.
@@ -2215,6 +2669,8 @@ details[open] summary::after{transform:rotate(45deg)}
     b.textContent = lockCfg && lockCfg.face ? "Turn off Face ID" : "Turn on Face ID";
   }
   async function bootLock() {
+    // Inside Claude the app sits behind his Claude login, and Face ID isn't offered to a page there, so there's no lock.
+    if (CLOUD) { hideLock(false); $("lockSet").hidden = true; return; }
     lockCfg = readLock();
     if (lockCfg && openRecently()) hideLock(false);
     else lockStart();
@@ -2229,6 +2685,9 @@ details[open] summary::after{transform:rotate(45deg)}
   $("meGot").addEventListener("click", () => meLog("in"));
   $("meBal").addEventListener("input", () => { if (!$("meBal").value.trim()) meWait = {}; renderMeCheck(meWeek()); });
   $("meSaveBal").addEventListener("click", meSaveBal);
+  $("meBankUse").addEventListener("click", bankUse);
+  $("cloudOn").addEventListener("click", ghTurnOn);
+  $("cloudOff").addEventListener("click", ghTurnOff);
   $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
   $("meAddBill").addEventListener("click", meAddBill);
   $("meSaveSetup").addEventListener("click", meSaveSetup);
@@ -2254,6 +2713,7 @@ details[open] summary::after{transform:rotate(45deg)}
     catch (e) { toast("Face ID didn't set up. Your code still works."); }
   });
   document.addEventListener("visibilitychange", () => {
+    if (CLOUD) return;
     if (document.hidden) { if (unlocked) $("app").hidden = true; return; }
     if (!unlocked) return;
     if (!openRecently()) lockStart();
@@ -2262,6 +2722,7 @@ details[open] summary::after{transform:rotate(45deg)}
 
   init();
   bootLock();
+  cloudBoot();
 })();
 </script>
 </body>
