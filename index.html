@@ -1277,7 +1277,7 @@ details[open] summary::after{transform:rotate(45deg)}
   const SYNC_KEY = KEY + ".sync";
   const GH_KEY = KEY + ".gh";
   const GH_REPO = "jordonaylward-ship-it/pots-data";
-  const cloud = { kind: CLOUD ? "art" : "", phase: "none", db: null, ref: null, view: null, rev: 0, known: false, gen: 0, sent: -1, busy: false, again: false, timer: null, at: null, err: "", why: "", tries: 0, clash: 0, dev: "", ops: {}, opBusy: false, bootDirty: false, gh: null, applied: {}, poll: null, pollTimer: null, polling: false };
+  const cloud = { kind: CLOUD ? "art" : "", phase: "none", db: null, ref: null, view: null, rev: 0, known: false, gen: 0, sent: -1, busy: false, again: false, timer: null, at: null, err: "", why: "", tries: 0, clash: 0, clashAt: 0, seq: 0, seqOk: 0, here: null, dev: "", ops: {}, opBusy: false, bootDirty: false, gh: null, applied: {}, poll: null, pollTimer: null, polling: false };
   function ghCfg() {
     try {
       const v = JSON.parse(localStorage.getItem(GH_KEY) || "null");
@@ -1290,13 +1290,14 @@ details[open] summary::after{transform:rotate(45deg)}
     try { m = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); } catch (e) {}
     if (m && typeof m === "object" && Number.isFinite(m.rev) && m.rev > 0) { cloud.rev = m.rev; cloud.known = true; cloud.sent = m.clean ? 0 : -1; cloud.bootDirty = !m.clean; }
     if (m && m.applied && typeof m.applied === "object") cloud.applied = m.applied;
+    if (m && Number.isFinite(m.seq) && m.seq > 0) { cloud.seq = m.seq; cloud.seqOk = Number.isFinite(m.seqOk) && m.seqOk > 0 ? Math.min(m.seqOk, m.seq) : 0; }
     cloud.dev = m && typeof m.dev === "string" && m.dev ? m.dev : "d" + Math.random().toString(36).slice(2, 10);
     if (!CLOUD) { cloud.gh = ghCfg(); if (cloud.gh) cloud.kind = "gh"; }
     cloud.phase = cloud.kind ? "wait" : "none";
   })();
   const cloudDirty = () => cloud.sent !== cloud.gen;
   function writeSync() {
-    try { localStorage.setItem(SYNC_KEY, JSON.stringify({ rev: cloud.rev, dev: cloud.dev, clean: !cloudDirty(), applied: cloud.applied })); } catch (e) {}
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify({ rev: cloud.rev, dev: cloud.dev, clean: !cloudDirty(), applied: cloud.applied, seq: cloud.seq, seqOk: cloud.seqOk })); } catch (e) {}
   }
   function niceTime(d) {
     return d.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, "").toLowerCase();
@@ -1319,12 +1320,12 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!has) msg = "Cloud: off. Paste your key and turn it on, then Claude can see your app and update it.";
     else if (cloud.phase === "wait") msg = "Cloud: connecting.";
     else if (cloud.phase === "off") msg = "Cloud: " + (cloud.why || "off right now. This copy only lives on this phone.");
-    else if (cloud.err) msg = "Cloud: the last save didn't go through. It tries again by itself.";
+    else if (cloud.err) msg = "Cloud: " + ((cloud.kind === "gh" && ghWhy({ code: cloud.err })) || "the last save didn't go through. It tries again by itself.");
     else if (cloudDirty() || cloud.busy) msg = "Cloud: saving.";
     else msg = "Cloud: saved" + (cloud.at ? " " + niceTime(new Date(cloud.at)) : "") + ". Claude can see this and update it.";
     l.textContent = msg;
     const on = has && cloud.phase === "on";
-    const ask = !CLOUD && (!has || cloud.phase === "off");
+    const ask = !CLOUD && (!has || cloud.phase === "off" || (cloud.kind === "gh" && !!ghWhy({ code: cloud.err })));
     $("cloudKeyField").hidden = !ask;
     $("cloudOn").hidden = !ask;
     $("cloudOff").hidden = CLOUD || !has;
@@ -1344,6 +1345,7 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!cloud.kind) return;
     cloud.phase = "wait";
     cloud.why = "";
+    cloud.err = "";
     cloudUI();
     // A phone that has never met the cloud is held until the cloud answers, so nothing gets typed in the middle of the two copies meeting.
     if (!cloud.known) { $("app").classList.add("cloudwait"); setStatus("Getting your pots from the cloud."); }
@@ -1383,7 +1385,11 @@ details[open] summary::after{transform:rotate(45deg)}
   function cloudMeet(snap) {
     const d = snap && snap.exists ? snap.data() : null;
     const rrev = d ? Number(d.rev) || 0 : 0;
-    if (d && (!cloud.known || rrev !== cloud.rev)) {
+    const rseq = d ? Number(d.seq) || 0 : 0;
+    // The cloud can hold a save this very phone sent and never heard back about. The phone's copy is the same or newer, so it stays and goes up again.
+    const echo = !!d && d.dev === cloud.dev && rseq > cloud.seqOk && rseq <= cloud.seq;
+    if (echo) { cloud.known = true; cloud.seqOk = rseq; }
+    if (d && !echo && (!cloud.known || rrev !== cloud.rev)) {
       // The cloud holds a copy this phone hasn't seen, so the cloud wins. What was on this phone is kept aside, just in case.
       const real = !firstRun;
       const fresh = !cloud.known;
@@ -1392,7 +1398,7 @@ details[open] summary::after{transform:rotate(45deg)}
     }
     if (rrev > cloud.rev) cloud.rev = rrev;
     if (d && typeof d.at === "string" && !cloud.at) cloud.at = d.at;
-    if (!d || !cloud.known || cloudDirty()) { cloud.sent = -1; cloudPush(); }
+    if (!d || !cloud.known || cloudDirty() || echo) { cloud.sent = -1; cloudPush(); }
     else cloudUI();
   }
   function cloudAdopt(d) {
@@ -1402,6 +1408,8 @@ details[open] summary::after{transform:rotate(45deg)}
     state = { setup: s.setup, moves: s.moves, personal: s.personal && Array.isArray(s.personal.bills) ? s.personal : clone(ME_DEFAULT) };
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
     cloud.rev = Number(d.rev) || 0;
+    if (d.dev === cloud.dev) cloud.seq = Math.max(cloud.seq, Number(d.seq) || 0);
+    cloud.seqOk = cloud.seq;
     cloud.known = true;
     cloud.sent = cloud.gen;
     cloud.at = typeof d.at === "string" ? d.at : null;
@@ -1421,23 +1429,29 @@ details[open] summary::after{transform:rotate(45deg)}
     const g = cloud.gen;
     const rev = cloud.rev + 1;
     const at = new Date().toISOString();
+    // Every try gets its own number, written down before it's sent, so a save whose answer got lost can be told apart later.
+    cloud.seq += 1;
+    const seq = cloud.seq;
+    writeSync();
     let text = "";
     try { text = allText(true); } catch (e) {}
     let clash = false;
     try {
-      await cloud.ref.set({ rev: rev, at: at, dev: cloud.dev, app: APP_VERSION, json: JSON.stringify(state) });
-      cloud.rev = rev; cloud.sent = g; cloud.at = at; cloud.err = ""; cloud.tries = 0; cloud.clash = 0; cloud.known = true;
+      await cloud.ref.set({ rev: rev, at: at, dev: cloud.dev, app: APP_VERSION, seq: seq, json: JSON.stringify(state) });
+      cloud.rev = rev; cloud.sent = g; cloud.at = at; cloud.err = ""; cloud.tries = 0; cloud.clash = 0; cloud.known = true; cloud.seqOk = seq;
       writeSync();
       try { await cloud.view.set({ rev: rev, at: at, text: text }); } catch (e) {}
     } catch (e) {
       cloud.err = (e && e.code) || "error";
       cloud.tries += 1;
-      clash = cloud.err === "conflict" && cloud.clash < 2;
+      // After two clashes in a row it waits a few seconds between looks, so it can't spin and can't get stuck.
+      clash = cloud.err === "conflict" && (cloud.clash < 2 || Date.now() - cloud.clashAt > 8000);
     }
     cloud.busy = false;
     if (clash) {
       // Something else saved since this phone last looked. Look again and let the two copies meet.
       cloud.clash += 1;
+      cloud.clashAt = Date.now();
       cloud.err = "";
       cloud.again = false;
       try { cloudMeet(await cloud.ref.get()); } catch (e) { cloud.err = (e && e.code) || "error"; }
@@ -1493,7 +1507,9 @@ details[open] summary::after{transform:rotate(45deg)}
     if (res.status === 401) throw { code: "auth" };
     if (res.status === 404) return null;
     if (res.status === 409 || res.status === 422) throw { code: "conflict" };
-    if (res.status === 403 || res.status === 429) throw { code: "denied" };
+    // 403 is also what GitHub sends when it wants the app to slow down. That sorts itself out, so it's tried again.
+    if (res.status === 429 || (res.status === 403 && (res.headers.get("retry-after") || res.headers.get("x-ratelimit-remaining") === "0"))) throw { code: "unavailable" };
+    if (res.status === 403) throw { code: "denied" };
     if (!res.ok) throw { code: "unavailable" };
     return res.json();
   }
@@ -1502,7 +1518,9 @@ details[open] summary::after{transform:rotate(45deg)}
     const snapOf = (f) => ({ id: "state", exists: !!f, data: () => f, metadata: { fromCache: false, hasPendingWrites: false } });
     const stateDoc = {
       get: async () => {
-        const r = await ghCall("GET", "state.json");
+        // A repo with nothing in it yet answers 404 or 409 here. Both mean there's no file.
+        let r = null;
+        try { r = await ghCall("GET", "state.json"); } catch (e) { if (!e || e.code !== "conflict") throw e; }
         if (!r) {
           // No file yet, or the key can't see the repo at all. Asking for the repo itself tells the two apart.
           if (!(await ghCall("GET", ""))) throw { code: "notfound" };
@@ -1514,12 +1532,12 @@ details[open] summary::after{transform:rotate(45deg)}
         try { f = JSON.parse(b64d(r.content)); } catch (e) { f = null; }
         if (!f || typeof f !== "object") return snapOf({ rev: 0, json: "" });
         if (f.applied && typeof f.applied === "object") cloud.applied = Object.assign({}, f.applied, cloud.applied);
-        return snapOf({ rev: f.rev, at: f.at, dev: f.dev, app: f.app, json: JSON.stringify(f.state || null) });
+        return snapOf({ rev: f.rev, at: f.at, dev: f.dev, app: f.app, seq: f.seq, json: JSON.stringify(f.state || null) });
       },
       set: async (b) => {
         let text = "";
         try { text = allText(true); } catch (e) {}
-        const file = { rev: b.rev, at: b.at, dev: b.dev, app: b.app, applied: cloud.applied, view: text, state: JSON.parse(b.json) };
+        const file = { rev: b.rev, at: b.at, dev: b.dev, app: b.app, seq: b.seq, applied: cloud.applied, view: text, state: JSON.parse(b.json) };
         const body = { message: "Pay Day Pots save, rev " + b.rev, content: b64e(JSON.stringify(file, null, 1)) };
         if (sha) body.sha = sha;
         const r = await ghCall("PUT", "state.json", body);
@@ -1536,16 +1554,31 @@ details[open] summary::after{transform:rotate(45deg)}
           try {
             const list = await ghCall("GET", "inbox");
             const docs = [];
+            const here = {};
+            const done = [];
             for (const it of Array.isArray(list) ? list : []) {
               if (!it || it.type !== "file" || !/\.json$/.test(String(it.name))) continue;
               const id = it.name.slice(0, -5);
-              if (cloud.applied[id] || cloud.ops[id]) continue;
+              here[id] = true;
+              if (cloud.applied[id]) { if (it.sha) done.push({ id: id, name: it.name, sha: it.sha }); continue; }
+              if (cloud.ops[id]) continue;
               const r = await ghCall("GET", "inbox/" + encodeURIComponent(it.name));
               let d = null;
               try { d = r ? JSON.parse(b64d(r.content)) : null; } catch (e) { d = null; }
               docs.push({ id: id, data: () => (d && typeof d === "object" ? d : { op: "unreadable" }) });
             }
+            cloud.here = here;
             if (docs.length) fn({ docs: docs });
+            // A change that has been taken, with its receipt already in the saved copy, is cleared out of the inbox. One at a time, and never while a save is on its way.
+            for (const it of done) {
+              if (cloud.kind !== "gh" || cloud.phase !== "on" || cloud.busy || cloudDirty()) break;
+              cloud.busy = true;
+              let gone = false;
+              try { await ghCall("DELETE", "inbox/" + encodeURIComponent(it.name), { message: "Pay Day Pots took " + it.name, sha: it.sha }); gone = true; } catch (e) {}
+              cloud.busy = false;
+              if (gone) delete here[it.id];
+              if (cloud.again || cloudDirty()) { cloud.again = false; cloudLater(); break; }
+            }
           } catch (e) {}
           cloud.polling = false;
         };
@@ -1557,8 +1590,9 @@ details[open] summary::after{transform:rotate(45deg)}
       doc: (id) => ({
         update: async (p) => {
           cloud.applied[id] = { at: p.doneAt, result: p.result };
+          // Old receipts are dropped once there are more than 200, but never one whose file is still sitting in the inbox, or it would be taken a second time.
           const keys = Object.keys(cloud.applied);
-          if (keys.length > 200) keys.sort((x, y) => String(cloud.applied[x].at).localeCompare(String(cloud.applied[y].at))).slice(0, keys.length - 200).forEach((k) => { delete cloud.applied[k]; });
+          if (keys.length > 200) keys.filter((k) => !(cloud.here && cloud.here[k])).sort((x, y) => String(cloud.applied[x].at).localeCompare(String(cloud.applied[y].at))).slice(0, keys.length - 200).forEach((k) => { delete cloud.applied[k]; });
           cloud.gen += 1;
           writeSync();
           cloudLater();
@@ -1669,7 +1703,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "11 Nov 2026, v8";
+  const APP_VERSION = "11 Nov 2026, v9";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
