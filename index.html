@@ -180,6 +180,9 @@ textarea{font-size:15px;resize:vertical}
 .bank{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--tintsoft);border-radius:14px}
 .bank p{margin:0;min-width:0;font-size:15px;line-height:1.35}
 .bank .btn{flex:none;align-self:center}
+.bankgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bankgo .btn{flex:none;align-self:center}
+.bankgo .hint{flex:1;min-width:150px}
 .lockset{display:flex;flex-direction:column;gap:14px}
 .cloudwait .view,.cloudwait .topbar{opacity:.45;pointer-events:none}
 .ask{display:flex;flex-direction:column;gap:8px}
@@ -286,6 +289,11 @@ details[open] summary::after{transform:rotate(45deg)}
     <div class="bank" id="meBank" hidden>
       <p id="meBankText"></p>
       <button class="btn primary small" id="meBankUse" type="button">Use it</button>
+    </div>
+
+    <div class="bankgo" id="meBankGo" hidden>
+      <button class="btn ghost small" id="meBankCheck" type="button">Check the bank</button>
+      <p class="hint" id="meBankLine"></p>
     </div>
 
     <form class="panel" id="meSpendForm" novalidate>
@@ -1332,6 +1340,7 @@ details[open] summary::after{transform:rotate(45deg)}
     $("backupHint").textContent = on ? "Everything saves to your cloud copy as you go. A backup in your Notes never hurts." : "Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.";
     $("meCopyAll").hidden = on;
     $("bizCopyAll").hidden = on;
+    try { bankGoUI(); } catch (e) {}
   }
   function ghWhy(e) {
     const c = e && e.code;
@@ -1497,12 +1506,13 @@ details[open] summary::after{transform:rotate(45deg)}
   // GitHub as the cloud. It's made to look like the small part of the artifact database the code above uses, so both run the same way.
   const b64e = (str) => { const by = new TextEncoder().encode(str); let bin = ""; for (let i = 0; i < by.length; i += 0x8000) bin += String.fromCharCode.apply(null, by.subarray(i, i + 0x8000)); return btoa(bin); };
   const b64d = (s) => new TextDecoder().decode(Uint8Array.from(atob(String(s).replace(/\s/g, "")), (c) => c.charCodeAt(0)));
-  async function ghCall(method, path, body) {
+  // Files in the repo by default. With whole set, path is taken from the top of the repo, which is how a release is made.
+  async function ghCall(method, path, body, whole) {
     const g = cloud.gh;
     if (!g) throw { code: "auth" };
     let res;
     try {
-      res = await fetch("https://api.github.com/repos/" + g.repo + (path ? "/contents/" + path : ""), { method: method, cache: "no-store", headers: { Authorization: "Bearer " + g.token, Accept: "application/vnd.github+json" }, body: body ? JSON.stringify(body) : undefined });
+      res = await fetch("https://api.github.com/repos/" + g.repo + (whole ? "/" + path : path ? "/contents/" + path : ""), { method: method, cache: "no-store", headers: { Authorization: "Bearer " + g.token, Accept: "application/vnd.github+json" }, body: body ? JSON.stringify(body) : undefined });
     } catch (e) { throw { code: "offline" }; }
     if (res.status === 401) throw { code: "auth" };
     if (res.status === 404) return null;
@@ -1656,7 +1666,14 @@ details[open] summary::after{transform:rotate(45deg)}
         if (!Number.isFinite(avail) || o.avail == null || typeof t !== "string" || Number.isNaN(Date.parse(t))) return "error: needs avail in cents and the time of the alert";
         const cur = P().bank;
         if (cur && Date.parse(cur.at) >= Date.parse(t)) return "skipped: an alert as new as that is already there";
-        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; }, null);
+        // dep is the deposit the alert was about, in cents, when it was one. It stops the same money being counted twice, see bankStamp.
+        const dep = Math.round(Number(o.dep));
+        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; if (dep > 0) state.personal.bank.dep = dep; }, null);
+      }
+      if (kind === "checked") {
+        // Claude's answer to Check the bank. It lands after the bank's number, when there was a new one.
+        setTimeout(chkAnswer, 0);
+        return "ok";
       }
       if (kind === "spend") {
         const amt = Math.round(Number(o.amount));
@@ -1676,6 +1693,89 @@ details[open] summary::after{transform:rotate(45deg)}
       }
       return "skipped: don't know that one";
     } catch (e) { return "error: " + ((e && e.message) || "failed"); }
+  }
+  // Check the bank. The app can't read email, so it asks Claude. Making a release in the private repo is the knock on the door: a Claude task set to run on that
+  // reads Greater's emails and leaves what it finds in the inbox. The app then looks every few seconds until the answer is there.
+  const CHK_KEY = KEY + ".chk", CHK_SAID = KEY + ".chkd", CHK_WAIT = 240000;
+  let chk = null, chkTimer = null;
+  function chkRead() { try { const c = JSON.parse(localStorage.getItem(CHK_KEY) || "null"); return c && Number.isFinite(c.at) && typeof c.tag === "string" ? c : null; } catch (e) { return null; } }
+  function chkWrite() { try { if (chk) localStorage.setItem(CHK_KEY, JSON.stringify({ tag: chk.tag, at: chk.at })); else localStorage.removeItem(CHK_KEY); } catch (e) {} }
+  function chkSay(text) { try { localStorage.setItem(CHK_SAID, JSON.stringify({ at: Date.now(), text: text })); } catch (e) {} }
+  function chkSaid() {
+    try {
+      const c = JSON.parse(localStorage.getItem(CHK_SAID) || "null");
+      if (c && Number.isFinite(c.at) && ymd(new Date(c.at)) === today()) return "Checked at " + niceTime(new Date(c.at)) + ". " + c.text;
+    } catch (e) {}
+    return "Claude reads Greater's emails. About a minute.";
+  }
+  function bankGoUI() {
+    const can = !CLOUD && cloud.kind === "gh" && cloud.phase === "on" && mePay() > 0;
+    $("meBankGo").hidden = !can;
+    if (!can) return;
+    $("meBankCheck").disabled = !!chk;
+    $("meBankCheck").textContent = chk ? "Checking" : "Check the bank";
+    $("meBankLine").textContent = chk ? "Asking Claude to read Greater's emails. About a minute." : chkSaid();
+  }
+  async function bankCheck() {
+    if (chk || cloud.kind !== "gh" || cloud.phase !== "on") return;
+    const now = Date.now();
+    chk = { tag: "check-" + new Date(now).toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z"), at: now, last: false };
+    bankGoUI();
+    try {
+      const r = await ghCall("POST", "releases", { tag_name: chk.tag, name: "Bank check", body: "Asked from the app." }, true);
+      if (!r) throw { code: "notfound" };
+    } catch (e) {
+      chk = null;
+      bankGoUI();
+      const c = e && e.code;
+      toast(c === "offline" ? "No signal. Try again in a minute." : c === "auth" || c === "denied" || c === "notfound" ? "Your key couldn't ask. Tell Claude." : "Couldn't ask Claude just now. Try again in a minute.");
+      return;
+    }
+    chkWrite();
+    chkTimer = setTimeout(chkTick, 6000);
+  }
+  function chkTick() {
+    clearTimeout(chkTimer);
+    if (!chk) return;
+    if (Date.now() - chk.at > CHK_WAIT) {
+      // One last look before giving up, in case it landed while the phone was asleep.
+      if (chk.last) {
+        chk = null; chkWrite();
+        chkSay("No answer yet. It can take a few minutes. It shows up here when it lands.");
+        bankGoUI();
+        return;
+      }
+      chk.last = true;
+    }
+    if (cloud.poll && cloud.phase === "on") cloud.poll();
+    chkTimer = setTimeout(chkTick, 6000);
+  }
+  function chkAnswer() {
+    clearTimeout(chkTimer);
+    const asked = !!chk;
+    chk = null; chkWrite();
+    const bo = bankOffer();
+    chkSay(bo ? "Greater's number is in." : "Nothing new from Greater.");
+    renderMe();
+    if (!asked) return;
+    if (bo) bankUse(); else toast("Nothing new from Greater.");
+  }
+  function chkBoot() {
+    chk = chkRead();
+    if (chk && Date.now() - chk.at > CHK_WAIT) { chk = null; chkWrite(); }
+    if (chk) { chk.last = false; chkTimer = setTimeout(chkTick, 4000); }
+  }
+  // A balance that came from a bank alert counts as at the alert's time, so anything logged after it still comes off. The one thing that must not come off twice
+  // is the deposit the alert was about: a Money in of the same amount logged after the alert is the same money, so it's left out.
+  function bankStamp(check, bal) {
+    const bo = meBankAt ? bankOffer() : null;
+    if (!bo || bo.at !== meBankAt || bal !== bo.avail) return false;
+    check.at = new Date(bo.at).toISOString();
+    if (bo.dep > 0) {
+      const skip = Object.entries(P().spends || {}).filter((e) => e[1].kind === "in" && e[1].amount === bo.dep && String(e[1].at) > check.at).map((e) => e[0]);
+      if (skip.length) check.skip = skip;
+    }
+    return true;
   }
   // The newest bank alert, if it's from today and newer than the last balance saved.
   function bankOffer() {
@@ -1703,7 +1803,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "11 Nov 2026, v9";
+  const APP_VERSION = "13 Nov 2026, v10";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2117,7 +2217,8 @@ details[open] summary::after{transform:rotate(45deg)}
       if (late || o.date < nextPd) due += o.amount;
       coming.push(Object.assign({ state: late ? "late" : "soon" }, o));
     });
-    Object.values(P().spends || {}).forEach((x) => { if (String(x.at) > String(c.at)) est -= signed(x); });
+    const skip = Array.isArray(c.skip) ? c.skip : [];
+    Object.entries(P().spends || {}).forEach((e) => { if (String(e[1].at) > String(c.at) && !skip.includes(e[0])) est -= signed(e[1]); });
     return { est: est, due: due, payDue: payDue, room: est + payDue - due, coming: coming };
   }
   const meRoom = () => meBank(P().check);
@@ -2202,6 +2303,7 @@ details[open] summary::after{transform:rotate(45deg)}
     const bo = st.pre ? null : bankOffer();
     $("meBank").hidden = !bo;
     if (bo) $("meBankText").textContent = "Greater says " + money(bo.avail) + " available at " + niceTime(new Date(bo.at)) + ".";
+    bankGoUI();
     renderMeVerdict(st);
     renderMeWeek(st);
     renderMeBills();
@@ -2339,7 +2441,9 @@ details[open] summary::after{transform:rotate(45deg)}
       });
     }
     ask.hidden = !rows.length;
-    const bank = typed !== null ? meBank(meDraftCheck(typed, rows)) : r;
+    const draft = typed !== null ? meDraftCheck(typed, rows) : null;
+    if (draft) bankStamp(draft, typed);
+    const bank = draft ? meBank(draft) : r;
     const out = $("meCheckOut");
     out.textContent = "";
     if (bank) {
@@ -2356,10 +2460,8 @@ details[open] summary::after{transform:rotate(45deg)}
     const bal = raw ? parseBal(raw) : null;
     if (bal === null) { toast("Type your Greater balance, like 617.05."); return; }
     const d = meDraftCheck(bal, meAsk());
-    // A balance that came from a bank alert is saved as at the alert's time, so anything logged after it still comes off.
-    const bo = meBankAt ? bankOffer() : null;
-    const fromBank = !!(bo && bo.at === meBankAt && bal === bo.avail);
-    const check = { bal: bal, date: today(), at: fromBank ? new Date(bo.at).toISOString() : new Date().toISOString() };
+    const check = { bal: bal, date: today(), at: new Date().toISOString() };
+    bankStamp(check, bal);
     if (d.wait.length) check.wait = d.wait;
     if (d.payWait) check.payWait = true;
     guarded(() => { state.personal.check = check; })
@@ -2720,6 +2822,7 @@ details[open] summary::after{transform:rotate(45deg)}
   $("meBal").addEventListener("input", () => { if (!$("meBal").value.trim()) meWait = {}; renderMeCheck(meWeek()); });
   $("meSaveBal").addEventListener("click", meSaveBal);
   $("meBankUse").addEventListener("click", bankUse);
+  $("meBankCheck").addEventListener("click", bankCheck);
   $("cloudOn").addEventListener("click", ghTurnOn);
   $("cloudOff").addEventListener("click", ghTurnOff);
   $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
@@ -2755,6 +2858,7 @@ details[open] summary::after{transform:rotate(45deg)}
   });
 
   init();
+  if (!CLOUD) chkBoot();
   bootLock();
   cloudBoot();
 })();
