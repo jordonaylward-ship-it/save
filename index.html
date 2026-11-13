@@ -383,9 +383,20 @@ details[open] summary::after{transform:rotate(45deg)}
   <header>
     <p class="eyebrow">In savings</p>
     <p class="total loading" id="total">$0.00</p>
-    <p class="sub">Should match your business savings balance.</p>
+    <p class="sub">This should match your Business Saver in CommBank.</p>
     <div class="bar" id="bar" aria-hidden="true"></div>
   </header>
+
+  <details id="bizCheckBox">
+    <summary>Check against CommBank</summary>
+    <div class="setup">
+      <div class="field">
+        <label for="bizSaver">What your Business Saver says</label>
+        <input class="big" id="bizSaver" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+      </div>
+      <p class="cost" id="bizCheckOut" aria-live="polite"></p>
+    </div>
+  </details>
 
 
   <div class="rule" id="rule" hidden></div>
@@ -658,8 +669,36 @@ details[open] summary::after{transform:rotate(45deg)}
     else toast("That didn't save. Your phone's storage might be full.");
   }
 
+  // In savings should read the same as the Business Saver in CommBank. Typing the bank's number says whether it does, and what to move if it doesn't.
+  function renderBizCheck() {
+    const out = $("bizCheckOut");
+    const raw = $("bizSaver").value.trim();
+    const typed = raw ? parseMoney(raw) : null;
+    out.textContent = "";
+    if (typed === null) { out.textContent = raw ? "Type it like 4857.01." : "Type the balance of your Business Saver to see if it matches."; return; }
+    const b = balances();
+    const total = Object.keys(b).reduce((a, k) => a + b[k], 0);
+    const gap = total - typed;
+    if (Math.abs(gap) < 100) { out.append(el("b", null, "Spot on."), document.createTextNode(" Your saver and the app match.")); return; }
+    if (gap < 0) {
+      out.append(document.createTextNode("Your saver has "), el("b", null, money(-gap)), document.createTextNode(" more than the app knows about. Tap Money in and add it, so the app matches."));
+      return;
+    }
+    // Short. The usual reason is a top up logged here that hasn't been moved in the bank yet, so look for one that fits the gap.
+    const since = addDays(today(), -7);
+    const one = moves.filter((m) => !m.void && m.kind === "in" && String(m.date) >= since && Math.abs(m.amount - gap) <= 1000)
+      .sort((x, y) => Math.abs(x.amount - gap) - Math.abs(y.amount - gap))[0];
+    out.append(document.createTextNode("Your saver is "), el("b", null, money(gap)), document.createTextNode(" short of what the app says. "));
+    if (one) {
+      const where = Object.keys(one.split || {}).map(potName).join(", ");
+      out.append(document.createTextNode("Looks like the " + money(one.amount) + " for " + where + " hasn't been moved yet. Move " + money(one.amount) + " from Business Transaction to Business Saver in CommBank. Then check again."));
+    } else {
+      out.append(document.createTextNode("Move " + money(gap) + " from Business Transaction to Business Saver in CommBank. Then check again."));
+    }
+  }
   function render() {
     renderTop();
+    try { renderBizCheck(); } catch (e) {}
     renderCost();
     renderPots();
     renderHist();
@@ -974,7 +1013,7 @@ details[open] summary::after{transform:rotate(45deg)}
       $("inNote").value = "";
       inWhere = "split";
       $("panelIn").hidden = true;
-      toast("Added " + money(amt) + ". Make sure it's sitting in your business savings.");
+      toast("Added " + money(amt) + " in the app. Now move " + money(amt) + " into your Business Saver in CommBank, if you haven't yet.");
     } catch (e) { failToast(e); btn.disabled = false; }
   }
 
@@ -1803,7 +1842,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "13 Nov 2026, v10";
+  const APP_VERSION = "13 Nov 2026, v11";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2643,6 +2682,7 @@ details[open] summary::after{transform:rotate(45deg)}
   $("outAmt").addEventListener("input", renderOut);
   $("outBiz").addEventListener("change", renderOut);
   $("costAmt").addEventListener("input", renderCost);
+  $("bizSaver").addEventListener("input", renderBizCheck);
   $("panelIn").addEventListener("submit", (e) => { e.preventDefault(); saveIn(); });
   $("panelOut").addEventListener("submit", (e) => { e.preventDefault(); saveOut(); });
   $("histMore").addEventListener("click", () => { showAll = !showAll; renderHist(); });
