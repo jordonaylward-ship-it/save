@@ -105,6 +105,8 @@ button{font-family:inherit}
 .rule p{margin:0;font-size:15px;line-height:1.4;text-wrap:pretty}
 .rule b{font-weight:600}
 .rule .wk{color:var(--label2)}
+.rule .btn.small{margin:2px 0 8px}
+.rule .link{font-size:15px;padding:4px 0 10px}
 
 .pots,.hist{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;overflow:hidden}
 .pempty,.hempty{padding:14px 16px;color:var(--label2);font-size:15px}
@@ -742,6 +744,7 @@ details[open] summary::after{transform:rotate(45deg)}
       parts.forEach((x) => p.append(typeof x === "string" ? document.createTextNode(x) : el("b", null, x.b)));
       rule.append(p);
     };
+    atoLine(rule);
     novPlan().forEach((parts) => line(parts));
     if (plan.take > 0) {
       const parts = ["Every " + DAYS[day] + " take ", { b: money(plan.take) }, " from the business"];
@@ -771,7 +774,7 @@ details[open] summary::after{transform:rotate(45deg)}
   // The split for the RCTI that lands mid November 2026: $8,270.57. Tax is GST $1,206, instalment $550, loan catch up $1,350 and $64 GST on the Drive $700.
   // Shows what's still to do, counts what has been logged with Money in since 12 Nov, and drops off by itself.
   const PAY_PARTS = { 115000: [77088, 37912], 125000: [77088, 47912] };
-  const NOV = { from: "2026-11-12", to: "2026-11-30", atoDay: "2026-11-16", ato: 60000, tax: 317000, pots: 112500 };
+  const NOV = { from: "2026-11-12", to: "2026-11-30", tax: 317000, pots: 112500 };
   function novPlan() {
     const t = today();
     const taxPot = weeklyTarget() || (pots().find((p) => p.id === "tax") ? "tax" : null);
@@ -781,15 +784,58 @@ details[open] summary::after{transform:rotate(45deg)}
       if (m.void || m.kind !== "in" || !(m.date >= NOV.from)) return;
       Object.keys(m.split || {}).forEach((k) => { const v = Number(m.split[k]) || 0; if (k === taxPot) tax += v; else other += v; });
     });
-    // The ATO for November is paid, so the line says so. It used to say Pay, which read as still to do. It goes after the day it was due.
     const out = [];
-    if (t <= NOV.atoDay) out.push(["ATO ", { b: money(NOV.ato) }, " for November is paid. Nothing to do."]);
-    const todo = [];
-    if (tax < NOV.tax) todo.push(["Move ", { b: money(NOV.tax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
-    if (other < NOV.pots) todo.push(["Move ", { b: money(NOV.pots - other) }, " to savings and log it as Money in, Split across pots."]);
-    // The heading is only for jobs still to do.
-    if (todo.length) out.unshift([{ b: "When this month's RCTI lands" }]);
-    return out.concat(todo);
+    if (tax < NOV.tax) out.push(["Move ", { b: money(NOV.tax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
+    if (other < NOV.pots) out.push(["Move ", { b: money(NOV.pots - other) }, " to savings and log it as Money in, Split across pots."]);
+    if (out.length) out.unshift([{ b: "When this month's RCTI lands" }]);
+    return out;
+  }
+
+  // The ATO payment plan. The same amount by BPAY by the same day every month, paid from the business transaction account, so it never touches the pots.
+  // The line shows from the 12th, when the RCTI is close. After the due day it says it was due. He ticks it off himself and it says paid until the month ends.
+  // Next month it comes back by itself. A tick is kept in his data, setup.ato.paid, under the month: the time it was ticked, or false if he unticked it.
+  // done lists months that were paid before the tick existed.
+  const ATO = { amount: 60000, day: 16, show: 12, from: "2026-11", done: ["2026-11"] };
+  const monthName = (m) => parseYmd(m + "-01").toLocaleDateString("en-AU", { month: "long" });
+  function atoPaid(m) {
+    const a = (setup && setup.ato && setup.ato.paid) || {};
+    return Object.prototype.hasOwnProperty.call(a, m) ? !!a[m] : ATO.done.includes(m);
+  }
+  function atoState() {
+    const t = today(), m = t.slice(0, 7);
+    if (m < ATO.from) return null;
+    const due = m + "-" + pad(ATO.day);
+    if (atoPaid(m)) return { m: m, due: due, kind: "paid" };
+    if (t < m + "-" + pad(ATO.show)) return null;
+    return { m: m, due: due, kind: t > due ? "late" : "due" };
+  }
+  function atoLine(rule) {
+    const st = atoState();
+    if (!st) return;
+    const p = el("p");
+    const amt = el("b", null, money(ATO.amount));
+    if (st.kind === "paid") p.append("ATO ", amt, " for " + monthName(st.m) + " is paid. Nothing to do.");
+    else if (st.kind === "late") p.append("The ATO ", amt, " was due " + niceDate(st.due) + ". Pay it by BPAY now.");
+    else p.append("When the RCTI lands, pay the ATO ", amt, " by BPAY. Due " + niceDate(st.due) + ".");
+    const paid = st.kind === "paid";
+    const btn = el("button", paid ? "link" : "btn primary small", paid ? "Not paid yet? Undo" : "I've paid it");
+    btn.type = "button";
+    btn.id = "atoTick";
+    btn.addEventListener("click", () => atoTick(st.m, !paid));
+    rule.append(p, btn);
+  }
+  // A second tap straight after the first is ignored, so a double tap can't tick it and untick it again.
+  let atoHold = false;
+  async function atoTick(m, on) {
+    if (atoHold || !setupRef || !setup) return;
+    atoHold = true;
+    setTimeout(() => { atoHold = false; }, 1200);
+    const ato = clone(setup.ato || {});
+    ato.paid = Object.assign({}, ato.paid || {}, { [m]: on ? new Date().toISOString() : false });
+    try {
+      await setupRef.set(Object.assign({}, setup, { ato: ato }));
+      toast(on ? "Done. ATO for " + monthName(m) + " is ticked as paid." : "OK. ATO for " + monthName(m) + " is back to not paid.");
+    } catch (e) { failToast(e); }
   }
 
   function weeklyTarget() {
@@ -1205,7 +1251,9 @@ details[open] summary::after{transform:rotate(45deg)}
     btn.disabled = true;
     try {
       const keepPot = old.pot && list.find((p) => p.id === old.pot) ? old.pot : null;
-      await setupRef.set({ pots: list, weekly: { pay: pay, day: day, from: from, pot: keepPot }, plan: { take: take, tax: taxw, lump: lump, wtax: wtax }, v: 1 });
+      const next = { pots: list, weekly: { pay: pay, day: day, from: from, pot: keepPot }, plan: { take: take, tax: taxw, lump: lump, wtax: wtax }, v: 1 };
+      if (setup && setup.ato) next.ato = clone(setup.ato);
+      await setupRef.set(next);
       setupDirty = false;
       firstRun = false;
       setStatus("");
@@ -1323,6 +1371,7 @@ details[open] summary::after{transform:rotate(45deg)}
   //   bank: avail in cents and alertAt, the time of a bank alert. Shows on Personal with a Use it button.
   //   spend: amount in cents, note, kind spend or in, and spentAt if it wasn't just now. Logs it on Personal.
   //   note: a message that pops up.
+  //   ato: month like 2026-12, and paid true or false. Ticks or unticks the ATO line on the Business tab.
   const CLOUD = !!(window.claude && typeof window.claude.use === "function");
   const SYNC_KEY = KEY + ".sync";
   const GH_KEY = KEY + ".gh";
@@ -1728,6 +1777,15 @@ details[open] summary::after{transform:rotate(45deg)}
         return opSave(() => { state.personal.spends = state.personal.spends || {}; state.personal.spends["c" + id] = { date: date, at: at, kind: k, amount: amt, note: note.slice(0, 60) }; },
           "Claude logged " + money(amt) + (k === "in" ? " in" : " spent") + (note ? ", " + note.slice(0, 60) : "") + ".");
       }
+      if (kind === "ato") {
+        const mth = String(o.month || "");
+        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mth)) return "error: needs a month like 2026-12";
+        const on = o.paid !== false;
+        return opSave(() => {
+          if (!state.setup.ato || typeof state.setup.ato !== "object") state.setup.ato = {};
+          state.setup.ato.paid = Object.assign({}, state.setup.ato.paid || {}, { [mth]: on ? new Date().toISOString() : false });
+        }, on ? "Claude ticked the ATO for " + monthName(mth) + " as paid." : "Claude set the ATO for " + monthName(mth) + " back to not paid.");
+      }
       if (kind === "note") {
         if (!note) return "error: no message";
         toast(note);
@@ -1845,7 +1903,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "14 Nov 2026, v12";
+  const APP_VERSION = "14 Nov 2026, v13";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -1895,7 +1953,7 @@ details[open] summary::after{transform:rotate(45deg)}
       gap();
       add("BUSINESS, WHAT THE SCREEN SHOWS");
       add("In savings: " + tx("total"));
-      Array.from($("rule").children).forEach((x) => add(x.textContent.replace(/\s+/g, " ").trim()));
+      Array.from($("rule").children).forEach((x) => { if (x.tagName !== "BUTTON") add(x.textContent.replace(/\s+/g, " ").trim()); });
       add("Pots: " + pots().map((x) => x.name + " " + money(b[x.id] || 0) + " (" + potMeta(x) + (Number(x.goal) > 0 ? ", goal " + money(x.goal) : "") + ")").join(" // "));
       const mv = moves.slice().sort((x, y) => String(y.at).localeCompare(String(x.at)));
       add("History, newest first: " + (mv.map((m) => m.date + " " + m.kind + " " + money(m.amount) + " " + Object.keys(m.split || {}).map((k) => potName(k) + " " + money(m.split[k])).join(", ") + (m.taxMove && Number(m.taxMove.amount) > 0 ? ", tax moved " + money(m.taxMove.amount) : "") + (m.note ? ", " + m.note : "") + (m.void ? ", UNDONE" : "")).join(" // ") || "nothing"));
