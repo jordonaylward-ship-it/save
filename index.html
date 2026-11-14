@@ -137,6 +137,9 @@ button{font-family:inherit}
 .hdir{font-size:12px;color:var(--label2)}
 .void .htitle,.void .hamt{text-decoration:line-through;opacity:.5}
 .hdetail{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.bline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.bline .btn.small{align-self:center;flex:none}
+.hamt.done{color:var(--label2)}
 .hist-wrap{display:flex;flex-direction:column}
 .prev{margin:8px 0 0;padding:0 16px}
 
@@ -324,6 +327,7 @@ details[open] summary::after{transform:rotate(45deg)}
     <section class="hist-wrap" aria-labelledby="meBillsH">
       <h2 class="h" id="meBillsH">Coming out of Greater</h2>
       <ul class="hist" id="meBills"></ul>
+      <p class="hint prev" id="meBillsHint" hidden>Paid one already? Tap it.</p>
     </section>
 
     <details id="meCheckBox">
@@ -1903,7 +1907,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "14 Nov 2026, v13";
+  const APP_VERSION = "14 Nov 2026, v14";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2064,7 +2068,7 @@ details[open] summary::after{transform:rotate(45deg)}
   const DEFAULT_MOVES = { "auto-2026-11-06": { date: "2026-11-06", at: "2026-11-06T00:00:00.000Z", kind: "auto", amount: 21900, split: { tax: 21900 }, note: "Friday tax", void: false } };
   const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
   const ASK_BACK = 2;
-  let meOpen = null, meDirty = false, meDraft = null, meWait = {}, meBankAt = null;
+  let meOpen = null, meDirty = false, meDraft = null, meWait = {}, meBankAt = null, billOpen = null, tickHold = false;
 
   const P = () => state.personal;
   const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
@@ -2130,6 +2134,8 @@ details[open] summary::after{transform:rotate(45deg)}
     return out.sort((a, b) => a.date.localeCompare(b.date));
   }
   const occKey = (o) => o.id + "|" + o.date;
+  // A bill he has ticked as paid: personal.paid holds the bill and its date against the time of the tick.
+  const paidAt = (o) => (P().paid || {})[occKey(o)] || null;
   function meRaw(bills, pay) {
     let w = 0;
     (bills || []).forEach((b) => {
@@ -2309,6 +2315,13 @@ details[open] summary::after{transform:rotate(45deg)}
     billsBetween(addDays(c.date, -ASK_BACK), nextPd).forEach((o) => {
       const late = o.date <= c.date;
       if (late && !wait.includes(occKey(o))) return;
+      const pa = paidAt(o);
+      if (pa) {
+        // Ticked as paid. A tick from before the balance was saved is already in that balance. A tick after it means the money has gone since.
+        if (String(pa) > String(c.at)) est -= o.amount;
+        if (o.date >= t) coming.push(Object.assign({ state: "paid" }, o));
+        return;
+      }
       if (late ? t > c.date : o.date <= t) {
         est -= o.amount;
         if (o.date === t) coming.push(Object.assign({ state: "today" }, o));
@@ -2335,6 +2348,7 @@ details[open] summary::after{transform:rotate(45deg)}
     if (payOn && mePay() > 0) rows.push({ pay: true, key: "pay|" + payOn, name: "Pay in", date: payOn, amount: mePay(), done: !meWait["pay|" + payOn] });
     billsBetween(back, t).forEach((o) => {
       const k = occKey(o);
+      if (paidAt(o)) return;
       if (o.often === "week" && o.date !== t && !was.includes(k)) return;
       rows.push(Object.assign({ key: k, done: !meWait[k] }, o));
     });
@@ -2489,23 +2503,79 @@ details[open] summary::after{transform:rotate(45deg)}
     const t = today();
     const pd = mePayDay();
     const r = meRoom();
-    const list = r ? r.coming : billsBetween(t, nextPayday(pd, false)).map((o) => Object.assign({ state: o.date === t ? "today" : "soon" }, o));
+    const list = r ? r.coming : billsBetween(t, nextPayday(pd, false)).map((o) => Object.assign({ state: paidAt(o) ? "paid" : o.date === t ? "today" : "soon" }, o));
+    $("meBillsHint").hidden = !list.length;
     if (!list.length) { ul.append(el("li", "hempty", "Nothing due before payday.")); return; }
-    const groups = {};
-    list.forEach((b) => { const k = b.state === "late" ? "0" : b.date; (groups[k] = groups[k] || []).push(b); });
-    Object.keys(groups).sort().forEach((k) => {
-      const g = groups[k];
-      const late = k === "0";
-      const d = g[0].date;
-      const when = late ? "Not gone yet" : d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d);
-      const li = el("li", "hitem");
-      const row = el("div", "brow");
-      const left = el("div", "hleft");
-      left.append(el("span", "htitle", g.map((x) => x.name).join(", ")), el("span", "hsub", when + (!late && parseYmd(d).getDay() === pd ? " · payday" : "")));
-      row.append(left, el("span", "hamt", money(sumAmt(g))));
-      li.append(row);
-      ul.append(li);
+    const whenOf = (d, late) => (late ? "Not gone yet" : d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d));
+    const payday = (d) => (parseYmd(d).getDay() === pd ? " · payday" : "");
+    // Bills still to come out are grouped by day. Tap a row and each bill in it gets an I've paid it button.
+    // A bill he has ticked gets a row of its own that says paid, until its day has passed. Tap that row to undo.
+    const groups = {}, done = {};
+    list.forEach((b) => {
+      if (b.state === "paid") (done[b.date] = done[b.date] || []).push(b);
+      else { const k = b.state === "late" ? "0" : b.date; (groups[k] = groups[k] || []).push(b); }
     });
+    const row = (id, title, sub, amt, paid) => {
+      const li = el("li", "hitem");
+      const btn = el("button", "hrow");
+      btn.type = "button";
+      btn.setAttribute("aria-expanded", billOpen === id ? "true" : "false");
+      const left = el("div", "hleft");
+      left.append(el("span", "htitle", title), el("span", "hsub", sub));
+      btn.append(left, el("span", "hamt" + (paid ? " done" : ""), amt));
+      btn.addEventListener("click", () => { billOpen = billOpen === id ? null : id; renderMeBills(); });
+      li.append(btn);
+      return li;
+    };
+    const tick = (b, on) => {
+      const x = el("button", on ? "btn primary small" : "link", on ? "I've paid it" : "Not paid yet? Undo");
+      x.type = "button";
+      x.dataset.bill = occKey(b);
+      x.addEventListener("click", () => billTick(b, on));
+      return x;
+    };
+    Array.from(new Set(Object.keys(groups).concat(Object.keys(done)))).sort().forEach((k) => {
+      const g = groups[k];
+      if (g) {
+        const late = k === "0";
+        const d = g[0].date;
+        const id = "g|" + k;
+        const li = row(id, g.map((x) => x.name).join(", "), whenOf(d, late) + (late ? "" : payday(d)), money(sumAmt(g)), false);
+        if (billOpen === id) {
+          const det = el("div", "hdetail");
+          g.forEach((b) => {
+            if (g.length === 1) { det.append(tick(b, true)); return; }
+            const ln = el("div", "bline");
+            ln.append(el("span", null, b.name + " " + money(b.amount)), tick(b, true));
+            det.append(ln);
+          });
+          li.append(det);
+        }
+        ul.append(li);
+      }
+      (done[k] || []).forEach((b) => {
+        const id = "p|" + occKey(b);
+        const li = row(id, b.name, whenOf(b.date, false) + payday(b.date) + " · paid", money(b.amount), true);
+        if (billOpen === id) { const det = el("div", "hdetail"); det.append(tick(b, false)); li.append(det); }
+        ul.append(li);
+      });
+    });
+  }
+  // Ticking a bill as paid, or unticking it. No money is logged. Ticks older than two months are cleared out as it goes.
+  // A second tap straight after the first is ignored, so a double tap can't tick it and untick it again.
+  function billTick(o, on) {
+    if (tickHold) return;
+    tickHold = true;
+    setTimeout(() => { tickHold = false; }, 1200);
+    const k = occKey(o);
+    billOpen = null;
+    guarded(() => {
+      const paid = Object.assign({}, state.personal.paid || {});
+      if (on) paid[k] = new Date().toISOString(); else delete paid[k];
+      const old = addDays(today(), -60);
+      Object.keys(paid).forEach((x) => { if (x.slice(x.lastIndexOf("|") + 1) < old) delete paid[x]; });
+      if (Object.keys(paid).length) state.personal.paid = paid; else delete state.personal.paid;
+    }).then(() => toast(on ? "Done. " + o.name + " is ticked as paid." : "OK. " + o.name + " is back to not paid.")).catch(failToast);
   }
 
   function renderMeCheck(st) {
