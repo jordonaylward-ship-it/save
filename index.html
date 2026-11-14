@@ -781,12 +781,15 @@ details[open] summary::after{transform:rotate(45deg)}
       if (m.void || m.kind !== "in" || !(m.date >= NOV.from)) return;
       Object.keys(m.split || {}).forEach((k) => { const v = Number(m.split[k]) || 0; if (k === taxPot) tax += v; else other += v; });
     });
+    // The ATO for November is paid, so the line says so. It used to say Pay, which read as still to do. It goes after the day it was due.
     const out = [];
-    if (t <= NOV.atoDay) out.push(["Pay the ATO ", { b: money(NOV.ato) }, " by BPAY on " + niceDate(NOV.atoDay) + "."]);
-    if (tax < NOV.tax) out.push(["Move ", { b: money(NOV.tax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
-    if (other < NOV.pots) out.push(["Move ", { b: money(NOV.pots - other) }, " to savings and log it as Money in, Split across pots."]);
-    if (out.length) out.unshift([{ b: "When this month's RCTI lands" }]);
-    return out;
+    if (t <= NOV.atoDay) out.push(["ATO ", { b: money(NOV.ato) }, " for November is paid. Nothing to do."]);
+    const todo = [];
+    if (tax < NOV.tax) todo.push(["Move ", { b: money(NOV.tax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
+    if (other < NOV.pots) todo.push(["Move ", { b: money(NOV.pots - other) }, " to savings and log it as Money in, Split across pots."]);
+    // The heading is only for jobs still to do.
+    if (todo.length) out.unshift([{ b: "When this month's RCTI lands" }]);
+    return out.concat(todo);
   }
 
   function weeklyTarget() {
@@ -1842,7 +1845,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "13 Nov 2026, v11";
+  const APP_VERSION = "14 Nov 2026, v12";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
