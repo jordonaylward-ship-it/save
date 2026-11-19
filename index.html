@@ -1,0 +1,3024 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pots">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADnElEQVR42u3dMVbbQBDG8cWPjjYP16lzkSQcAbiCz+Aj5NncINhHSHKFnMLU9NRKQZEilnCEPLva/f2fO6zCOx/z7cyOpItPP34n4BgLS4A+LlPXWQUcFwdpgK2ArUDmAHEgr60ktoK+aoU2wFZAHFDKQuaA9jnYCtgKiANsBTakAFuBgzdMseewCGArYCswzwG2AuKADilkDmifg62ArQDEAR1SOHiDagVsBWwFqhWwFZjnAFsBiAMO3iBzgDgQ2j5nK9AhBVuBDinYCsxzgK2ArUC1ArYC8xzAP5kjM4fbz8LQx8fdr0bFQRYnLlEuieTZcxxuvwj8/0vkZ3i10qXgD2WM/4+KjVR0KXu4o4zZrN6iS13YhzIm0UdYvHRIZ0hXXYf06f6rsM5rJXVIZY/c1crT/Y14Tpo8bgKiZp5D6mAr5GGegzbMc0C1EsLVetP3p5f1qm1boYkTvlO2Sgz7xMri6CVFSaSz5yhBGZNcm+Y5YBxzADx7ZZSnj7NHbdGONqaKayn6qG+eY+7KaMpfmng+x5uxPLrTHL7qar3Juz/tdEjPrYyBAL/+aeDyzPpQrZy1wXVKaIe/Vre/tFWtjG59FtkEU62cIW2Mi3TfVdmSh2oFOW0lZo55voZSrLkERG2hsaHtkfuOt/mnjeKSR8AMaYGlBAppdNiQIpnnqC5v6JDCDCncmgAHbxU3P5qaFKy2QxrZkMjS/NAhNWDs8dYodc9Rbf982kP2aQcAZjLPkdzuxlCatJWX9aovrifexDZ6BLUCW6l/+nxAH8MSGTezXtf0eQMM62Oca7Rwa3Ur8xzTxrIIZYTMkLYy7TNVRIvJGaoVk2A52+ch/XMDxueY5zj3p8Un+7x5n2PjCcM8x994eyaYZ4LJCjqkycEbW0GArZAGabAV6ih1nmP5sBfNCVk+7HVIkRo4eOvScit5TJQ2tvuYkDXxNMHqNhtdbS8ATCldb3dCO6M1jH4j9fWGPt6hjM0u+I3U0e8rv948CvMoZTwGR+oy3+9Mz6s7IT99uVKOU9nMv5lECpTFKxcfvn0XAzh4g0cwwMEb2ApyvowHYCtgK1CtgK3A2yHBVkAcqGXPwVYgc4A44GU80CEFW4EOKdgKzHOArYCtAKoVEAccvEG1ArYCtgKZA8QB8xzQIQXYChy8ga2ArUD7HDqkYCsgDrAV2JCCrQBsBTIHiAPmOeDgDWwFxAGlLGQOaJ8DbAVsBe/mD9/1KbaXkjlBAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADnElEQVR42u3dMVbbQBDG8cWPjjYP16lzkSQcAbiCz+Aj5NncINhHSHKFnMLU9NRKQZEilnCEPLva/f2fO6zCOx/z7cyOpItPP34n4BgLS4A+LlPXWQUcFwdpgK2ArUDmAHEgr60ktoK+aoU2wFZAHFDKQuaA9jnYCtgKiANsBTakAFuBgzdMseewCGArYCswzwG2AuKADilkDmifg62ArQDEAR1SOHiDagVsBWwFqhWwFZjnAFsBiAMO3iBzgDgQ2j5nK9AhBVuBDinYCsxzgK2ArUC1ArYC8xzAP5kjM4fbz8LQx8fdr0bFQRYnLlEuieTZcxxuvwj8/0vkZ3i10qXgD2WM/4+KjVR0KXu4o4zZrN6iS13YhzIm0UdYvHRIZ0hXXYf06f6rsM5rJXVIZY/c1crT/Y14Tpo8bgKiZp5D6mAr5GGegzbMc0C1EsLVetP3p5f1qm1boYkTvlO2Sgz7xMri6CVFSaSz5yhBGZNcm+Y5YBxzADx7ZZSnj7NHbdGONqaKayn6qG+eY+7KaMpfmng+x5uxPLrTHL7qar3Juz/tdEjPrYyBAL/+aeDyzPpQrZy1wXVKaIe/Vre/tFWtjG59FtkEU62cIW2Mi3TfVdmSh2oFOW0lZo55voZSrLkERG2hsaHtkfuOt/mnjeKSR8AMaYGlBAppdNiQIpnnqC5v6JDCDCncmgAHbxU3P5qaFKy2QxrZkMjS/NAhNWDs8dYodc9Rbf982kP2aQcAZjLPkdzuxlCatJWX9aovrifexDZ6BLUCW6l/+nxAH8MSGTezXtf0eQMM62Oca7Rwa3Ur8xzTxrIIZYTMkLYy7TNVRIvJGaoVk2A52+ch/XMDxueY5zj3p8Un+7x5n2PjCcM8x994eyaYZ4LJCjqkycEbW0GArZAGabAV6ih1nmP5sBfNCVk+7HVIkRo4eOvScit5TJQ2tvuYkDXxNMHqNhtdbS8ATCldb3dCO6M1jH4j9fWGPt6hjM0u+I3U0e8rv948CvMoZTwGR+oy3+9Mz6s7IT99uVKOU9nMv5lECpTFKxcfvn0XAzh4g0cwwMEb2ApyvowHYCtgK1CtgK3A2yHBVkAcqGXPwVYgc4A44GU80CEFW4EOKdgKzHOArYCtAKoVEAccvEG1ArYCtgKZA8QB8xzQIQXYChy8ga2ArUD7HDqkYCsgDrAV2JCCrQBsBTIHiAPmOeDgDWwFxAGlLGQOaJ8DbAVsBe/mD9/1KbaXkjlBAAAAAElFTkSuQmCC">
+<title>Pay Day Pots</title>
+<style>
+/* Layout: one phone column in the iOS grouped style. Frosted bar for the tabs, big balance, white cards on grey, teal as the only colour. */
+:root{
+  --bg:#F2F2F7;
+  --card:#FFFFFF;
+  --fill:rgba(118,118,128,.12);
+  --fill2:rgba(120,120,128,.2);
+  --label:#000000;
+  --label2:#6E6E73;
+  --label3:#AEAEB2;
+  --sep:rgba(60,60,67,.22);
+  --tint:#0A7F91;
+  --tintsoft:rgba(10,127,145,.11);
+  --btn:#0A7F91;
+  --btnink:#FFFFFF;
+  --red:#D70015;
+  --redsoft:rgba(215,0,21,.09);
+  --bar:rgba(242,242,247,.8);
+  --seg:#FFFFFF;
+  --toastbg:rgba(28,28,30,.94);
+  --toastink:#FFFFFF;
+  --n-green:#075E6B;
+  --n-mauve:#0A8C9F;
+  --n-blue:#3DB4C7;
+  --n-gold:#94D6E1;
+  --n-orange:#8E8E93;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --rounded:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000000;--card:#1C1C1E;--fill:rgba(118,118,128,.24);--fill2:rgba(120,120,128,.36);
+    --label:#FFFFFF;--label2:#98989F;--label3:#5C5C61;--sep:rgba(84,84,88,.6);
+    --tint:#40C8E0;--tintsoft:rgba(64,200,224,.15);--btn:#40C8E0;--btnink:#00262C;
+    --red:#FF6961;--redsoft:rgba(255,105,97,.15);
+    --bar:rgba(0,0,0,.7);--seg:#636366;--toastbg:rgba(58,58,60,.95);--toastink:#FFFFFF;
+    --n-green:#1C8A9B;--n-mauve:#35B4C7;--n-blue:#72D1DF;--n-gold:#B7E9F0;--n-orange:#8E8E93;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000000;--card:#1C1C1E;--fill:rgba(118,118,128,.24);--fill2:rgba(120,120,128,.36);
+  --label:#FFFFFF;--label2:#98989F;--label3:#5C5C61;--sep:rgba(84,84,88,.6);
+  --tint:#40C8E0;--tintsoft:rgba(64,200,224,.15);--btn:#40C8E0;--btnink:#00262C;
+  --red:#FF6961;--redsoft:rgba(255,105,97,.15);
+  --bar:rgba(0,0,0,.7);--seg:#636366;--toastbg:rgba(58,58,60,.95);--toastink:#FFFFFF;
+  --n-green:#1C8A9B;--n-mauve:#35B4C7;--n-blue:#72D1DF;--n-gold:#B7E9F0;--n-orange:#8E8E93;
+  color-scheme:dark;
+}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--label);font:400 17px/1.35 var(--font);letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+[hidden]{display:none!important}
+img{max-width:100%}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--tint);outline-offset:2px}
+
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px;display:flex;flex-direction:column;gap:24px}
+.view{display:flex;flex-direction:column;gap:24px}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--sep)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:2px;background:var(--fill);border-radius:9px}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--label);font:600 15px/1 var(--font);height:34px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--seg);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)}
+
+.view > header{display:flex;flex-direction:column;padding:4px 4px 0}
+.eyebrow{margin:0;font-size:15px;font-weight:500;color:var(--label2)}
+.total{margin:4px 0 0;font:700 clamp(44px,13vw,58px)/1.05 var(--rounded);letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.total.loading{opacity:.3}
+.total.over{color:var(--red)}
+.sub{margin:6px 0 0;font-size:15px;color:var(--label2)}
+.menote{margin:10px 0 0;font-size:13px;line-height:1.4;color:var(--label2);text-wrap:pretty}
+.meter,.bar{height:8px;border-radius:999px;background:var(--fill);overflow:hidden;margin-top:16px}
+.meter span{display:block;height:100%;width:0;background:var(--tint);border-radius:999px}
+.meter.over span{background:var(--red)}
+.bar{display:flex;gap:2px}
+.bar span{display:block;height:100%;background:var(--c);flex:1 1 0px}
+
+.status{margin:0;font-size:15px;color:var(--label2)}
+.status.warn{color:var(--red);font-weight:600}
+
+.h{margin:0 0 8px;padding:0 16px;font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:.02em;color:var(--label2)}
+.panel > .h{margin:0;padding:0;font-size:17px;font-weight:600;text-transform:none;letter-spacing:-.01em;color:var(--label)}
+.setup .h{margin:8px 0 0;padding:0}
+
+.rule{margin:0;padding:14px 16px;background:var(--card);border-radius:14px;display:flex;flex-direction:column;gap:6px}
+.rule p{margin:0;font-size:15px;line-height:1.4;text-wrap:pretty}
+.rule b{font-weight:600}
+.rule .wk{color:var(--label2)}
+.rule .btn.small{margin:2px 0 8px}
+.rule .link{font-size:15px;padding:4px 0 10px}
+
+.pots,.hist{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;overflow:hidden}
+.pempty,.hempty{padding:14px 16px;color:var(--label2);font-size:15px}
+.pot,.hitem{position:relative}
+.pot{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:12px 16px;min-height:58px}
+.pot+.pot::before,.hitem+.hitem::before{content:"";position:absolute;top:0;right:0;height:.5px;background:var(--sep)}
+.pot+.pot::before{left:40px}
+.hitem+.hitem::before{left:16px}
+.note{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.pmain{display:flex;flex-direction:column;min-width:0;gap:1px}
+.pname{font-size:17px;overflow-wrap:anywhere}
+.pmeta{color:var(--label2);font-size:13px}
+.pbal{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.goal{grid-column:2/4;display:flex;align-items:center;gap:10px;margin-top:4px}
+.track{flex:1;height:4px;background:var(--fill);border-radius:999px;overflow:hidden}
+.track span{display:block;height:100%;background:var(--c);border-radius:999px}
+.gtext{font-size:12px;color:var(--label2);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.hrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;color:inherit;font:inherit;text-align:left;padding:11px 16px;min-height:58px;cursor:pointer}
+.hrow:active{background:var(--fill)}
+.brow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 16px;min-height:58px}
+.hleft{display:flex;flex-direction:column;min-width:0;gap:1px}
+.htitle{font-size:17px;overflow-wrap:anywhere}
+.hsub{font-size:13px;color:var(--label2)}
+.hright{display:flex;flex-direction:column;align-items:flex-end;flex:none;gap:1px}
+.hamt{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.hamt.in{color:var(--tint)}
+.hdir{font-size:12px;color:var(--label2)}
+.void .htitle,.void .hamt{text-decoration:line-through;opacity:.5}
+.hdetail{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.bline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.bline .btn.small{align-self:center;flex:none}
+.hamt.done{color:var(--label2)}
+.hist-wrap{display:flex;flex-direction:column}
+.prev{margin:8px 0 0;padding:0 16px}
+
+.panel{background:var(--card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+label,legend{font-size:15px;color:var(--label2)}
+legend{padding:0;margin-bottom:10px}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+.opt{color:var(--label3)}
+input,select,textarea{font:400 17px var(--font);color:var(--label);background:var(--fill);border:0;border-radius:10px;padding:12px 14px;width:100%;min-width:0;outline:none;letter-spacing:-.01em}
+input::placeholder,textarea::placeholder{color:var(--label3)}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--tint)}
+input.big{font:600 30px/1.15 var(--rounded);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+select{appearance:none;-webkit-appearance:none;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238E8E93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px}
+textarea{font-size:15px;resize:vertical}
+
+.btn{appearance:none;border:0;border-radius:999px;font:600 17px/1.2 var(--font);letter-spacing:-.01em;padding:14px 20px;min-height:50px;cursor:pointer;text-align:center;background:var(--tintsoft);color:var(--tint)}
+.btn.primary{background:var(--btn);color:var(--btnink)}
+.btn.ghost{background:var(--tintsoft);color:var(--tint)}
+.btn.small{min-height:36px;padding:8px 16px;font-size:15px;align-self:flex-start}
+.btn.danger{background:var(--redsoft);color:var(--red)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:not(:disabled):active{opacity:.7}
+.link{appearance:none;background:none;border:0;color:var(--tint);font:400 17px var(--font);padding:6px 0;cursor:pointer;align-self:flex-start;text-align:left}
+.link.danger{color:var(--red)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 auto}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:0;background:var(--fill);color:var(--label);border-radius:999px;padding:8px 14px;min-height:36px;font:500 15px var(--font);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed="true"]{background:var(--btn);color:var(--btnink)}
+.chip .cb{font-weight:400;color:var(--label2);font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"] .cb{color:inherit;opacity:.8}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.chip[aria-pressed="true"] .dot{box-shadow:0 0 0 1.5px var(--btnink)}
+
+.cost{margin:0;font-size:17px;line-height:1.4;text-wrap:pretty}
+.cost b{font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.cost b.ok{color:var(--tint)}
+.should{margin:0;font-size:17px}
+.should b{font-weight:600;font-variant-numeric:tabular-nums}
+.bank{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--tintsoft);border-radius:14px}
+.bank p{margin:0;min-width:0;font-size:15px;line-height:1.35}
+.bank .btn{flex:none;align-self:center}
+.bankgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bankgo .btn{flex:none;align-self:center}
+.bankgo .hint{flex:1;min-width:150px}
+.lockset{display:flex;flex-direction:column;gap:14px}
+.cloudwait .view,.cloudwait .topbar{opacity:.45;pointer-events:none}
+.ask{display:flex;flex-direction:column;gap:8px}
+.askrow{appearance:none;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--fill);border:0;border-radius:10px;color:inherit;font:inherit;text-align:left;padding:9px 14px;min-height:54px;cursor:pointer}
+.askrow:active{opacity:.7}
+.pill{flex:none;font-size:13px;font-weight:600;line-height:1;padding:7px 11px;border-radius:999px;background:var(--btn);color:var(--btnink)}
+.askrow[aria-pressed="false"] .pill{background:var(--redsoft);color:var(--red)}
+.hint{margin:0;color:var(--label2);font-size:13px;line-height:1.4}
+.err{margin:0;color:var(--red);font-size:15px;font-weight:500}
+.preview{display:flex;flex-direction:column;gap:8px;font-size:15px}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+.pl{display:inline-flex;align-items:center;gap:8px;min-width:0}
+
+.check{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:12px;font-size:17px;color:var(--label);cursor:pointer}
+.check input{appearance:none;-webkit-appearance:none;width:51px;height:31px;padding:0;margin:0;border-radius:999px;background:var(--fill2);position:relative;flex:none;cursor:pointer}
+.check input::before{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#FFFFFF;box-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06)}
+.check input:checked{background:var(--btn)}
+.check input:checked::before{transform:translateX(20px)}
+
+details{background:var(--card);border-radius:14px}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:0 16px;min-height:52px;font-size:17px;border-radius:14px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--label3);border-bottom:2px solid var(--label3);transform:rotate(-45deg);margin-right:4px}
+details[open] summary::after{transform:rotate(45deg)}
+.setup{padding:0 16px 16px;display:flex;flex-direction:column;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+.perow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;align-items:start;padding-top:14px;border-top:.5px solid var(--sep)}
+.perow .note{margin-top:40px}
+.pefields{display:flex;flex-direction:column;gap:10px;min-width:0}
+.billrow,.backup{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:.5px solid var(--sep)}
+
+.toast{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));max-width:420px;margin:0 auto;background:var(--toastbg);color:var(--toastink);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:13px 18px;border-radius:16px;font-size:15px;line-height:1.35;text-align:center;z-index:40;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+
+.lock{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lockin{width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.lockicon{width:68px;height:68px;border-radius:16px;background:linear-gradient(180deg,#2BB6C9,#0A7F91);display:grid;place-items:center;box-shadow:0 6px 16px rgba(10,127,145,.28)}
+.lockicon span{width:40px;height:24px;border-radius:5px;background:#FFFFFF;position:relative}
+.lockicon span::after{content:"";position:absolute;top:5px;left:13px;width:14px;height:14px;border-radius:50%;border:2.5px solid #0A7F91;box-sizing:border-box}
+.locktitle{margin:6px 0 0;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.lockmsg{margin:0;font-size:17px;color:var(--label)}
+.dots{display:flex;gap:22px;justify-content:center;padding:10px 0 0}
+.dots span{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--label)}
+.dots span.on{background:var(--label)}
+.lockerr{margin:0;min-height:20px;color:var(--red);font-size:15px}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:16px 24px;justify-content:center;margin-top:6px}
+.pad button{appearance:none;border:0;width:76px;height:76px;border-radius:50%;background:var(--fill);color:var(--label);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+.pad button:active{background:var(--fill2)}
+.pad .d{font:400 34px/1 var(--font);font-variant-numeric:tabular-nums}
+.pad .l{font-size:10px;font-weight:600;letter-spacing:.14em;margin-top:2px;min-height:12px}
+.pad .cell{display:flex;align-items:center;justify-content:center}
+.pad .txt{background:none;font:400 17px var(--font);color:var(--label)}
+.pad .txt:active{background:none;opacity:.5}
+.pad .face{color:var(--tint)}
+.pad .face svg{width:34px;height:34px}
+.lockalt{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:8px}
+.lock .btn{width:100%}
+
+@media (prefers-reduced-motion: no-preference){
+  .meter span{transition:width .4s ease}
+  .track span{transition:width .4s ease}
+  .bar span{transition:flex-grow .4s ease}
+  summary::after{transition:transform .2s ease}
+  .check input,.check input::before{transition:all .2s ease}
+  .dots.shake{animation:shake .35s}
+}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div class="lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="lockin">
+    <div class="lockicon" aria-hidden="true"><span></span></div>
+    <h1 class="locktitle" id="lockTitle">Pay Day Pots</h1>
+    <p class="lockmsg" id="lockMsg">Locked</p>
+    <div class="dots" id="lockDots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <p class="lockerr" id="lockErr" role="alert"></p>
+    <div class="pad" id="lockPad"><button type="button" data-k="1" aria-label="1"><span class="d">1</span><span class="l"></span></button><button type="button" data-k="2" aria-label="2"><span class="d">2</span><span class="l">ABC</span></button><button type="button" data-k="3" aria-label="3"><span class="d">3</span><span class="l">DEF</span></button><button type="button" data-k="4" aria-label="4"><span class="d">4</span><span class="l">GHI</span></button><button type="button" data-k="5" aria-label="5"><span class="d">5</span><span class="l">JKL</span></button><button type="button" data-k="6" aria-label="6"><span class="d">6</span><span class="l">MNO</span></button><button type="button" data-k="7" aria-label="7"><span class="d">7</span><span class="l">PQRS</span></button><button type="button" data-k="8" aria-label="8"><span class="d">8</span><span class="l">TUV</span></button><button type="button" data-k="9" aria-label="9"><span class="d">9</span><span class="l">WXYZ</span></button><span class="cell"><button type="button" class="txt face" id="lockFace" aria-label="Unlock with Face ID" hidden><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10V7a5 5 0 0 1 5-5h3M24 2h3a5 5 0 0 1 5 5v3M32 24v3a5 5 0 0 1-5 5h-3M10 32H7a5 5 0 0 1-5-5v-3"/><path d="M11 12v3M23 12v3M17 12v7h-2M12 23c3 2.6 7 2.6 10 0"/></svg></button><button type="button" class="txt" id="lockCancel" hidden>Cancel</button></span><button type="button" data-k="0" aria-label="0"><span class="d">0</span><span class="l"></span></button><button type="button" class="txt" data-k="del" aria-label="Delete">Delete</button></div>
+    <div class="lockalt" id="lockAlt" hidden>
+      <button class="btn primary" id="lockFaceOn" type="button">Turn on Face ID</button>
+      <button class="btn ghost" id="lockFaceSkip" type="button">Not now</button>
+    </div>
+    <div class="lockalt" id="lockGate" hidden>
+      <input id="gateKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Key" aria-label="Key">
+      <button class="btn primary" id="gateGo" type="button">Open</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+  <div class="topbar">
+    <div class="tabs" role="tablist" aria-label="Accounts">
+      <button type="button" role="tab" id="tabMe" aria-selected="true" aria-controls="meView">Personal</button>
+      <button type="button" role="tab" id="tabBiz" aria-selected="false" aria-controls="bizView">Business</button>
+    </div>
+  </div>
+
+  <p class="status" id="status" role="status" hidden></p>
+
+  <section class="view" id="meView" role="tabpanel" aria-labelledby="tabMe">
+    <header>
+      <p class="eyebrow" id="meEyebrow">Spending money</p>
+      <p class="total" id="meLeft">$0.00</p>
+      <p class="sub" id="meSub"></p>
+      <div class="meter" id="meMeterWrap" aria-hidden="true"><span id="meMeter"></span></div>
+      <p class="menote" id="meNote" hidden></p>
+    </header>
+
+    <div class="bank" id="meBank" hidden>
+      <p id="meBankText"></p>
+      <button class="btn primary small" id="meBankUse" type="button">Use it</button>
+    </div>
+
+    <div class="bankgo" id="meBankGo" hidden>
+      <button class="btn ghost small" id="meBankCheck" type="button">Check the bank</button>
+      <p class="hint" id="meBankLine"></p>
+    </div>
+
+    <form class="panel" id="meSpendForm" novalidate>
+      <h2 class="h">Before you spend</h2>
+      <div class="field">
+        <label for="meAmt">How much</label>
+        <input class="big" id="meAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+      </div>
+      <div class="field">
+        <label for="meWhat">What for <span class="opt">optional</span></label>
+        <input id="meWhat" autocomplete="off" maxlength="60" placeholder="Uber Eats">
+      </div>
+      <p class="cost" id="meVerdict" aria-live="polite"></p>
+      <div class="row">
+        <button class="btn primary" id="meSpent" type="submit" disabled>Spent it</button>
+        <button class="btn ghost" id="meGot" type="button" disabled>Got money in</button>
+      </div>
+    </form>
+
+    <section class="hist-wrap" id="meWeekWrap" aria-labelledby="meWeekH">
+      <h2 class="h" id="meWeekH">This week</h2>
+      <ul class="hist" id="meWeek"></ul>
+      <p class="hint prev" id="mePrev" hidden></p>
+    </section>
+
+    <section class="hist-wrap" aria-labelledby="meBillsH">
+      <h2 class="h" id="meBillsH">Coming out of your bank</h2>
+      <ul class="hist" id="meBills"></ul>
+      <p class="hint prev" id="meBillsHint" hidden>Paid one already? Tap it.</p>
+    </section>
+
+    <details id="meCheckBox">
+      <summary id="meCheckSum">Check against your bank</summary>
+      <div class="setup">
+        <p class="should" id="meShould" hidden></p>
+        <div class="field">
+          <label for="meBal" id="meBalLbl">What's available in your bank</label>
+          <input class="big" id="meBal" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <div class="ask" id="meAsk" hidden></div>
+        <p class="cost" id="meCheckOut" aria-live="polite"></p>
+        <button class="btn ghost small" id="meSaveBal" type="button">Save balance</button>
+        <p class="hint" id="meCheckHint"></p>
+      </div>
+    </details>
+
+    <details id="meSetupBox">
+      <summary>Setup</summary>
+      <div class="setup">
+        <div class="field">
+          <label for="mePay" id="mePayLbl">Weekly pay into your bank</label>
+          <input id="mePay" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <p class="hint" id="meAllowHint"></p>
+        <p class="hint" id="meFixNote" hidden></p>
+        <h3 class="h" id="meBillsEditH">Bills that come out of your bank</h3>
+        <div id="meBillEdit"></div>
+        <button class="btn ghost small" id="meAddBill" type="button">Add a bill</button>
+        <div class="lockset" id="lockSet">
+          <h3 class="h">Lock</h3>
+          <div class="row">
+            <button class="btn ghost small" id="lockChange" type="button">Change code</button>
+            <button class="btn ghost small" id="lockFaceToggle" type="button" hidden>Turn on Face ID</button>
+          </div>
+          <p class="hint">Asks for Face ID or your code once a day.</p>
+        </div>
+        <p class="err" id="meSetupErr" hidden></p>
+        <button class="btn primary" id="meSaveSetup" type="button">Save setup</button>
+        <p class="hint" id="appVer"></p>
+        <div class="lockset" id="cloudSet">
+          <h3 class="h">Cloud</h3>
+          <p class="hint" id="cloudLine"></p>
+          <div class="field" id="cloudKeyField">
+            <label for="cloudKey">Cloud key</label>
+            <input id="cloudKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste the key from GitHub">
+          </div>
+          <div class="row">
+            <button class="btn ghost small" id="cloudOn" type="button">Turn on</button>
+            <button class="btn ghost small" id="cloudOff" type="button">Turn off</button>
+          </div>
+        </div>
+      </div>
+    </details>
+    <button class="btn ghost" id="meCopyAll" type="button">Copy everything for Claude</button>
+  </section>
+
+  <section class="view" id="bizView" role="tabpanel" aria-labelledby="tabBiz" hidden>
+  <header>
+    <p class="eyebrow">In savings</p>
+    <p class="total loading" id="total">$0.00</p>
+    <p class="sub" id="bizSub">This should match your savings account.</p>
+    <div class="bar" id="bar" aria-hidden="true"></div>
+  </header>
+
+  <details id="bizCheckBox">
+    <summary id="bizCheckSum">Check against your bank</summary>
+    <div class="setup">
+      <div class="field">
+        <label for="bizSaver" id="bizSaverLbl">What your savings account says</label>
+        <input class="big" id="bizSaver" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+      </div>
+      <p class="cost" id="bizCheckOut" aria-live="polite"></p>
+    </div>
+  </details>
+
+
+  <div class="rule" id="rule" hidden></div>
+
+  <section class="panel" id="costBox" hidden aria-labelledby="costH">
+    <h2 class="h" id="costH">Before you grab extra</h2>
+    <div class="field">
+      <label for="costAmt">How much are you thinking of taking</label>
+      <input class="big" id="costAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+    </div>
+    <p class="cost" id="costOut" aria-live="polite"></p>
+  </section>
+
+  <section aria-labelledby="potsH">
+    <h2 class="h" id="potsH">Pots</h2>
+    <ul class="pots" id="pots"><li class="pempty">Your pots show up here once they load.</li></ul>
+  </section>
+
+  <div class="actions">
+    <button class="btn primary" id="btnIn" type="button" disabled>Money in</button>
+    <button class="btn" id="btnOut" type="button" disabled>Take out</button>
+  </div>
+
+  <form class="panel" id="panelIn" hidden novalidate>
+    <h2 class="h">Money in</h2>
+    <div class="field">
+      <label for="inAmt">How much went into savings</label>
+      <input class="big" id="inAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+    </div>
+    <fieldset>
+      <legend>Where it goes</legend>
+      <div class="chips" id="inWhere"></div>
+    </fieldset>
+    <div class="field">
+      <label for="inNote">What is it <span class="opt">optional</span></label>
+      <input id="inNote" autocomplete="off" maxlength="60" placeholder="Extra income">
+    </div>
+    <div class="preview" id="inPreview" aria-live="polite"></div>
+    <div class="row">
+      <button class="btn primary" id="inSave" type="submit" disabled>Add to pots</button>
+      <button class="btn ghost" id="inCancel" type="button">Cancel</button>
+    </div>
+  </form>
+
+  <form class="panel" id="panelOut" hidden novalidate>
+    <h2 class="h">Take out</h2>
+    <fieldset>
+      <legend>Which pot</legend>
+      <div class="chips" id="outPots"></div>
+    </fieldset>
+    <p class="hint" id="outHas">Pick the pot it comes out of.</p>
+    <div class="field">
+      <label for="outAmt">How much</label>
+      <input class="big" id="outAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+    </div>
+    <div class="field">
+      <label for="outNote">What for <span class="opt">optional</span></label>
+      <input id="outNote" autocomplete="off" maxlength="60" placeholder="Dentist">
+    </div>
+    <label class="check" for="outBiz"><input type="checkbox" id="outBiz"> <span id="outBizLbl">Business bill</span></label>
+    <p class="cost" id="outTax" hidden></p>
+    <p class="err" id="outErr" hidden></p>
+    <div class="row">
+      <button class="btn primary" id="outSave" type="submit" disabled>Take it out</button>
+      <button class="btn ghost" id="outCancel" type="button">Cancel</button>
+    </div>
+  </form>
+
+  <section class="hist-wrap" aria-labelledby="histH">
+    <h2 class="h" id="histH">History</h2>
+    <ul class="hist" id="hist"><li class="hempty">Your top ups and anything you take out show up here.</li></ul>
+    <button class="link" id="histMore" type="button" hidden>Show all</button>
+  </section>
+
+  <details id="setupBox">
+    <summary>Setup</summary>
+    <div class="setup">
+      <div class="two">
+        <div class="field">
+          <label for="planTake">Weekly pay from the business</label>
+          <input id="planTake" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <div class="field">
+          <label for="planTax">Into the tax pot each week</label>
+          <input id="planTax" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label for="planLump" id="planLumpLbl">Share of big payments to your pots</label>
+          <input id="planLump" inputmode="decimal" autocomplete="off" placeholder="50%">
+        </div>
+        <div class="field">
+          <label for="planWtax">Tax on pot money you take out</label>
+          <input id="planWtax" inputmode="decimal" autocomplete="off" placeholder="33%">
+        </div>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label for="payAmt" id="payLbl">Into pots every payday <span class="opt">optional</span></label>
+          <input id="payAmt" inputmode="decimal" autocomplete="off" placeholder="$0.00">
+        </div>
+        <div class="field">
+          <label for="payDay">Payday</label>
+          <select id="payDay">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5" selected>Friday</option>
+            <option value="6">Saturday</option>
+            <option value="0">Sunday</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint" id="payHint"></p>
+      <div id="potEdit"></div>
+      <button class="btn ghost small" id="addPot" type="button">Add a pot</button>
+      <p class="hint" id="pctHint"></p>
+      <p class="err" id="setupErr" hidden></p>
+      <button class="btn primary" id="saveSetup" type="button">Save setup</button>
+      <div class="backup">
+        <p class="hint" id="backupHint">Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.</p>
+        <button class="btn ghost small" id="copyBackup" type="button">Copy backup</button>
+        <div class="field">
+          <label for="restoreText">Restore from a backup</label>
+          <textarea id="restoreText" rows="3" placeholder="Paste a backup here"></textarea>
+        </div>
+        <button class="btn ghost small" id="doRestore" type="button">Restore</button>
+      </div>
+    </div>
+  </details>
+  <button class="btn ghost" id="bizCopyAll" type="button">Copy everything for Claude</button>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+  const money = (c) => fmt.format((Number(c) || 0) / 100);
+  const COLORS = ["green", "blue", "mauve", "gold", "orange"];
+  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const TAX_ID = "tax";
+  const STARTER = [
+    { id: "emergency", name: "Emergency fund", pct: 50, goal: 0, color: "green" },
+    { id: "holidays", name: "Holidays", pct: 30, goal: 0, color: "blue" },
+    { id: "fun", name: "Fun", pct: 20, goal: 0, color: "gold" }
+  ];
+
+  let setupRef = null, movesCol = null;
+  let setup = null, moves = [];
+  let gotSetup = false, gotMoves = false, setupReady = false, movesReady = false;
+  let autoDone = false, showAll = false, openId = null, openedSetupOnce = false;
+  let inWhere = "split", outPot = null, setupDirty = false, draft = null;
+  let loadTimer = null, toastTimer = null, toastGo = "";
+
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const pad = (n) => String(n).padStart(2, "0");
+  const ymd = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const parseYmd = (s) => { const p = String(s).split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const today = () => ymd(new Date());
+  const niceDate = (s) => parseYmd(s).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+  const fmtPct = (n) => (Math.round(n * 100) / 100) + "%";
+  const newId = () => "m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const payDayOf = (wk) => (wk && Number.isInteger(wk.day) ? wk.day : 5);
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function dotFor(color) {
+    const d = el("span", "dot");
+    d.style.setProperty("--c", cVar(color));
+    return d;
+  }
+  const cVar = (color) => "var(--n-" + (COLORS.includes(color) ? color : "green") + ")";
+
+  function nextPayday(day, includeToday) {
+    const d = new Date(); d.setHours(0, 0, 0, 0);
+    if (!includeToday) d.setDate(d.getDate() + 1);
+    while (d.getDay() !== day) d.setDate(d.getDate() + 1);
+    return ymd(d);
+  }
+  function paydaysBetween(from, day, to) {
+    const out = [];
+    const d = parseYmd(from);
+    const end = parseYmd(to);
+    while (d.getDay() !== day) d.setDate(d.getDate() + 1);
+    while (d <= end && out.length < 200) { out.push(ymd(d)); d.setDate(d.getDate() + 7); }
+    return out;
+  }
+  function parseMoney(v) {
+    const s = String(v == null ? "" : v).replace(/[$,\s]/g, "");
+    if (!s || s === "." || !/^\d*\.?\d{0,2}$/.test(s)) return null;
+    const c = Math.round(parseFloat(s) * 100);
+    return Number.isFinite(c) ? c : null;
+  }
+  const centsToInput = (c) => (c ? (c / 100).toFixed(2).replace(/\.00$/, "") : "");
+
+  const pots = () => (setup && Array.isArray(setup.pots) ? setup.pots : []);
+  const pctTotal = (list) => list.reduce((a, p) => a + (Number(p.pct) || 0), 0);
+  const potName = (id) => (pots().find((p) => p.id === id) || {}).name || "Old pot";
+  const potColor = (id) => (pots().find((p) => p.id === id) || {}).color || "green";
+
+  function splitAmount(cents, list) {
+    const res = {};
+    const share = list.filter((p) => (Number(p.pct) || 0) > 0);
+    const total = pctTotal(share);
+    if (total <= 0 || cents <= 0) return res;
+    let used = 0;
+    const parts = share.map((p) => {
+      const exact = (cents * Number(p.pct)) / total;
+      const fl = Math.floor(exact);
+      used += fl;
+      return { id: p.id, fl: fl, frac: exact - fl };
+    });
+    let rem = cents - used;
+    parts.slice().sort((a, b) => b.frac - a.frac).forEach((p) => { if (rem > 0) { p.fl += 1; rem -= 1; } });
+    parts.forEach((p) => { if (p.fl > 0) res[p.id] = p.fl; });
+    return res;
+  }
+  function balances() {
+    const b = {};
+    pots().forEach((p) => { b[p.id] = 0; });
+    moves.forEach((m) => {
+      if (m.void) return;
+      const s = m.split || {};
+      const sign = m.kind === "out" ? -1 : 1;
+      Object.keys(s).forEach((k) => { b[k] = (b[k] || 0) + sign * (Number(s[k]) || 0); });
+      const t = m.taxMove;
+      if (t && t.from && Number(t.amount) > 0) {
+        b[t.from] = (b[t.from] || 0) - Number(t.amount);
+        b[TAX_ID] = (b[TAX_ID] || 0) + Number(t.amount);
+      }
+    });
+    return b;
+  }
+  function taxOnOut(potId, amt) {
+    const rate = Number((setup && setup.plan && setup.plan.wtax) || 0);
+    if (!(rate > 0) || potId === TAX_ID || !pots().find((p) => p.id === TAX_ID)) return 0;
+    return Math.round((amt * rate) / 100);
+  }
+
+  function setStatus(msg, warn) {
+    const s = $("status");
+    s.textContent = msg || "";
+    s.hidden = !msg;
+    s.classList.toggle("warn", !!warn);
+  }
+  function toast(msg) {
+    if (!$("lock").hidden) { pendingToast = pendingToast && pendingToast !== msg ? pendingToast + " " + msg : msg; return; }
+    // Messages that fire in the same go, like the Friday switch and the Friday tax, join up. Otherwise the last one wipes the first before it can be read.
+    if (toastGo) msg = toastGo.includes(msg) ? toastGo : toastGo + " " + msg;
+    else setTimeout(() => { toastGo = ""; }, 0);
+    toastGo = msg;
+    const t = $("toast");
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, msg.length > 80 ? 6500 : 4200);
+  }
+  function failToast(e) {
+    if (e && e.code === "quota_exceeded") toast("Your pots history is full. Ask Claude to tidy it up.");
+    else toast("That didn't save. Your phone's storage might be full.");
+  }
+
+  // In savings should read the same as the savings account at the bank. Typing the bank's number says whether it does, and what to move if it doesn't.
+  function renderBizCheck() {
+    const out = $("bizCheckOut");
+    const raw = $("bizSaver").value.trim();
+    const typed = raw ? parseMoney(raw) : null;
+    out.textContent = "";
+    if (typed === null) { out.textContent = raw ? "Type it like 1234.56." : "Type the balance of your " + SV() + " to see if it matches."; return; }
+    const b = balances();
+    const total = Object.keys(b).reduce((a, k) => a + b[k], 0);
+    const gap = total - typed;
+    if (Math.abs(gap) < 100) { out.append(el("b", null, "Spot on."), document.createTextNode(" Your saver and the app match.")); return; }
+    if (gap < 0) {
+      out.append(document.createTextNode("Your saver has "), el("b", null, money(-gap)), document.createTextNode(" more than the app knows about. Tap Money in and add it, so the app matches."));
+      return;
+    }
+    // Short. The usual reason is a top up logged here that hasn't been moved in the bank yet, so look for one that fits the gap.
+    const since = addDays(today(), -7);
+    const one = moves.filter((m) => !m.void && m.kind === "in" && String(m.date) >= since && Math.abs(m.amount - gap) <= 1000)
+      .sort((x, y) => Math.abs(x.amount - gap) - Math.abs(y.amount - gap))[0];
+    out.append(document.createTextNode("Your saver is "), el("b", null, money(gap)), document.createTextNode(" short of what the app says. "));
+    if (one) {
+      const where = Object.keys(one.split || {}).map(potName).join(", ");
+      out.append(document.createTextNode("Looks like the " + money(one.amount) + " for " + where + " hasn't been moved yet. Move " + money(one.amount) + moveWords() + " Then check again."));
+    } else {
+      out.append(document.createTextNode("Move " + money(gap) + moveWords() + " Then check again."));
+    }
+  }
+  function render() {
+    renderTop();
+    try { renderBizCheck(); } catch (e) {}
+    renderCost();
+    renderPots();
+    renderHist();
+    if (!$("panelIn").hidden) renderIn();
+    if (!$("panelOut").hidden) renderOut();
+    renderSetup();
+    renderMe();
+    const ready = !!(movesCol && gotSetup && gotMoves && setup && pots().length);
+    $("btnIn").disabled = !ready;
+    $("btnOut").disabled = !ready;
+  }
+
+  function renderTop() {
+    const shown = gotSetup && gotMoves;
+    const b = balances();
+    const list = pots();
+    const total = Object.keys(b).reduce((a, k) => a + b[k], 0);
+    const t = $("total");
+    t.textContent = money(total);
+    t.classList.toggle("loading", !shown);
+    const bar = $("bar");
+    bar.textContent = "";
+    if (shown && total > 0) {
+      list.forEach((p) => {
+        const v = b[p.id] || 0;
+        if (v <= 0) return;
+        const s = el("span");
+        s.style.setProperty("--c", cVar(p.color));
+        s.style.flexGrow = String(v);
+        bar.appendChild(s);
+      });
+    }
+    const rule = $("rule");
+    rule.textContent = "";
+    if (!shown || !setup) { rule.hidden = true; return; }
+    const plan = setup.plan || {};
+    const wk = setup.weekly || {};
+    const day = payDayOf(wk);
+    const line = (parts, cls) => {
+      const p = el("p", cls || null);
+      parts.forEach((x) => p.append(typeof x === "string" ? document.createTextNode(x) : el("b", null, x.b)));
+      rule.append(p);
+    };
+    dueLine(rule);
+    stepsPlan().forEach((parts) => line(parts));
+    if (plan.take > 0) {
+      const parts = ["Every " + DAYS[day] + " take ", { b: money(plan.take) }, " from the business"];
+      if (plan.tax > 0) parts.push(" and put ", { b: money(plan.tax) }, " in the business savings for tax.");
+      else parts.push(".");
+      // Pay can land as two transfers. When the private settings name them, say both and never only the total.
+      const pp = payParts(Number(plan.take));
+      if (pp) parts.push(" That's " + pp.a + " " + money(pp.amt) + " plus " + pp.b + " " + money(pp.rest) + ".");
+      line(parts);
+    }
+    if (plan.lump > 0) {
+      const rl = nm("rule", "Big payment lands: tax first, keep enough in the business for bills, then {pct} of what's left goes to your pots.");
+      const ri = rl.indexOf("{pct}");
+      line(ri < 0 ? [rl] : [rl.slice(0, ri), { b: fmtPct(plan.lump) }, rl.slice(ri + 5)]);
+    }
+    const target = weeklyTarget();
+    if (wk.pay > 0 && (target || pctTotal(list) > 0)) {
+      let next = nextPayday(day, true);
+      if (moves.some((m) => m.id === "auto-" + next)) next = ymd(new Date(parseYmd(next).getTime() + 7 * 86400000));
+      if (wk.from && wk.from > next) next = wk.from;
+      line(["Every " + DAYS[day] + " " + money(wk.pay) + " goes into " + (target ? potName(target) : "your pots") + " by itself. Next one " + niceDate(next) + "."], "wk");
+    }
+    rule.hidden = !rule.childNodes.length;
+  }
+
+  // Nothing about the person who uses this app is written in this file. Their own amounts, the names of their banks and the wording for their
+  // own bills come from the private settings, see cfg further down. With no settings these parts simply don't show.
+  // Pay that lands as two transfers: pay.a and pay.b are their names, pay.amt is the first one in cents, the second is whatever is left.
+  function payParts(take) {
+    const p = cfg.pay;
+    const amt = p && typeof p === "object" ? Math.round(Number(p.amt)) : 0;
+    if (!(amt > 0) || !(take > amt) || typeof p.a !== "string" || typeof p.b !== "string" || !p.a || !p.b) return null;
+    return { a: p.a, b: p.b, amt: amt, rest: take - amt };
+  }
+  // Steps for one big payment: how much has to reach the tax pot and how much the other pots, between two dates.
+  // Shows what's still to do, counts what has been logged with Money in since the first date, and drops off by itself after the last.
+  function stepsPlan() {
+    const st = cfg.steps;
+    const isDay = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || ""));
+    if (!st || typeof st !== "object" || !isDay(st.from) || !isDay(st.to)) return [];
+    const t = today();
+    const taxPot = weeklyTarget() || (pots().find((p) => p.id === "tax") ? "tax" : null);
+    if (t > st.to || !taxPot) return [];
+    const needTax = Math.max(0, Math.round(Number(st.tax)) || 0), needPots = Math.max(0, Math.round(Number(st.pots)) || 0);
+    let tax = 0, other = 0;
+    moves.forEach((m) => {
+      if (m.void || m.kind !== "in" || !(m.date >= st.from)) return;
+      Object.keys(m.split || {}).forEach((k) => { const v = Number(m.split[k]) || 0; if (k === taxPot) tax += v; else other += v; });
+    });
+    const out = [];
+    if (tax < needTax) out.push(["Move ", { b: money(needTax - tax) }, " to savings and log it as Money in, " + potName(taxPot) + "."]);
+    if (other < needPots) out.push(["Move ", { b: money(needPots - other) }, " to savings and log it as Money in, Split across pots."]);
+    if (out.length) out.unshift([{ b: typeof st.title === "string" && st.title ? st.title : "When this month's money lands" }]);
+    return out;
+  }
+
+  // A bill paid by hand every month and ticked off, from the private settings: bill.amount in cents, bill.day it is due, bill.show the day it starts
+  // showing, bill.from the first month, bill.done the months paid before the tick existed, bill.name and the three sentences to say.
+  // After the due day it says it was due. A tick says paid until the month ends, and next month it comes back by itself.
+  // A tick is kept in the saved data, setup.due.paid, under the month: the time it was ticked, or false if it was unticked.
+  function dueCfg() {
+    const b = cfg.bill;
+    if (!b || typeof b !== "object" || !(Math.round(Number(b.amount)) > 0) || !/^\d{4}-\d{2}$/.test(String(b.from || ""))) return null;
+    const day = Math.round(Number(b.day)), show = Math.round(Number(b.show));
+    if (!(day >= 1 && day <= 28)) return null;
+    const name = typeof b.name === "string" && b.name ? b.name : "bill";
+    const say = (k, d) => (typeof b[k] === "string" && b[k] ? b[k] : d);
+    return { amount: Math.round(Number(b.amount)), day: day, show: show >= 1 && show <= day ? show : 1, from: b.from, done: Array.isArray(b.done) ? b.done : [], name: name,
+      due: say("due", "Pay the " + name + " {amt}. Due {date}."), late: say("late", "The " + name + " {amt} was due {date}. Pay it now."), paid: say("paid", name + " {amt} for {month} is paid. Nothing to do.") };
+  }
+  const monthName = (m) => parseYmd(m + "-01").toLocaleDateString("en-AU", { month: "long" });
+  function duePaid(m) {
+    const a = (setup && setup.due && setup.due.paid) || {};
+    if (Object.prototype.hasOwnProperty.call(a, m)) return !!a[m];
+    const c = dueCfg();
+    return !!c && c.done.includes(m);
+  }
+  function dueState() {
+    const c = dueCfg();
+    if (!c) return null;
+    const t = today(), m = t.slice(0, 7);
+    if (m < c.from) return null;
+    const due = m + "-" + pad(c.day);
+    if (duePaid(m)) return { m: m, due: due, kind: "paid", c: c };
+    if (t < m + "-" + pad(c.show)) return null;
+    return { m: m, due: due, kind: t > due ? "late" : "due", c: c };
+  }
+  function dueLine(rule) {
+    const st = dueState();
+    if (!st) return;
+    const p = el("p");
+    const amt = el("b", null, money(st.c.amount));
+    const txt = st.c[st.kind].replace(/\{date\}/g, niceDate(st.due)).replace(/\{month\}/g, monthName(st.m));
+    const i = txt.indexOf("{amt}");
+    if (i < 0) p.append(txt); else p.append(txt.slice(0, i), amt, txt.slice(i + 5));
+    const paid = st.kind === "paid";
+    const btn = el("button", paid ? "link" : "btn primary small", paid ? "Not paid yet? Undo" : "I've paid it");
+    btn.type = "button";
+    btn.id = "dueTick";
+    btn.addEventListener("click", () => dueTick(st.m, !paid));
+    rule.append(p, btn);
+  }
+  // A second tap straight after the first is ignored, so a double tap can't tick it and untick it again.
+  let dueHold = false;
+  async function dueTick(m, on) {
+    if (dueHold || !setupRef || !setup) return;
+    const c = dueCfg();
+    const name = c ? c.name : "bill";
+    dueHold = true;
+    setTimeout(() => { dueHold = false; }, 1200);
+    const due = clone(setup.due || {});
+    due.paid = Object.assign({}, due.paid || {}, { [m]: on ? new Date().toISOString() : false });
+    try {
+      await setupRef.set(Object.assign({}, setup, { due: due }));
+      toast(on ? "Done. " + name + " for " + monthName(m) + " is ticked as paid." : "OK. " + name + " for " + monthName(m) + " is back to not paid.");
+    } catch (e) { failToast(e); }
+  }
+
+  function weeklyTarget() {
+    const wk = (setup && setup.weekly) || {};
+    return wk.pot && pots().find((p) => p.id === wk.pot) ? wk.pot : null;
+  }
+  function potMeta(p) {
+    const wk = (setup && setup.weekly) || {};
+    if (weeklyTarget() === p.id && wk.pay > 0) return money(wk.pay) + " every " + DAYS[payDayOf(wk)];
+    return Number(p.pct) > 0 ? fmtPct(Number(p.pct)) + " of each top up" : "Top up by hand";
+  }
+
+  function renderCost() {
+    const box = $("costBox");
+    const rate = Number((setup && setup.plan && setup.plan.wtax) || 0);
+    if (!setup || !(rate > 0)) { box.hidden = true; return; }
+    box.hidden = false;
+    const amt = parseMoney($("costAmt").value);
+    const out = $("costOut");
+    out.textContent = "";
+    if (!amt || amt <= 0) { out.textContent = "Type an amount to see what it really costs you."; return; }
+    const tax = Math.round((amt * rate) / 100);
+    out.append(document.createTextNode(money(amt) + " really costs you "), el("b", null, money(amt + tax)), document.createTextNode(". If you take it, move " + money(tax) + " to the tax saver too."));
+  }
+
+  function renderPots() {
+    const ul = $("pots");
+    ul.textContent = "";
+    if (!gotSetup || !gotMoves) { ul.append(el("li", "pempty", "Your pots show up here once they load.")); return; }
+    const list = pots();
+    if (!list.length) { ul.append(el("li", "pempty", "No pots yet. Set them up in Setup below.")); return; }
+    const b = balances();
+    list.forEach((p) => {
+      const li = el("li", "pot");
+      li.style.setProperty("--c", cVar(p.color));
+      const note = el("span", "note");
+      note.setAttribute("aria-hidden", "true");
+      const main = el("div", "pmain");
+      main.append(el("span", "pname", p.name), el("span", "pmeta", potMeta(p)));
+      const bal = b[p.id] || 0;
+      li.append(note, main, el("span", "pbal", money(bal)));
+      if (Number(p.goal) > 0) {
+        const g = el("div", "goal");
+        const tr = el("div", "track");
+        const f = el("span");
+        f.style.width = Math.min(100, Math.max(0, (bal / p.goal) * 100)) + "%";
+        tr.append(f);
+        g.append(tr, el("span", "gtext", money(bal) + " of " + money(p.goal)));
+        li.append(g);
+      }
+      ul.append(li);
+    });
+  }
+
+  function renderHist() {
+    const ul = $("hist");
+    const more = $("histMore");
+    ul.textContent = "";
+    if (!gotSetup || !gotMoves) { ul.append(el("li", "hempty", "Your top ups and anything you take out show up here.")); more.hidden = true; return; }
+    const sorted = moves.slice().sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.at || "").localeCompare(String(a.at || "")));
+    if (!sorted.length) { ul.append(el("li", "hempty", "Nothing yet. Your top ups and anything you take out show up here.")); more.hidden = true; return; }
+    const shown = showAll ? sorted : sorted.slice(0, 12);
+    shown.forEach((m) => ul.append(histRow(m)));
+    more.hidden = sorted.length <= 12;
+    more.textContent = showAll ? "Show less" : "Show all " + sorted.length;
+  }
+
+  function histRow(m) {
+    const li = el("li", "hitem" + (m.void ? " void" : ""));
+    const keys = Object.keys(m.split || {});
+    const btn = el("button", "hrow");
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", openId === m.id ? "true" : "false");
+    const title = m.kind === "auto" ? (m.note || "Pay day") : (m.note || (m.kind === "out" ? "Taken out" : "Money in"));
+    let where = "";
+    if (m.kind === "out") where = "From " + potName(keys[0]) + (m.biz ? " for a business bill" : "");
+    else if (keys.length > 1) where = "Split across pots";
+    else if (keys.length === 1) where = "Into " + potName(keys[0]);
+    const left = el("div", "hleft");
+    left.append(el("span", "htitle", title), el("span", "hsub", niceDate(m.date) + (where ? " · " + where : "")));
+    const right = el("div", "hright");
+    const dir = m.void ? (m.kind === "auto" ? "skipped" : "undone") : (m.kind === "out" ? "out" : "in");
+    right.append(el("span", "hamt " + (m.kind === "out" ? "out" : "in"), money(m.amount)), el("span", "hdir", dir));
+    btn.append(left, right);
+    btn.addEventListener("click", () => { openId = openId === m.id ? null : m.id; renderHist(); });
+    li.append(btn);
+    if (openId === m.id) {
+      const d = el("div", "hdetail");
+      keys.forEach((k) => {
+        const r = el("div", "prow");
+        const l = el("span", "pl");
+        l.append(dotFor(potColor(k)), document.createTextNode(potName(k)));
+        r.append(l, el("span", null, money(m.split[k])));
+        d.append(r);
+      });
+      if (m.taxMove && Number(m.taxMove.amount) > 0) {
+        const r = el("div", "prow");
+        const l = el("span", "pl");
+        l.append(dotFor(potColor(TAX_ID)), document.createTextNode("Moved to Tax"));
+        r.append(l, el("span", null, money(m.taxMove.amount)));
+        d.append(r);
+      }
+      const act = el("button", "btn ghost small", m.void ? "Bring it back" : (m.kind === "auto" ? "Skip this week" : "Undo this"));
+      act.type = "button";
+      act.addEventListener("click", () => setVoid(m.id, !m.void));
+      d.append(act);
+      li.append(d);
+    }
+    return li;
+  }
+
+  async function setVoid(id, v) {
+    const m = moves.find((x) => x.id === id);
+    if (!m || !movesCol) return;
+    const b = balances();
+    const keys = Object.keys(m.split || {});
+    if (v && m.kind !== "out") {
+      const short = keys.find((k) => (b[k] || 0) < m.split[k]);
+      if (short) { toast("Can't undo that. " + potName(short) + " has already used some of it."); return; }
+    }
+    const tm = m.taxMove && Number(m.taxMove.amount) > 0 ? Number(m.taxMove.amount) : 0;
+    if (v && m.kind === "out" && tm && (b[TAX_ID] || 0) < tm) { toast("Can't undo that. Tax has already used some of it."); return; }
+    if (!v && m.kind === "out") {
+      const k = keys[0];
+      if ((b[k] || 0) < m.amount + tm) { toast(potName(k) + " doesn't have enough to take that out again."); return; }
+    }
+    try {
+      await movesCol.doc(id).update({ void: v });
+      toast(v ? (m.kind === "auto" ? "Skipped that week." : "Undone.") : "Brought back.");
+    } catch (e) { failToast(e); }
+  }
+
+  function renderIn() {
+    const list = pots();
+    if (inWhere !== "split" && !list.find((p) => p.id === inWhere)) inWhere = "split";
+    const wrap = $("inWhere");
+    wrap.textContent = "";
+    const opts = [{ id: "split", name: "Split across pots" }].concat(list.map((p) => ({ id: p.id, name: p.name, color: p.color })));
+    opts.forEach((o) => {
+      const c = el("button", "chip");
+      c.type = "button";
+      c.id = "in-" + o.id;
+      c.setAttribute("aria-pressed", inWhere === o.id ? "true" : "false");
+      if (o.color) c.append(dotFor(o.color));
+      c.append(document.createTextNode(o.name));
+      c.addEventListener("click", () => { inWhere = o.id; renderIn(); });
+      wrap.append(c);
+    });
+    const amt = parseMoney($("inAmt").value);
+    const pv = $("inPreview");
+    pv.textContent = "";
+    const save = $("inSave");
+    save.textContent = "Add to pots";
+    if (!amt || amt <= 0) { save.disabled = true; return; }
+    const split = inWhere === "split" ? splitAmount(amt, list) : { [inWhere]: amt };
+    const keys = Object.keys(split);
+    if (!keys.length) { pv.append(el("p", "err", "None of your pots take a share of pay. Pick one pot instead.")); save.disabled = true; return; }
+    keys.forEach((k) => {
+      const r = el("div", "prow");
+      const l = el("span", "pl");
+      l.append(dotFor(potColor(k)), document.createTextNode(potName(k)));
+      r.append(l, el("span", null, money(split[k])));
+      pv.append(r);
+    });
+    save.disabled = false;
+    save.textContent = inWhere === "split" ? "Add " + money(amt) + " to pots" : "Add " + money(amt) + " to " + potName(inWhere);
+  }
+
+  function renderOut() {
+    const list = pots();
+    const b = balances();
+    if (outPot && !list.find((p) => p.id === outPot)) outPot = null;
+    const wrap = $("outPots");
+    wrap.textContent = "";
+    list.forEach((p) => {
+      const c = el("button", "chip");
+      c.type = "button";
+      c.id = "out-" + p.id;
+      c.setAttribute("aria-pressed", outPot === p.id ? "true" : "false");
+      c.append(dotFor(p.color), document.createTextNode(p.name), el("span", "cb", money(b[p.id] || 0)));
+      c.addEventListener("click", () => { outPot = p.id; renderOut(); });
+      wrap.append(c);
+    });
+    $("outHas").textContent = outPot ? potName(outPot) + " has " + money(b[outPot] || 0) + "." : "Pick the pot it comes out of.";
+    const amt = parseMoney($("outAmt").value);
+    const save = $("outSave");
+    const err = $("outErr");
+    const tx = $("outTax");
+    err.hidden = true;
+    tx.hidden = true;
+    save.textContent = "Take it out";
+    if (!outPot || !amt || amt <= 0) { save.disabled = true; return; }
+    const biz = $("outBiz").checked;
+    const extra = biz ? 0 : taxOnOut(outPot, amt);
+    const need = amt + extra;
+    if (need > (b[outPot] || 0)) {
+      err.textContent = extra > 0
+        ? potName(outPot) + " needs " + money(need) + " for this, " + money(amt) + " plus " + money(extra) + " tax. It has " + money(b[outPot] || 0) + "."
+        : "That's more than " + potName(outPot) + " has. Take the rest from another pot.";
+      err.hidden = false;
+      save.disabled = true;
+      return;
+    }
+    if (extra > 0) {
+      tx.textContent = "";
+      tx.append(document.createTextNode("This really costs you "), el("b", null, money(need)), document.createTextNode(". " + money(extra) + " of it goes to Tax."));
+      tx.hidden = false;
+    }
+    save.disabled = false;
+    save.textContent = "Take " + money(amt) + " out of " + potName(outPot);
+  }
+
+  async function saveIn() {
+    if (!movesCol) return;
+    const amt = parseMoney($("inAmt").value);
+    if (!amt || amt <= 0) return;
+    const split = inWhere === "split" ? splitAmount(amt, pots()) : { [inWhere]: amt };
+    if (!Object.keys(split).length) return;
+    const btn = $("inSave");
+    btn.disabled = true;
+    try {
+      await movesCol.doc(newId()).set({ date: today(), at: new Date().toISOString(), kind: "in", amount: amt, split: split, note: $("inNote").value.trim().slice(0, 60), void: false });
+      $("inAmt").value = "";
+      $("inNote").value = "";
+      inWhere = "split";
+      $("panelIn").hidden = true;
+      toast("Added " + money(amt) + " in the app. Now move " + money(amt) + " into your " + SV() + " in " + BZ() + ", if you haven't yet.");
+    } catch (e) { failToast(e); btn.disabled = false; }
+  }
+
+  async function saveOut() {
+    if (!movesCol || !outPot) return;
+    const amt = parseMoney($("outAmt").value);
+    const b = balances();
+    if (!amt || amt <= 0) return;
+    const biz = $("outBiz").checked;
+    const extra = biz ? 0 : taxOnOut(outPot, amt);
+    if (amt + extra > (b[outPot] || 0)) return;
+    const btn = $("outSave");
+    btn.disabled = true;
+    const pot = outPot;
+    try {
+      const doc = { date: today(), at: new Date().toISOString(), kind: "out", amount: amt, split: { [pot]: amt }, note: $("outNote").value.trim().slice(0, 60), void: false };
+      if (extra > 0) doc.taxMove = { from: pot, amount: extra };
+      if (biz) doc.biz = true;
+      await movesCol.doc(newId()).set(doc);
+      $("outAmt").value = "";
+      $("outNote").value = "";
+      outPot = null;
+      $("panelOut").hidden = true;
+      $("outBiz").checked = false;
+      toast((!biz && pot === spendPotId()) ? "Done. Move " + money(amt) + " from your business savings to " + BK() + ", then tap Got money in on Personal." : biz ? "Done. Move " + money(amt) + " from the business savings to the business account and pay it from there." : "Done. Move " + money(amt) + " from your business savings to " + BKof("account") + (extra > 0 ? ". The " + money(extra) + " tax stays put." : "."));
+    } catch (e) { failToast(e); btn.disabled = false; }
+  }
+
+  function renderSetup() {
+    if (!setupReady) return;
+    if (!setupDirty) {
+      draft = setup ? clone(setup) : { pots: clone(STARTER), weekly: { pay: 0, day: 5, from: null }, plan: { take: 0, tax: 0, lump: 0, wtax: 0 }, v: 1 };
+      if (!Array.isArray(draft.pots)) draft.pots = [];
+      draft.weekly = draft.weekly || { pay: 0, day: 5, from: null };
+      draft.plan = draft.plan || { take: 0, tax: 0, lump: 0, wtax: 0 };
+      $("planWtax").value = draft.plan.wtax ? String(draft.plan.wtax) : "";
+      $("payAmt").value = centsToInput(draft.weekly.pay || 0);
+      $("payDay").value = String(payDayOf(draft.weekly));
+      $("planTake").value = centsToInput(draft.plan.take || 0);
+      $("planTax").value = centsToInput(draft.plan.tax || 0);
+      $("planLump").value = draft.plan.lump ? String(draft.plan.lump) : "";
+      const wp = draft.weekly.pot && draft.pots.find((p) => p.id === draft.weekly.pot);
+      const lbl = $("payLbl");
+      lbl.textContent = (wp ? "Into " + wp.name : "Into pots") + " every payday ";
+      lbl.append(el("span", "opt", "optional"));
+      drawPotEditor();
+    }
+    updateSetupHints();
+    if (!setup && !openedSetupOnce) { openedSetupOnce = true; $("setupBox").open = true; }
+  }
+
+  function drawPotEditor() {
+    const box = $("potEdit");
+    box.textContent = "";
+    draft.pots.forEach((p, i) => {
+      const row = el("div", "perow");
+      row.style.setProperty("--c", cVar(p.color));
+      const sw = el("span", "note");
+      sw.setAttribute("aria-hidden", "true");
+      const fields = el("div", "pefields");
+
+      const nf = el("div", "field");
+      const nl = el("label", null, "Pot name");
+      nl.htmlFor = "pn-" + p.id;
+      const ni = el("input");
+      ni.id = "pn-" + p.id;
+      ni.value = p.name || "";
+      ni.maxLength = 30;
+      ni.autocomplete = "off";
+      ni.addEventListener("input", () => { p.name = ni.value; setupDirty = true; });
+      nf.append(nl, ni);
+
+      const two = el("div", "two");
+      const pf = el("div", "field");
+      const pl = el("label", null, "Share of top ups");
+      pl.htmlFor = "pp-" + p.id;
+      const pi = el("input");
+      pi.id = "pp-" + p.id;
+      pi.inputMode = "decimal";
+      pi.autocomplete = "off";
+      pi.value = String(Number(p.pct) || 0);
+      pi.addEventListener("input", () => { p.pct = Number(pi.value) || 0; setupDirty = true; updateSetupHints(); });
+      pf.append(pl, pi);
+      const gf = el("div", "field");
+      const gl = el("label", null, "Goal");
+      gl.htmlFor = "pg-" + p.id;
+      const gi = el("input");
+      gi.id = "pg-" + p.id;
+      gi.inputMode = "decimal";
+      gi.autocomplete = "off";
+      gi.placeholder = "None";
+      gi.value = centsToInput(Number(p.goal) || 0);
+      gi.addEventListener("input", () => { p.goal = parseMoney(gi.value) || 0; setupDirty = true; });
+      gf.append(gl, gi);
+      two.append(pf, gf);
+
+      const rm = el("button", "link danger", "Remove " + (p.name || "this pot"));
+      rm.type = "button";
+      rm.addEventListener("click", () => removePot(i));
+
+      fields.append(nf, two, rm);
+      row.append(sw, fields);
+      box.append(row);
+    });
+  }
+
+  function removePot(i) {
+    const p = draft.pots[i];
+    if (!p) return;
+    const bal = balances()[p.id] || 0;
+    if (bal > 0) { showSetupErr((p.name || "That pot") + " still has " + money(bal) + ". Take it out first."); return; }
+    draft.pots.splice(i, 1);
+    setupDirty = true;
+    $("setupErr").hidden = true;
+    drawPotEditor();
+    updateSetupHints();
+  }
+
+  function addPot() {
+    if (!draft) return;
+    const used = draft.pots.map((p) => p.color);
+    const color = COLORS.find((c) => !used.includes(c)) || COLORS[draft.pots.length % COLORS.length];
+    const id = "p" + Date.now().toString(36);
+    draft.pots.push({ id: id, name: "", pct: 0, goal: 0, color: color });
+    setupDirty = true;
+    drawPotEditor();
+    updateSetupHints();
+    const n = $("pn-" + id);
+    if (n) n.focus();
+  }
+
+  function updateSetupHints() {
+    if (!draft) return;
+    const pct = Math.round(pctTotal(draft.pots) * 100) / 100;
+    $("pctHint").textContent = pct === 100 ? "Shares add up to 100%." : "Shares add up to " + fmtPct(pct) + ". Make them 100%.";
+    const pay = parseMoney($("payAmt").value) || 0;
+    const day = Number($("payDay").value);
+    if (pay > 0) {
+      const wk = (setup && setup.weekly) || {};
+      const from = wk.pay > 0 && payDayOf(wk) === day && wk.from ? wk.from : nextPayday(day, true);
+      const when = from > today() ? ", starting " + niceDate(from) + "." : ".";
+      const wp = draft.weekly && draft.weekly.pot && draft.pots.find((p) => p.id === draft.weekly.pot);
+      $("payHint").textContent = money(pay) + " goes into " + (wp ? wp.name : "your pots") + " every " + DAYS[day] + " by itself" + when;
+    } else {
+      $("payHint").textContent = "Leave this empty if your pots only get topped up from " + LP() + ".";
+    }
+  }
+
+  function showSetupErr(msg) {
+    const e = $("setupErr");
+    e.textContent = msg;
+    e.hidden = false;
+  }
+
+  async function saveSetup() {
+    if (!setupRef || !draft) return;
+    $("setupErr").hidden = true;
+    const list = draft.pots.map((p) => ({
+      id: p.id,
+      name: String(p.name || "").trim().slice(0, 30),
+      pct: Math.max(0, Math.round((Number(p.pct) || 0) * 100) / 100),
+      goal: Math.max(0, Math.round(Number(p.goal) || 0)),
+      color: COLORS.includes(p.color) ? p.color : "green"
+    }));
+    if (!list.length) return showSetupErr("Add at least one pot.");
+    if (list.some((p) => !p.name)) return showSetupErr("Give every pot a name.");
+    if (Math.abs(pctTotal(list) - 100) > 0.01) return showSetupErr("Your pot shares need to add up to 100%.");
+    const take = parseMoney($("planTake").value.trim() || "0");
+    const taxw = parseMoney($("planTax").value.trim() || "0");
+    const lumpRaw = $("planLump").value.trim().replace("%", "");
+    const lump = lumpRaw ? Number(lumpRaw) : 0;
+    if (take === null || taxw === null) return showSetupErr("Weekly pay and the tax pot need to be numbers, like 1000.");
+    if (!Number.isFinite(lump) || lump < 0 || lump > 100) return showSetupErr("The share of " + LP() + " needs to be between 0 and 100.");
+    const wtRaw = $("planWtax").value.trim().replace("%", "");
+    const wtax = wtRaw ? Number(wtRaw) : 0;
+    if (!Number.isFinite(wtax) || wtax < 0 || wtax > 100) return showSetupErr("Tax on pot money needs to be between 0 and 100.");
+    const raw = $("payAmt").value.trim();
+    const pay = raw ? parseMoney(raw) : 0;
+    if (pay === null) return showSetupErr("Weekly pay needs to be a number, like 850.");
+    const day = Number($("payDay").value);
+    const old = (setup && setup.weekly) || {};
+    let from = old.from || null;
+    if (pay > 0) { if (!(old.pay > 0) || payDayOf(old) !== day || !from) from = nextPayday(day, true); }
+    else from = null;
+    const btn = $("saveSetup");
+    btn.disabled = true;
+    try {
+      const keepPot = old.pot && list.find((p) => p.id === old.pot) ? old.pot : null;
+      const next = { pots: list, weekly: { pay: pay, day: day, from: from, pot: keepPot }, plan: { take: take, tax: taxw, lump: lump, wtax: wtax }, v: 1 };
+      if (setup && setup.due) next.due = clone(setup.due);
+      await setupRef.set(next);
+      setupDirty = false;
+      firstRun = false;
+      setStatus("");
+      toast("Setup saved.");
+      runAuto();
+    } catch (e) { failToast(e); }
+    btn.disabled = false;
+  }
+
+  async function runAuto() {
+    if (!setup || !movesCol) return;
+    const wk = setup.weekly || {};
+    if (!(wk.pay > 0) || !wk.from) return;
+    const list = pots();
+    const target = weeklyTarget();
+    if (!target && pctTotal(list) <= 0) return;
+    const day = payDayOf(wk);
+    const amt = Math.round(wk.pay);
+    const have = new Set(moves.map((m) => m.id));
+    const due = paydaysBetween(wk.from, day, today()).filter((d) => !have.has("auto-" + d));
+    let added = 0;
+    for (const d of due) {
+      try {
+        await movesCol.doc("auto-" + d).set({ date: d, at: new Date().toISOString(), kind: "auto", amount: amt, split: target ? { [target]: amt } : splitAmount(amt, list), note: DAYS[day] + (target ? " " + potName(target).toLowerCase() : " pay"), void: false });
+        added += 1;
+      } catch (e) { failToast(e); break; }
+    }
+    if (added === 1) toast("Added this " + DAYS[day] + "'s " + money(amt) + (target ? " to " + potName(target) + "." : " to your pots."));
+    else if (added > 1) toast("Added " + added + " paydays to your pots.");
+  }
+
+  const KEY = "paydaypots.v1";
+  // A new phone starts empty. Everything is typed in Setup or comes down from the cloud copy.
+  const DEFAULT_SETUP = {
+    pots: STARTER.concat([{ id: "tax", name: "Tax", pct: 0, goal: 0, color: "orange" }]),
+    weekly: { pay: 0, day: 5, from: null, pot: "tax" },
+    plan: { take: 0, tax: 0, lump: 0, wtax: 0 },
+    v: 1
+  };
+  // Private settings. The owner's own amounts, the names of their banks and the wording for their own bills live in a file called config.json in their
+  // private cloud copy. The phone reads it when the cloud connects and keeps what it read under paydaypots.v1.cfg.
+  // Without it those parts don't show and plain words are used.
+  const CFG_KEY = KEY + ".cfg";
+  let cfg = {};
+  function cfgLoad() {
+    try { const c = JSON.parse(localStorage.getItem(CFG_KEY) || "null"); cfg = c && typeof c === "object" && !Array.isArray(c) ? c : {}; } catch (e) { cfg = {}; }
+  }
+  function cfgTake(c) {
+    if (!c || typeof c !== "object" || Array.isArray(c)) return false;
+    const text = JSON.stringify(c);
+    if (text === JSON.stringify(cfg)) return false;
+    cfg = JSON.parse(text);
+    try { localStorage.setItem(CFG_KEY, text); } catch (e) {}
+    try { nameUI(); render(); } catch (e) {}
+    return true;
+  }
+  const nm = (k, d) => { const n = cfg.names; const w = n && typeof n === "object" ? n[k] : null; return typeof w === "string" && w.trim() ? w : d; };
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const BK = () => nm("bank", "your bank");
+  const BKc = () => cap(BK());
+  const BKof = (what) => (nm("bank", "") ? "your " + nm("bank", "") + " " + what : "your bank " + what);
+  const BZ = () => nm("bizBank", "your bank");
+  const SV = () => nm("saver", "savings account");
+  const TR = () => nm("trans", "your everyday account");
+  const LP = () => nm("lump", "big payments");
+  const moveWords = () => " from " + TR() + " to " + SV() + " in " + BZ() + ".";
+  const spendPotId = () => (typeof cfg.spendPot === "string" ? cfg.spendPot : "");
+  // The labels that name a bank are filled in here.
+  function nameUI() {
+    $("meBillsH").textContent = "Coming out of " + BK();
+    $("meCheckSum").textContent = "Check against " + BK();
+    $("meBalLbl").textContent = "What's available in " + BK();
+    $("mePayLbl").textContent = "Weekly pay into " + BK();
+    $("meBillsEditH").textContent = "Bills that come out of " + BK();
+    $("bizSub").textContent = "This should match your " + SV() + (nm("bizBank", "") ? " in " + BZ() : "") + ".";
+    $("bizCheckSum").textContent = "Check against " + BZ();
+    $("bizSaverLbl").textContent = "What your " + SV() + " says";
+    $("inNote").placeholder = nm("inNote", "Extra income");
+    $("outBizLbl").textContent = nm("bizBill", "Business bill");
+    $("planLumpLbl").textContent = "Share of " + LP() + " to your pots";
+  }
+  let state = { setup: null, moves: {}, personal: null };
+  let firstRun = false;
+
+  // Saves to this phone, and to the cloud copy when the page runs as a Claude artifact. It only fails if neither can take it.
+  function persist() {
+    let ok = false;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); ok = true; } catch (e) {}
+    if (cloudTouch()) ok = true;
+    if (!ok) throw new Error("save");
+  }
+  function emit() {
+    setup = state.setup ? clone(state.setup) : null;
+    moves = Object.keys(state.moves).map((id) => Object.assign(clone(state.moves[id]), { id: id }));
+    gotSetup = gotMoves = setupReady = movesReady = true;
+    render();
+  }
+  function guarded(fn) {
+    return new Promise((resolve, reject) => {
+      const before = JSON.stringify(state);
+      try { fn(); persist(); } catch (e) { state = JSON.parse(before); emit(); reject({ code: "save" }); return; }
+      emit();
+      resolve();
+    });
+  }
+  const localSetupRef = { set: (data) => guarded(() => { state.setup = clone(data); }) };
+  const localMoves = {
+    doc: (id) => ({
+      set: (data) => guarded(() => { state.moves[id] = clone(data); }),
+      update: (patch) => guarded(() => {
+        if (!state.moves[id]) throw new Error("missing");
+        Object.assign(state.moves[id], clone(patch));
+      })
+    })
+  };
+
+  function init() {
+    let ok = true;
+    cfgLoad();
+    try {
+      // What is saved here is only read on a phone that has been set up with the key. Anywhere else the app starts empty.
+      const raw = owner() ? localStorage.getItem(KEY) : null;
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s && s.setup && Array.isArray(s.setup.pots)) state = { setup: s.setup, moves: s.moves || {}, personal: s.personal || null };
+      }
+      localStorage.setItem(KEY + ".t", "1");
+      localStorage.removeItem(KEY + ".t");
+    } catch (e) { ok = false; }
+    if (!state.setup) { state.setup = clone(DEFAULT_SETUP); firstRun = true; }
+    if (!state.personal || !Array.isArray(state.personal.bills)) { state.personal = meBlank(state.setup); try { persist(); } catch (e) {} }
+    ensureWeek();
+    nameUI();
+    let tab = "me";
+    try { tab = localStorage.getItem(KEY + ".tab") || "me"; } catch (e) {}
+    showTab(tab);
+    setupRef = localSetupRef;
+    movesCol = localMoves;
+    if (!ok) setStatus("This browser won't save your pots. Open it in Safari or Chrome, not a private tab.", true);
+    else setStatus("");
+    emit();
+    runAuto();
+  }
+
+  // The cloud copy. Everything lives on the phone. The app can keep a second copy somewhere Claude can reach,
+  // so Claude can read what the phone holds and send changes back. Two places are supported:
+  //   GitHub   a private repo called pots-data, under the account that serves this page, reached with a key pasted in once.
+  //            state.json holds rev, at, dev, app, applied, view and state. inbox/<id>.json are changes from Claude. config.json holds the private settings.
+  //   Claude   only when the page runs as a Claude artifact: the artifact's own database, pots/state, pots/view and inbox/<id>.
+  // Either way only the page writes the saved state, rev goes up by one each save, and Claude sends changes as inbox items.
+  // The page applies each item once, oldest first by its at field, and records the result.
+  //   replace: json holds the whole saved state. With baseRev it only goes in if the app is still at that rev.
+  //   bank: avail in cents and alertAt, the time of a bank alert. Shows on Personal with a Use it button.
+  //   spend: amount in cents, note, kind spend or in, and spentAt if it wasn't just now. Logs it on Personal.
+  //   note: a message that pops up.
+  //   due: month like 2026-12, and paid true or false. Ticks or unticks the monthly bill on the Business tab.
+  const CLOUD = !!(window.claude && typeof window.claude.use === "function");
+  const SYNC_KEY = KEY + ".sync";
+  const GH_KEY = KEY + ".gh";
+  const OWN_KEY = KEY + ".own";
+  // The repo is worked out from the address this page is served from, so no account name is written here.
+  const GH_OWNER = (() => { const h = String(location.hostname || ""); if (/\.github\.io$/i.test(h)) return h.split(".")[0]; try { return localStorage.getItem(KEY + ".owner") || ""; } catch (e) { return ""; } })();
+  const GH_REPO = GH_OWNER + "/pots-data";
+  const cloud = { cfgAt: 0, kind: CLOUD ? "art" : "", phase: "none", db: null, ref: null, view: null, rev: 0, known: false, gen: 0, sent: -1, busy: false, again: false, timer: null, at: null, err: "", why: "", tries: 0, clash: 0, clashAt: 0, seq: 0, seqOk: 0, here: null, dev: "", ops: {}, opBusy: false, bootDirty: false, gh: null, applied: {}, poll: null, pollTimer: null, polling: false };
+  function ghCfg() {
+    try {
+      const v = JSON.parse(localStorage.getItem(GH_KEY) || "null");
+      if (!v || typeof v.token !== "string" || !v.token) return null;
+      return { token: v.token, repo: typeof v.repo === "string" && /^[\w.-]+\/[\w.-]+$/.test(v.repo) ? v.repo : GH_REPO };
+    } catch (e) { return null; }
+  }
+  // A phone counts as set up once it has held the key to the private cloud copy. Until then the lock screen only asks for that key,
+  // so nobody else can make a code of their own and get in.
+  function owner() {
+    if (CLOUD) return true;
+    try {
+      if (localStorage.getItem(OWN_KEY)) return true;
+      let m = null;
+      try { m = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); } catch (e) {}
+      if (ghCfg() || (m && Number(m.rev) > 0)) { localStorage.setItem(OWN_KEY, "1"); return true; }
+    } catch (e) {}
+    return false;
+  }
+  (() => {
+    let m = null;
+    try { m = JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); } catch (e) {}
+    if (m && typeof m === "object" && Number.isFinite(m.rev) && m.rev > 0) { cloud.rev = m.rev; cloud.known = true; cloud.sent = m.clean ? 0 : -1; cloud.bootDirty = !m.clean; }
+    if (m && m.applied && typeof m.applied === "object") cloud.applied = m.applied;
+    if (m && Number.isFinite(m.seq) && m.seq > 0) { cloud.seq = m.seq; cloud.seqOk = Number.isFinite(m.seqOk) && m.seqOk > 0 ? Math.min(m.seqOk, m.seq) : 0; }
+    cloud.dev = m && typeof m.dev === "string" && m.dev ? m.dev : "d" + Math.random().toString(36).slice(2, 10);
+    if (!CLOUD) { cloud.gh = ghCfg(); if (cloud.gh) cloud.kind = "gh"; }
+    cloud.phase = cloud.kind ? "wait" : "none";
+  })();
+  const cloudDirty = () => cloud.sent !== cloud.gen;
+  function writeSync() {
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify({ rev: cloud.rev, dev: cloud.dev, clean: !cloudDirty(), applied: cloud.applied, seq: cloud.seq, seqOk: cloud.seqOk })); } catch (e) {}
+  }
+  function niceTime(d) {
+    return d.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s/g, "").toLowerCase();
+  }
+  // Called on every save. True means the cloud has it or will get it.
+  function cloudTouch() {
+    if (!cloud.kind) return false;
+    cloud.gen += 1;
+    writeSync();
+    if (cloud.phase === "on") cloudLater();
+    cloudUI();
+    return cloud.phase !== "off";
+  }
+  function cloudLater(ms) { clearTimeout(cloud.timer); cloud.timer = setTimeout(cloudPush, ms || 700); }
+  function cloudUI() {
+    const l = $("cloudLine");
+    if (!l) return;
+    const has = !!cloud.kind;
+    let msg;
+    if (!has) msg = "Cloud: off. Paste your key and turn it on, then Claude can see your app and update it.";
+    else if (cloud.phase === "wait") msg = "Cloud: connecting.";
+    else if (cloud.phase === "off") msg = "Cloud: " + (cloud.why || "off right now. This copy only lives on this phone.");
+    else if (cloud.err) msg = "Cloud: " + ((cloud.kind === "gh" && ghWhy({ code: cloud.err })) || "the last save didn't go through. It tries again by itself.");
+    else if (cloudDirty() || cloud.busy) msg = "Cloud: saving.";
+    else msg = "Cloud: saved" + (cloud.at ? " " + niceTime(new Date(cloud.at)) : "") + ". Claude can see this and update it.";
+    l.textContent = msg;
+    const on = has && cloud.phase === "on";
+    const ask = !CLOUD && (!has || cloud.phase === "off" || (cloud.kind === "gh" && !!ghWhy({ code: cloud.err })));
+    $("cloudKeyField").hidden = !ask;
+    $("cloudOn").hidden = !ask;
+    $("cloudOff").hidden = CLOUD || !has;
+    $("backupHint").textContent = on ? "Everything saves to your cloud copy as you go. A backup in your Notes never hurts." : "Your pots only live on this phone. Copy a backup now and then and keep it in your Notes.";
+    $("meCopyAll").hidden = on;
+    $("bizCopyAll").hidden = on;
+    try { bankGoUI(); } catch (e) {}
+  }
+  function ghWhy(e) {
+    const c = e && e.code;
+    if (c === "auth") return "GitHub refused that key. Make a new one and paste it in.";
+    if (c === "notfound") return "that key can't see pots-data. Make a new one and pick pots-data.";
+    if (c === "denied") return "that key isn't allowed to save. It needs Contents set to Read and write.";
+    return "";
+  }
+  function cloudBoot() {
+    cloudUI();
+    if (!cloud.kind) return;
+    cloud.phase = "wait";
+    cloud.why = "";
+    cloud.err = "";
+    cloudUI();
+    // A phone that has never met the cloud is held until the cloud answers, so nothing gets typed in the middle of the two copies meeting.
+    if (!cloud.known) { $("app").classList.add("cloudwait"); setStatus("Getting your pots from the cloud."); }
+    let settled = false;
+    const done = (phase, why) => {
+      if (settled) return false;
+      settled = true;
+      clearTimeout(timer);
+      cloud.phase = phase;
+      cloud.err = "";
+      cloud.why = why || "";
+      $("app").classList.remove("cloudwait");
+      if (phase === "off") setStatus(why ? "Cloud: " + why : "Can't reach the cloud right now. This copy only lives on this phone until it can.", true);
+      else setStatus("");
+      cloudUI();
+      return true;
+    };
+    const timer = setTimeout(() => done("off"), 11000);
+    let p;
+    try { p = cloud.kind === "gh" ? ghDb() : window.claude.use("db"); } catch (e) { done("off"); return; }
+    Promise.resolve(p).then(async (db) => {
+      if (settled) return;
+      if (!db) { done("off"); return; }
+      try {
+        const ref = db.doc("pots/state");
+        const snap = await ref.get();
+        if (settled) return;
+        cloud.db = db; cloud.ref = ref; cloud.view = db.doc("pots/view");
+        done("on");
+        cloudMeet(snap);
+        ref.onSnapshot(cloudSeen, () => {});
+        db.collection("inbox").onSnapshot(cloudInbox, () => {});
+      } catch (e) { done("off", cloud.kind === "gh" ? ghWhy(e) : ""); }
+    }, () => { done("off"); });
+  }
+  // The phone's copy and the cloud's copy meet.
+  function cloudMeet(snap) {
+    const d = snap && snap.exists ? snap.data() : null;
+    const rrev = d ? Number(d.rev) || 0 : 0;
+    const rseq = d ? Number(d.seq) || 0 : 0;
+    // The cloud can hold a save this very phone sent and never heard back about. The phone's copy is the same or newer, so it stays and goes up again.
+    const echo = !!d && d.dev === cloud.dev && rseq > cloud.seqOk && rseq <= cloud.seq;
+    if (echo) { cloud.known = true; cloud.seqOk = rseq; }
+    if (d && !echo && (!cloud.known || rrev !== cloud.rev)) {
+      // The cloud holds a copy this phone hasn't seen, so the cloud wins. What was on this phone is kept aside, just in case.
+      const real = !firstRun;
+      const fresh = !cloud.known;
+      if (real) { try { localStorage.setItem(KEY + ".aside", JSON.stringify(state)); } catch (e) {} }
+      if (cloudAdopt(d)) { if (fresh && real) toast("Took the copy from the cloud. What was on this phone is kept aside."); return; }
+    }
+    if (rrev > cloud.rev) cloud.rev = rrev;
+    if (d && typeof d.at === "string" && !cloud.at) cloud.at = d.at;
+    if (!d || !cloud.known || cloudDirty() || echo) { cloud.sent = -1; cloudPush(); }
+    else cloudUI();
+  }
+  function cloudAdopt(d) {
+    let s = null;
+    try { s = JSON.parse(d.json); } catch (e) { return false; }
+    if (!s || !s.setup || !Array.isArray(s.setup.pots) || !s.moves || typeof s.moves !== "object") return false;
+    state = { setup: s.setup, moves: s.moves, personal: s.personal && Array.isArray(s.personal.bills) ? s.personal : meBlank(s.setup) };
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    cloud.rev = Number(d.rev) || 0;
+    if (d.dev === cloud.dev) cloud.seq = Math.max(cloud.seq, Number(d.seq) || 0);
+    cloud.seqOk = cloud.seq;
+    cloud.known = true;
+    cloud.sent = cloud.gen;
+    cloud.at = typeof d.at === "string" ? d.at : null;
+    writeSync();
+    firstRun = false; setupDirty = false; meDirty = false;
+    ensureWeek();
+    emit();
+    runAuto();
+    cloudUI();
+    return true;
+  }
+  async function cloudPush() {
+    if (!cloud.kind || cloud.phase !== "on" || !cloudDirty()) return;
+    if (cloud.busy) { cloud.again = true; return; }
+    cloud.busy = true;
+    const g = cloud.gen;
+    const rev = cloud.rev + 1;
+    const at = new Date().toISOString();
+    // Every try gets its own number, written down before it's sent, so a save whose answer got lost can be told apart later.
+    cloud.seq += 1;
+    const seq = cloud.seq;
+    writeSync();
+    let text = "";
+    try { text = allText(true); } catch (e) {}
+    let clash = false;
+    try {
+      await cloud.ref.set({ rev: rev, at: at, dev: cloud.dev, app: APP_VERSION, seq: seq, json: JSON.stringify(state) });
+      cloud.rev = rev; cloud.sent = g; cloud.at = at; cloud.err = ""; cloud.tries = 0; cloud.clash = 0; cloud.known = true; cloud.seqOk = seq;
+      writeSync();
+      try { await cloud.view.set({ rev: rev, at: at, text: text }); } catch (e) {}
+    } catch (e) {
+      cloud.err = (e && e.code) || "error";
+      cloud.tries += 1;
+      // After two clashes in a row it waits a few seconds between looks, so it can't spin and can't get stuck.
+      clash = cloud.err === "conflict" && (cloud.clash < 2 || Date.now() - cloud.clashAt > 8000);
+    }
+    cloud.busy = false;
+    if (clash) {
+      // Something else saved since this phone last looked. Look again and let the two copies meet.
+      cloud.clash += 1;
+      cloud.clashAt = Date.now();
+      cloud.err = "";
+      cloud.again = false;
+      try { cloudMeet(await cloud.ref.get()); } catch (e) { cloud.err = (e && e.code) || "error"; }
+      cloudUI();
+      return;
+    }
+    cloudUI();
+    if (cloud.err) { if (cloud.tries <= 3 && cloud.err !== "revoked" && cloud.err !== "invalid_argument" && cloud.err !== "auth" && cloud.err !== "notfound" && cloud.err !== "denied") cloudLater(4000 * cloud.tries); }
+    else if (cloud.again || cloudDirty()) cloudLater();
+    cloud.again = false;
+  }
+  // The saved state changed in the cloud while this page was open, from another phone or tab.
+  function cloudSeen(snap) {
+    if (!snap || !snap.exists || (snap.metadata && snap.metadata.hasPendingWrites)) return;
+    const d = snap.data();
+    const rrev = Number(d && d.rev) || 0;
+    if (!d || d.dev === cloud.dev || rrev <= cloud.rev || cloud.busy) return;
+    if (cloudDirty()) { cloud.rev = rrev; cloudLater(); return; }
+    if (cloudAdopt(d)) toast("Updated from the cloud.");
+  }
+  function cloudInbox(snap) {
+    if (!snap || !Array.isArray(snap.docs)) return;
+    snap.docs.forEach((doc) => {
+      const d = doc.data();
+      if (!d || d.done || cloud.ops[doc.id]) return;
+      cloud.ops[doc.id] = { id: doc.id, d: clone(d), todo: true };
+    });
+    cloudRunOps();
+  }
+  async function cloudRunOps() {
+    if (cloud.opBusy || cloud.phase !== "on") return;
+    cloud.opBusy = true;
+    try {
+      for (;;) {
+        const next = Object.values(cloud.ops).filter((o) => o.todo).sort((a, b) => String(a.d.at || "").localeCompare(String(b.d.at || "")) || a.id.localeCompare(b.id))[0];
+        if (!next) break;
+        next.todo = false;
+        const result = applyOp(next.id, next.d);
+        try { await cloud.db.collection("inbox").doc(next.id).update({ done: true, doneAt: new Date().toISOString(), result: result }); } catch (e) {}
+      }
+    } finally { cloud.opBusy = false; }
+  }
+  // GitHub as the cloud. It's made to look like the small part of the artifact database the code above uses, so both run the same way.
+  const b64e = (str) => { const by = new TextEncoder().encode(str); let bin = ""; for (let i = 0; i < by.length; i += 0x8000) bin += String.fromCharCode.apply(null, by.subarray(i, i + 0x8000)); return btoa(bin); };
+  const b64d = (s) => new TextDecoder().decode(Uint8Array.from(atob(String(s).replace(/\s/g, "")), (c) => c.charCodeAt(0)));
+  // Files in the repo by default. With whole set, path is taken from the top of the repo, which is how a release is made.
+  async function ghCall(method, path, body, whole) {
+    const g = cloud.gh;
+    if (!g) throw { code: "auth" };
+    let res;
+    try {
+      res = await fetch("https://api.github.com/repos/" + g.repo + (whole ? "/" + path : path ? "/contents/" + path : ""), { method: method, cache: "no-store", headers: { Authorization: "Bearer " + g.token, Accept: "application/vnd.github+json" }, body: body ? JSON.stringify(body) : undefined });
+    } catch (e) { throw { code: "offline" }; }
+    if (res.status === 401) throw { code: "auth" };
+    if (res.status === 404) return null;
+    if (res.status === 409 || res.status === 422) throw { code: "conflict" };
+    // 403 is also what GitHub sends when it wants the app to slow down. That sorts itself out, so it's tried again.
+    if (res.status === 429 || (res.status === 403 && (res.headers.get("retry-after") || res.headers.get("x-ratelimit-remaining") === "0"))) throw { code: "unavailable" };
+    if (res.status === 403) throw { code: "denied" };
+    if (!res.ok) throw { code: "unavailable" };
+    return res.json();
+  }
+  function ghDb() {
+    let sha = null;
+    const snapOf = (f) => ({ id: "state", exists: !!f, data: () => f, metadata: { fromCache: false, hasPendingWrites: false } });
+    const stateDoc = {
+      get: async () => {
+        // A repo with nothing in it yet answers 404 or 409 here. Both mean there's no file.
+        let r = null;
+        try { r = await ghCall("GET", "state.json"); } catch (e) { if (!e || e.code !== "conflict") throw e; }
+        if (!r) {
+          // No file yet, or the key can't see the repo at all. Asking for the repo itself tells the two apart.
+          if (!(await ghCall("GET", ""))) throw { code: "notfound" };
+          sha = null;
+          return snapOf(null);
+        }
+        sha = r.sha || null;
+        let f = null;
+        try { f = JSON.parse(b64d(r.content)); } catch (e) { f = null; }
+        if (!f || typeof f !== "object") return snapOf({ rev: 0, json: "" });
+        if (f.applied && typeof f.applied === "object") cloud.applied = Object.assign({}, f.applied, cloud.applied);
+        return snapOf({ rev: f.rev, at: f.at, dev: f.dev, app: f.app, seq: f.seq, json: JSON.stringify(f.state || null) });
+      },
+      set: async (b) => {
+        let text = "";
+        try { text = allText(true); } catch (e) {}
+        const file = { rev: b.rev, at: b.at, dev: b.dev, app: b.app, seq: b.seq, applied: cloud.applied, view: text, state: JSON.parse(b.json) };
+        const body = { message: "Pay Day Pots save, rev " + b.rev, content: b64e(JSON.stringify(file, null, 1)) };
+        if (sha) body.sha = sha;
+        const r = await ghCall("PUT", "state.json", body);
+        if (!r) throw { code: "notfound" };
+        sha = (r.content && r.content.sha) || null;
+      },
+      onSnapshot: () => () => {}
+    };
+    const inbox = {
+      onSnapshot: (fn) => {
+        cloud.poll = async () => {
+          if (cloud.kind !== "gh" || cloud.phase !== "on" || cloud.polling) return;
+          cloud.polling = true;
+          try {
+            // The private settings are read along with the inbox, once a minute at most.
+            if (Date.now() - cloud.cfgAt >= 60000 || Date.now() < cloud.cfgAt) {
+              cloud.cfgAt = Date.now();
+              try {
+                const cf = await ghCall("GET", "config.json");
+                let v = null;
+                try { v = cf && cf.content ? JSON.parse(b64d(cf.content)) : null; } catch (e) { v = null; }
+                cfgTake(v);
+              } catch (e) { cloud.cfgAt = 0; }
+            }
+            const list = await ghCall("GET", "inbox");
+            const docs = [];
+            const here = {};
+            const done = [];
+            for (const it of Array.isArray(list) ? list : []) {
+              if (!it || it.type !== "file" || !/\.json$/.test(String(it.name))) continue;
+              const id = it.name.slice(0, -5);
+              here[id] = true;
+              if (cloud.applied[id]) { if (it.sha) done.push({ id: id, name: it.name, sha: it.sha }); continue; }
+              if (cloud.ops[id]) continue;
+              const r = await ghCall("GET", "inbox/" + encodeURIComponent(it.name));
+              let d = null;
+              try { d = r ? JSON.parse(b64d(r.content)) : null; } catch (e) { d = null; }
+              docs.push({ id: id, data: () => (d && typeof d === "object" ? d : { op: "unreadable" }) });
+            }
+            cloud.here = here;
+            if (docs.length) fn({ docs: docs });
+            // A change that has been taken, with its receipt already in the saved copy, is cleared out of the inbox. One at a time, and never while a save is on its way.
+            for (const it of done) {
+              if (cloud.kind !== "gh" || cloud.phase !== "on" || cloud.busy || cloudDirty()) break;
+              cloud.busy = true;
+              let gone = false;
+              try { await ghCall("DELETE", "inbox/" + encodeURIComponent(it.name), { message: "Pay Day Pots took " + it.name, sha: it.sha }); gone = true; } catch (e) {}
+              cloud.busy = false;
+              if (gone) delete here[it.id];
+              if (cloud.again || cloudDirty()) { cloud.again = false; cloudLater(); break; }
+            }
+          } catch (e) {}
+          cloud.polling = false;
+        };
+        cloud.poll();
+        clearInterval(cloud.pollTimer);
+        cloud.pollTimer = setInterval(() => { if (!document.hidden && cloud.poll) cloud.poll(); }, 90000);
+        return () => {};
+      },
+      doc: (id) => ({
+        update: async (p) => {
+          cloud.applied[id] = { at: p.doneAt, result: p.result };
+          // Old receipts are dropped once there are more than 200, but never one whose file is still sitting in the inbox, or it would be taken a second time.
+          const keys = Object.keys(cloud.applied);
+          if (keys.length > 200) keys.filter((k) => !(cloud.here && cloud.here[k])).sort((x, y) => String(cloud.applied[x].at).localeCompare(String(cloud.applied[y].at))).slice(0, keys.length - 200).forEach((k) => { delete cloud.applied[k]; });
+          cloud.gen += 1;
+          writeSync();
+          cloudLater();
+          cloudUI();
+        }
+      })
+    };
+    return { doc: (path) => (path === "pots/state" ? stateDoc : { set: async () => {} }), collection: () => inbox };
+  }
+  function ghTurnOn() {
+    const v = $("cloudKey").value.trim();
+    if (v.length < 20 || /\s/.test(v)) { toast("That doesn't look like a key. Copy the whole thing from GitHub."); return; }
+    try { localStorage.setItem(GH_KEY, JSON.stringify({ token: v, repo: GH_REPO })); } catch (e) { toast("Couldn't save the key on this phone."); return; }
+    $("cloudKey").value = "";
+    cloud.gh = ghCfg();
+    cloud.kind = "gh";
+    cloud.sent = -1;
+    cloudBoot();
+  }
+  function ghTurnOff() {
+    try { localStorage.removeItem(GH_KEY); } catch (e) {}
+    clearTimeout(cloud.timer);
+    clearInterval(cloud.pollTimer);
+    cloud.kind = ""; cloud.gh = null; cloud.phase = "none"; cloud.db = null; cloud.ref = null; cloud.poll = null; cloud.err = ""; cloud.why = "";
+    $("app").classList.remove("cloudwait");
+    setStatus("");
+    cloudUI();
+    toast("Cloud is off. Everything is still on this phone.");
+  }
+  function opSave(fn, msg) {
+    const before = JSON.stringify(state);
+    try { fn(); persist(); } catch (e) { state = JSON.parse(before); emit(); return "error: couldn't save"; }
+    emit();
+    if (msg) toast(msg);
+    return "ok";
+  }
+  function applyOp(id, o) {
+    try {
+      const kind = String((o && o.op) || "");
+      const note = o && typeof o.note === "string" ? o.note.trim().slice(0, 220) : "";
+      if (kind === "replace") {
+        let s = null;
+        try { s = typeof o.json === "string" ? JSON.parse(o.json) : null; } catch (e) { s = null; }
+        if (!s || !s.setup || !Array.isArray(s.setup.pots) || !s.moves || typeof s.moves !== "object") return "error: that isn't Pay Day Pots data";
+        if (o.baseRev != null && (Number(o.baseRev) !== cloud.rev || cloudDirty())) return "stale: the app is at rev " + cloud.rev + (cloudDirty() ? " with changes still saving" : "");
+        const before = JSON.stringify(state);
+        state = { setup: s.setup, moves: s.moves, personal: s.personal && Array.isArray(s.personal.bills) ? s.personal : state.personal };
+        try { persist(); } catch (e) { state = JSON.parse(before); return "error: couldn't save"; }
+        setupDirty = false; meDirty = false; firstRun = false;
+        ensureWeek();
+        emit();
+        runAuto();
+        toast(note || "Claude updated your app.");
+        return "ok";
+      }
+      if (kind === "bank") {
+        const avail = Math.round(Number(o.avail));
+        // at is when Claude sent it and sets the order things are applied in. alertAt is when the bank says the money moved. Without alertAt, at is taken as that.
+        const t = typeof o.alertAt === "string" ? o.alertAt : o.at;
+        if (!Number.isFinite(avail) || o.avail == null || typeof t !== "string" || Number.isNaN(Date.parse(t))) return "error: needs avail in cents and the time of the alert";
+        const cur = P().bank;
+        if (cur && Date.parse(cur.at) >= Date.parse(t)) return "skipped: an alert as new as that is already there";
+        // dep is the deposit the alert was about, in cents, when it was one. It stops the same money being counted twice, see bankStamp.
+        const dep = Math.round(Number(o.dep));
+        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; if (dep > 0) state.personal.bank.dep = dep; }, null);
+      }
+      if (kind === "checked") {
+        // Claude's answer to Check the bank. It lands after the bank's number, when there was a new one.
+        setTimeout(chkAnswer, 0);
+        return "ok";
+      }
+      if (kind === "spend") {
+        const amt = Math.round(Number(o.amount));
+        if (!(amt > 0)) return "error: needs an amount in cents";
+        // at sets the order things are applied in. spentAt is when the money was spent, if that was earlier.
+        const t = typeof o.spentAt === "string" ? o.spentAt : o.at;
+        const at = typeof t === "string" && !Number.isNaN(Date.parse(t)) ? new Date(t).toISOString() : new Date().toISOString();
+        const date = /^\d{4}-\d{2}-\d{2}$/.test(String(o.date || "")) ? o.date : ymd(new Date(at));
+        const k = o.kind === "in" ? "in" : "spend";
+        return opSave(() => { state.personal.spends = state.personal.spends || {}; state.personal.spends["c" + id] = { date: date, at: at, kind: k, amount: amt, note: note.slice(0, 60) }; },
+          "Claude logged " + money(amt) + (k === "in" ? " in" : " spent") + (note ? ", " + note.slice(0, 60) : "") + ".");
+      }
+      if (kind === "due") {
+        const mth = String(o.month || "");
+        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mth)) return "error: needs a month like 2026-12";
+        const on = o.paid !== false;
+        const dc = dueCfg();
+        const dn = dc ? dc.name : "bill";
+        return opSave(() => {
+          if (!state.setup.due || typeof state.setup.due !== "object") state.setup.due = {};
+          state.setup.due.paid = Object.assign({}, state.setup.due.paid || {}, { [mth]: on ? new Date().toISOString() : false });
+        }, on ? "Claude ticked the " + dn + " for " + monthName(mth) + " as paid." : "Claude set the " + dn + " for " + monthName(mth) + " back to not paid.");
+      }
+      if (kind === "note") {
+        if (!note) return "error: no message";
+        toast(note);
+        return "ok";
+      }
+      return "skipped: don't know that one";
+    } catch (e) { return "error: " + ((e && e.message) || "failed"); }
+  }
+  // Check the bank. The app can't read email, so it asks Claude. Making a release in the private repo is the knock on the door: a Claude task set to run on that
+  // reads the bank's emails and leaves what it finds in the inbox. The app then looks every few seconds until the answer is there.
+  const CHK_KEY = KEY + ".chk", CHK_SAID = KEY + ".chkd", CHK_WAIT = 240000;
+  let chk = null, chkTimer = null;
+  function chkRead() { try { const c = JSON.parse(localStorage.getItem(CHK_KEY) || "null"); return c && Number.isFinite(c.at) && typeof c.tag === "string" ? c : null; } catch (e) { return null; } }
+  function chkWrite() { try { if (chk) localStorage.setItem(CHK_KEY, JSON.stringify({ tag: chk.tag, at: chk.at })); else localStorage.removeItem(CHK_KEY); } catch (e) {} }
+  function chkSay(text) { try { localStorage.setItem(CHK_SAID, JSON.stringify({ at: Date.now(), text: text })); } catch (e) {} }
+  function chkSaid() {
+    try {
+      const c = JSON.parse(localStorage.getItem(CHK_SAID) || "null");
+      if (c && Number.isFinite(c.at) && ymd(new Date(c.at)) === today()) return "Checked at " + niceTime(new Date(c.at)) + ". " + c.text;
+    } catch (e) {}
+    return "Claude reads " + BK() + "'s emails. About a minute.";
+  }
+  function bankGoUI() {
+    const can = !CLOUD && cloud.kind === "gh" && cloud.phase === "on" && mePay() > 0;
+    $("meBankGo").hidden = !can;
+    if (!can) return;
+    $("meBankCheck").disabled = !!chk;
+    $("meBankCheck").textContent = chk ? "Checking" : "Check the bank";
+    $("meBankLine").textContent = chk ? "Asking Claude to read " + BK() + "'s emails. About a minute." : chkSaid();
+  }
+  async function bankCheck() {
+    if (chk || cloud.kind !== "gh" || cloud.phase !== "on") return;
+    const now = Date.now();
+    chk = { tag: "check-" + new Date(now).toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z"), at: now, last: false };
+    bankGoUI();
+    try {
+      const r = await ghCall("POST", "releases", { tag_name: chk.tag, name: "Bank check", body: "Asked from the app." }, true);
+      if (!r) throw { code: "notfound" };
+    } catch (e) {
+      chk = null;
+      bankGoUI();
+      const c = e && e.code;
+      toast(c === "offline" ? "No signal. Try again in a minute." : c === "auth" || c === "denied" || c === "notfound" ? "Your key couldn't ask. Tell Claude." : "Couldn't ask Claude just now. Try again in a minute.");
+      return;
+    }
+    chkWrite();
+    chkTimer = setTimeout(chkTick, 6000);
+  }
+  function chkTick() {
+    clearTimeout(chkTimer);
+    if (!chk) return;
+    if (Date.now() - chk.at > CHK_WAIT) {
+      // One last look before giving up, in case it landed while the phone was asleep.
+      if (chk.last) {
+        chk = null; chkWrite();
+        chkSay("No answer yet. It can take a few minutes. It shows up here when it lands.");
+        bankGoUI();
+        return;
+      }
+      chk.last = true;
+    }
+    if (cloud.poll && cloud.phase === "on") cloud.poll();
+    chkTimer = setTimeout(chkTick, 6000);
+  }
+  function chkAnswer() {
+    clearTimeout(chkTimer);
+    const asked = !!chk;
+    chk = null; chkWrite();
+    const bo = bankOffer();
+    chkSay(bo ? BKc() + "'s number is in." : "Nothing new from " + BK() + ".");
+    renderMe();
+    if (!asked) return;
+    if (bo) bankUse(); else toast("Nothing new from " + BK() + ".");
+  }
+  function chkBoot() {
+    chk = chkRead();
+    if (chk && Date.now() - chk.at > CHK_WAIT) { chk = null; chkWrite(); }
+    if (chk) { chk.last = false; chkTimer = setTimeout(chkTick, 4000); }
+  }
+  // A balance that came from a bank alert counts as at the alert's time, so anything logged after it still comes off. The one thing that must not come off twice
+  // is the deposit the alert was about: a Money in of the same amount logged after the alert is the same money, so it's left out.
+  function bankStamp(check, bal) {
+    const bo = meBankAt ? bankOffer() : null;
+    if (!bo || bo.at !== meBankAt || bal !== bo.avail) return false;
+    check.at = new Date(bo.at).toISOString();
+    if (bo.dep > 0) {
+      const skip = Object.entries(P().spends || {}).filter((e) => e[1].kind === "in" && e[1].amount === bo.dep && String(e[1].at) > check.at).map((e) => e[0]);
+      if (skip.length) check.skip = skip;
+    }
+    return true;
+  }
+  // The newest bank alert, if it's from today and newer than the last balance saved.
+  function bankOffer() {
+    const p = P();
+    const b = p && p.bank;
+    if (!b || !Number.isFinite(b.avail) || typeof b.at !== "string") return null;
+    const when = Date.parse(b.at);
+    if (Number.isNaN(when) || ymd(new Date(when)) !== today()) return null;
+    const c = p.check || {};
+    const saved = c.at ? Date.parse(c.at) : NaN;
+    if (!Number.isNaN(saved) && saved >= when) return null;
+    return b;
+  }
+  function bankUse() {
+    const b = bankOffer();
+    if (!b) { renderMe(); return; }
+    $("meBal").value = (b.avail / 100).toFixed(2);
+    meWait = {};
+    meBankAt = b.at;
+    if (!meAsk().length) { meSaveBal(); return; }
+    $("meCheckBox").open = true;
+    renderMe();
+    try { $("meCheckBox").scrollIntoView({ block: "start" }); } catch (e) {}
+    toast("Tap any bill that hasn't gone through yet, then Save balance.");
+  }
+
+  // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
+  const APP_VERSION = "20 Nov 2026, v15";
+  function allText(noData) {
+    const out = [];
+    const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
+    const gap = () => out.push("");
+    const tx = (id) => { const e = $(id); return e && !e.hidden ? e.textContent.replace(/\s+/g, " ").trim() : ""; };
+    const rows = (id) => Array.from($(id).children).map((li) => {
+      const bits = Array.from(li.querySelectorAll(".htitle,.hsub,.hamt,.hdir,.pname,.pmeta,.pamt")).map((e) => e.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
+      return bits.length ? bits.join(" | ") : li.textContent.replace(/\s+/g, " ").trim();
+    });
+    const now = new Date();
+    add("PAY DAY POTS, EVERYTHING");
+    add("Copied " + niceDate(today()) + " " + now.getFullYear() + " at " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ". App " + APP_VERSION + ".");
+    try {
+      const p = P();
+      const st = meWeek();
+      const sh = meShown(st);
+      gap();
+      add("PERSONAL, WHAT THE SCREEN SHOWS");
+      add([tx("meEyebrow"), tx("meLeft")].filter(Boolean).join(": "));
+      add(tx("meSub"));
+      add(tx("meNote"));
+      add("This week: " + (rows("meWeek").join(" // ") || "nothing"));
+      add(tx("mePrev"));
+      add("Coming out of " + BK() + ": " + (rows("meBills").join(" // ") || "nothing"));
+      add(tx("meShould"));
+      add(tx("meCheckHint"));
+      gap();
+      add("PERSONAL, THE NUMBERS BEHIND IT");
+      add("Pay into " + BK() + " " + money(mePay()) + " a week, payday " + DAYS[mePayDay()] + ".");
+      if (!st.pre) add("Week from " + niceDate(st.ws) + ": allowed " + money(st.allow) + ", carried over " + money(st.carry) + ", spent " + money(st.spent) + ", left " + money(st.left) + ".");
+      const c = p.check;
+      if (c && c.date) add("Balance last saved: " + money(c.bal) + " on " + niceDate(c.date) + (Array.isArray(c.wait) && c.wait.length ? ", not gone yet: " + c.wait.join(", ") : "") + (c.payWait ? ", pay not landed" : "") + ".");
+      else add("No balance saved.");
+      if (sh.bank) add(BKc() + " worked out now: " + money(sh.bank.est) + ". Still to come out before " + DAYS[mePayDay()] + ": " + money(sh.bank.due) + ". Pay still to land: " + money(sh.bank.payDue) + ". Spare in the bank: " + money(sh.bank.room) + ".");
+      add("Top number comes from " + (st.pre ? "before the start date" : sh.byBank ? "the bank" : "the week's money") + ".");
+      add(tx("meAllowHint"));
+      if (p.fixNote) add("App note: " + p.fixNote);
+      add("Bills: " + (p.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b) + (b.often === "week" ? " on " + DAYS[Number(b.wd)] : b.often === "month" ? " on day " + b.dom : " from " + b.from) + (b.since ? " counting from " + b.since : "")).join(" // "));
+      const sp = Object.keys(p.spends || {}).map((k) => p.spends[k]).sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      add("Everything logged, newest first: " + (sp.map((x) => x.date + " " + (x.kind === "in" ? "money in " : "spent ") + money(x.amount) + (x.note ? " " + x.note : "")).join(" // ") || "nothing"));
+      add("Weeks: " + (Object.keys(p.weeks || {}).sort().map((k) => k + " " + money(p.weeks[k].allow)).join(" // ") || "none"));
+      if (p.toBiz && Array.isArray(p.toBiz.bills) && p.toBiz.bills.length) add("Moved to the business on " + p.toBiz.at + ": " + p.toBiz.bills.map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") + ".");
+      if (p.was) add("Before the reset on " + p.was.at + ": pay " + money(p.was.take) + ", week " + (p.was.allow == null ? "not set" : money(p.was.allow)) + ", bills " + ((p.was.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") || "not kept") + ".");
+    } catch (e) { add("Personal part failed: " + (e && e.message)); }
+    try {
+      const b = balances();
+      gap();
+      add("BUSINESS, WHAT THE SCREEN SHOWS");
+      add("In savings: " + tx("total"));
+      Array.from($("rule").children).forEach((x) => { if (x.tagName !== "BUTTON") add(x.textContent.replace(/\s+/g, " ").trim()); });
+      add("Pots: " + pots().map((x) => x.name + " " + money(b[x.id] || 0) + " (" + potMeta(x) + (Number(x.goal) > 0 ? ", goal " + money(x.goal) : "") + ")").join(" // "));
+      const mv = moves.slice().sort((x, y) => String(y.at).localeCompare(String(x.at)));
+      add("History, newest first: " + (mv.map((m) => m.date + " " + m.kind + " " + money(m.amount) + " " + Object.keys(m.split || {}).map((k) => potName(k) + " " + money(m.split[k])).join(", ") + (m.taxMove && Number(m.taxMove.amount) > 0 ? ", tax moved " + money(m.taxMove.amount) : "") + (m.note ? ", " + m.note : "") + (m.void ? ", UNDONE" : "")).join(" // ") || "nothing"));
+    } catch (e) { add("Business part failed: " + (e && e.message)); }
+    if (!noData) {
+      gap();
+      add("DATA");
+      add(JSON.stringify(state));
+    }
+    return out.join("\n");
+  }
+  function copyAll() {
+    let text;
+    try { text = allText(); } catch (e) { text = "PAY DAY POTS, EVERYTHING\nDATA\n" + JSON.stringify(state); }
+    const ok = "Copied. Paste it into Claude.";
+    const fallback = () => {
+      let done = false;
+      try {
+        const ta = el("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        done = document.execCommand("copy");
+        ta.remove();
+      } catch (e) {}
+      if (done) { toast(ok); return; }
+      const t = $("restoreText");
+      t.value = text;
+      toast("Couldn't copy by itself. It's in the Restore box in Business Setup. Select it all and copy.");
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => toast(ok), fallback);
+    else fallback();
+  }
+
+  function copyBackup() {
+    const text = JSON.stringify(state);
+    const fallback = () => {
+      const t = $("restoreText");
+      t.value = text;
+      t.focus();
+      t.select();
+      toast("Couldn't copy, so it's in the box below. Select it all and copy.");
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => toast("Backup copied. Paste it into your Notes."), fallback);
+    } else fallback();
+  }
+  let restoreArmed = 0;
+  function restoreBackup() {
+    let data;
+    try { data = JSON.parse($("restoreText").value); } catch (e) { toast("That backup didn't read properly. Copy it again."); return; }
+    if (!data || !data.setup || !Array.isArray(data.setup.pots) || typeof data.moves !== "object") { toast("That doesn't look like a Pay Day Pots backup."); return; }
+    // Two taps instead of a pop up box. Pop ups don't show when the app runs inside Claude.
+    const rb = $("doRestore");
+    if (Date.now() - restoreArmed > 6000) {
+      restoreArmed = Date.now();
+      rb.textContent = "Tap again to replace everything";
+      setTimeout(() => { if (restoreArmed && Date.now() - restoreArmed >= 6000) { restoreArmed = 0; rb.textContent = "Restore"; } }, 6200);
+      return;
+    }
+    restoreArmed = 0;
+    rb.textContent = "Restore";
+    guarded(() => { state.setup = data.setup; state.moves = data.moves || {}; if (data.personal && Array.isArray(data.personal.bills)) state.personal = data.personal; })
+      .then(() => { $("restoreText").value = ""; setupDirty = false; meDirty = false; firstRun = false; setStatus(""); toast("Restored."); ensureWeek(); emit(); })
+      .catch(failToast);
+  }
+
+  // Personal: weekly spending money out of the everyday bank account. A new phone starts with no bills and no pay.
+  const meBlank = (su) => {
+    const day = payDayOf((su && su.weekly) || {});
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    let n = 0;
+    while (d.getDay() !== day && n < 7) { d.setDate(d.getDate() - 1); n++; }
+    return { start: ymd(d), bills: [], spends: {}, weeks: {} };
+  };
+  const WD_LIST = [[1, "Monday"], [2, "Tuesday"], [3, "Wednesday"], [4, "Thursday"], [5, "Friday"], [6, "Saturday"], [0, "Sunday"]];
+  const ASK_BACK = 2;
+  let meOpen = null, meDirty = false, meDraft = null, meWait = {}, meBankAt = null, billOpen = null, tickHold = false;
+
+  const P = () => state.personal;
+  const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+  const mePayDay = () => payDayOf((state.setup && state.setup.weekly) || {});
+  const mePay = () => Math.max(0, Number((state.setup && state.setup.plan && state.setup.plan.take) || 0));
+  const signed = (x) => (x.kind === "in" ? -1 : 1) * (Number(x.amount) || 0);
+  const sumAmt = (list) => list.reduce((a, x) => a + x.amount, 0);
+
+  function parseBal(v) {
+    const t = String(v == null ? "" : v).replace(/[$,\s]/g, "");
+    if (t.startsWith("-")) { const c = parseMoney(t.slice(1)); return c === null ? null : -c; }
+    return parseMoney(t);
+  }
+  function weekStartOf(s) {
+    const d = parseYmd(s);
+    const pd = mePayDay();
+    let n = 0;
+    while (d.getDay() !== pd && n < 7) { d.setDate(d.getDate() - 1); n++; }
+    return ymd(d);
+  }
+  function billDates(b, from, to) {
+    const out = [];
+    if (from > to) return out;
+    if (b.often === "week") {
+      const d = parseYmd(from);
+      const wd = Number(b.wd);
+      let n = 0;
+      while (d.getDay() !== wd && n < 7) { d.setDate(d.getDate() + 1); n++; }
+      for (let x = ymd(d); x <= to; x = addDays(x, 7)) out.push(x);
+    } else if (b.often === "fortnight") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return out;
+      const diff = Math.round((parseYmd(from) - parseYmd(b.from)) / 86400000);
+      for (let x = addDays(b.from, Math.ceil(diff / 14) * 14); x <= to; x = addDays(x, 14)) out.push(x);
+    } else if (b.often === "quarter") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return out;
+      const base = parseYmd(b.from);
+      const f0 = parseYmd(from);
+      let k = Math.floor(((f0.getFullYear() - base.getFullYear()) * 12 + f0.getMonth() - base.getMonth()) / 3) - 1;
+      for (let n = 0; n < 400; n++, k++) {
+        const first = new Date(base.getFullYear(), base.getMonth() + 3 * k, 1);
+        const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+        const x = ymd(new Date(first.getFullYear(), first.getMonth(), Math.min(base.getDate(), last)));
+        if (x > to) break;
+        if (x >= from) out.push(x);
+      }
+    } else {
+      const f = parseYmd(from);
+      const t = parseYmd(to);
+      let y = f.getFullYear(), m = f.getMonth();
+      while (new Date(y, m, 1) <= t) {
+        const last = new Date(y, m + 1, 0).getDate();
+        const x = ymd(new Date(y, m, Math.min(Math.max(1, Number(b.dom) || 1), last)));
+        if (x >= from && x <= to) out.push(x);
+        m += 1;
+        if (m > 11) { m = 0; y += 1; }
+      }
+    }
+    return b.since ? out.filter((x) => x >= b.since) : out;
+  }
+  function billsBetween(from, to, list) {
+    const out = [];
+    (list || P().bills || []).forEach((b) => billDates(b, from, to).forEach((d) => out.push({ date: d, id: b.id, often: b.often, name: b.name, amount: Number(b.amount) || 0 })));
+    return out.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  const occKey = (o) => o.id + "|" + o.date;
+  // A bill ticked as paid: personal.paid holds the bill and its date against the time of the tick.
+  const paidAt = (o) => (P().paid || {})[occKey(o)] || null;
+  function meRaw(bills, pay) {
+    let w = 0;
+    (bills || []).forEach((b) => {
+      const a = Number(b.amount) || 0;
+      if (b.often === "week") w += a;
+      else if (b.often === "fortnight") w += a / 2;
+      else if (b.often === "quarter") w += (a * 4) / 52;
+      else w += (a * 12) / 52;
+    });
+    return pay - w;
+  }
+  const meAllow = (bills, pay) => Math.max(0, Math.floor(meRaw(bills, pay) / 500) * 500);
+  function allowFor(ws) {
+    const wk = P().weeks || {};
+    if (wk[ws] && Number.isFinite(wk[ws].allow)) return wk[ws].allow;
+    const earlier = Object.keys(wk).filter((k) => k < ws).sort();
+    if (earlier.length) return wk[earlier[earlier.length - 1]].allow;
+    return meAllow(P().bills, mePay());
+  }
+  const billPer = (b) => (b.often === "week" ? " a week" : b.often === "fortnight" ? " a fortnight" : b.often === "quarter" ? " every 3 months" : " a month");
+  function ensureWeek() {
+    const p = P();
+    if (!p) return;
+    const ws = weekStartOf(today());
+    if (ws < p.start) return;
+    p.weeks = p.weeks || {};
+    if (!p.weeks[ws]) {
+      p.weeks[ws] = { allow: meAllow(p.bills, mePay()) };
+      try { persist(); } catch (e) {}
+    }
+  }
+  function netSpent(from, to) {
+    let n = 0;
+    Object.values(P().spends || {}).forEach((x) => { if (x.date >= from && x.date <= to) n += signed(x); });
+    return n;
+  }
+  function meWeek() {
+    const p = P();
+    const t = today();
+    if (t < p.start) return { pre: true, start: p.start, allow: meAllow(p.bills, mePay()) };
+    const first = weekStartOf(p.start);
+    const ws = weekStartOf(t);
+    let carry = 0;
+    for (let w = first, n = 0; w < ws && n < 600; w = addDays(w, 7), n++) {
+      carry = Math.min(0, allowFor(w) + carry - netSpent(w, addDays(w, 6)));
+    }
+    const allow = allowFor(ws);
+    const spent = netSpent(ws, addDays(ws, 6));
+    const pw = addDays(ws, -7);
+    const prev = pw >= first ? { allow: allowFor(pw), spent: netSpent(pw, addDays(pw, 6)) } : null;
+    return { pre: false, ws: ws, next: addDays(ws, 7), allow: allow, carry: carry, spent: spent, left: allow + carry - spent, prev: prev };
+  }
+  // Where the bank account stands, worked forward from a saved balance.
+  // Bills dated on or before the day the balance was saved count as already out of it, unless they were marked "not yet" when it was saved (check.wait).
+  // A bill or pay marked "not yet" is still expected on the day of the save, and is taken as gone through from the next day.
+  function meBank(c) {
+    const t = today();
+    if (!c || !c.date || !Number.isFinite(c.bal) || c.date > t) return null;
+    const pd = mePayDay();
+    const nextPd = nextPayday(pd, false);
+    const wait = Array.isArray(c.wait) ? c.wait : [];
+    let est = c.bal, due = 0, payDue = 0;
+    const coming = [];
+    for (let d = addDays(c.date, 1), n = 0; d <= t && n < 800; d = addDays(d, 1), n++) if (parseYmd(d).getDay() === pd) est += mePay();
+    if (c.payWait) { if (t > c.date) est += mePay(); else payDue = mePay(); }
+    billsBetween(addDays(c.date, -ASK_BACK), nextPd).forEach((o) => {
+      const late = o.date <= c.date;
+      if (late && !wait.includes(occKey(o))) return;
+      const pa = paidAt(o);
+      if (pa) {
+        // Ticked as paid. A tick from before the balance was saved is already in that balance. A tick after it means the money has gone since.
+        if (String(pa) > String(c.at)) est -= o.amount;
+        if (o.date >= t) coming.push(Object.assign({ state: "paid" }, o));
+        return;
+      }
+      if (late ? t > c.date : o.date <= t) {
+        est -= o.amount;
+        if (o.date === t) coming.push(Object.assign({ state: "today" }, o));
+        return;
+      }
+      if (late || o.date < nextPd) due += o.amount;
+      coming.push(Object.assign({ state: late ? "late" : "soon" }, o));
+    });
+    const skip = Array.isArray(c.skip) ? c.skip : [];
+    Object.entries(P().spends || {}).forEach((e) => { if (String(e[1].at) > String(c.at) && !skip.includes(e[0])) est -= signed(e[1]); });
+    return { est: est, due: due, payDue: payDue, room: est + payDue - due, coming: coming };
+  }
+  const meRoom = () => meBank(P().check);
+  // Pay and bills from the last couple of days that might not have gone through yet when a balance is typed.
+  // Weekly bills only show on their day, unless they were marked "not yet" on the last save. Same for pay.
+  function meAsk() {
+    const t = today();
+    const c = P().check || {};
+    const back = addDays(t, -ASK_BACK);
+    const fresh = !!c.date && c.date >= back && c.date <= t;
+    const was = fresh && Array.isArray(c.wait) ? c.wait : [];
+    const rows = [];
+    const payOn = parseYmd(t).getDay() === mePayDay() ? t : (fresh && c.payWait ? weekStartOf(c.date) : null);
+    if (payOn && mePay() > 0) rows.push({ pay: true, key: "pay|" + payOn, name: "Pay in", date: payOn, amount: mePay(), done: !meWait["pay|" + payOn] });
+    billsBetween(back, t).forEach((o) => {
+      const k = occKey(o);
+      if (paidAt(o)) return;
+      if (o.often === "week" && o.date !== t && !was.includes(k)) return;
+      rows.push(Object.assign({ key: k, done: !meWait[k] }, o));
+    });
+    return rows;
+  }
+  const meDraftCheck = (bal, rows) => ({ bal: bal, date: today(), at: "9999", wait: rows.filter((x) => !x.pay && !x.done).map((x) => x.key), payWait: rows.some((x) => x.pay && !x.done) });
+  function meShown(st) {
+    const r = meRoom();
+    if (st.pre) return { shown: 0, byBank: false, bank: r };
+    if (r && r.room < st.left) return { shown: r.room, byBank: true, bank: r };
+    return { shown: st.left, byBank: false, bank: r };
+  }
+  const randomPot = () => pots().find((p) => p.id === spendPotId()) || null;
+  function grabCost(amt) {
+    const rate = Number((setup && setup.plan && setup.plan.wtax) || 0);
+    return amt + (rate > 0 ? Math.round((amt * rate) / 100) : 0);
+  }
+
+  function renderMe() {
+    const p = P();
+    if (!p) return;
+    const st = meWeek();
+    const pdName = DAYS[mePayDay()];
+    const big = $("meLeft"), eb = $("meEyebrow"), sub = $("meSub"), note = $("meNote");
+    const mw = $("meMeterWrap"), meter = $("meMeter");
+    $("meSpendForm").hidden = st.pre;
+    $("meWeekWrap").hidden = st.pre;
+    big.classList.remove("over");
+    mw.classList.remove("over");
+    const notes = [];
+    if (st.pre) {
+      eb.textContent = "Spending money";
+      big.textContent = money(st.allow);
+      sub.textContent = "a week for food, fun and anything that isn't a bill.";
+      notes.push(st.start === addDays(today(), 1) ? "Starts tomorrow." : "Starts " + niceDate(st.start) + ".");
+      mw.hidden = true;
+    } else {
+      const s = meShown(st);
+      mw.hidden = false;
+      if (s.shown >= 0) {
+        eb.textContent = "Left to spend till " + pdName;
+        big.textContent = money(s.shown);
+      } else {
+        big.textContent = money(-s.shown);
+        big.classList.add("over");
+        mw.classList.add("over");
+        if (s.byBank) {
+          eb.textContent = BKc() + " is short by";
+          notes.push(s.bank.due > 0
+            ? "Bills before " + pdName + " come to " + money(s.bank.due) + (s.bank.payDue > 0 ? " and " + BK() + " will have about " : " and " + BK() + " has about ") + money(s.bank.est + s.bank.payDue) + ". Top it up or a bill bounces."
+            : BKc() + " is in the red. Top it up.");
+        } else {
+          eb.textContent = "Over this week by";
+          notes.push("It comes off next week's money.");
+        }
+      }
+      sub.textContent = money(st.allow) + " a week. Resets " + niceDate(st.next) + ".";
+      if (st.carry < 0) notes.push("Less " + money(-st.carry) + " you went over last week.");
+      if (s.byBank && s.shown >= 0) notes.push("Going by what's in " + BK() + ".");
+      const budget = Math.max(0, st.allow + st.carry);
+      const used = budget > 0 ? Math.min(1, Math.max(0, (budget - s.shown) / budget)) : 1;
+      meter.style.width = (used * 100).toFixed(1) + "%";
+    }
+    note.textContent = notes.join(" ");
+    note.hidden = !notes.length;
+    const bo = st.pre ? null : bankOffer();
+    $("meBank").hidden = !bo;
+    if (bo) $("meBankText").textContent = BKc() + " says " + money(bo.avail) + " available at " + niceTime(new Date(bo.at)) + ".";
+    bankGoUI();
+    renderMeVerdict(st);
+    renderMeWeek(st);
+    renderMeBills();
+    renderMeCheck(st);
+    renderMeSetup();
+  }
+
+  function renderMeVerdict(st) {
+    const v = $("meVerdict"), sb = $("meSpent"), gb = $("meGot");
+    v.textContent = "";
+    sb.textContent = "Spent it";
+    gb.textContent = "Got money in";
+    if (st.pre) { sb.disabled = true; gb.disabled = true; return; }
+    const amt = parseMoney($("meAmt").value);
+    if (!amt || amt <= 0) {
+      v.textContent = "Type an amount to see what's left.";
+      sb.disabled = true;
+      gb.disabled = true;
+      return;
+    }
+    sb.disabled = false;
+    gb.disabled = false;
+    sb.textContent = "Spent " + money(amt);
+    gb.textContent = "Got " + money(amt) + " in";
+    const s = meShown(st);
+    const after = s.shown - amt;
+    if (after >= 0) {
+      v.append(document.createTextNode("Leaves you "), el("b", "ok", money(after)), document.createTextNode(" till " + DAYS[mePayDay()] + "."));
+      return;
+    }
+    if (s.byBank) v.append(document.createTextNode("That leaves " + BK() + " "), el("b", null, money(-after)), document.createTextNode(" short for bills before " + DAYS[mePayDay()] + "."));
+    else v.append(document.createTextNode("That puts you "), el("b", null, money(-after)), document.createTextNode(" over. It comes off next week's money."));
+    const r = randomPot();
+    if (r) v.append(document.createTextNode(" Grab it from " + r.name + " and it really costs "), el("b", null, money(grabCost(-after))), document.createTextNode("."));
+  }
+
+  function renderMeWeek(st) {
+    const ul = $("meWeek");
+    const pv = $("mePrev");
+    ul.textContent = "";
+    pv.hidden = true;
+    if (st.pre) return;
+    const sp = P().spends || {};
+    const items = Object.keys(sp).map((id) => Object.assign({ id: id }, sp[id]))
+      .filter((x) => x.date >= st.ws && x.date < st.next)
+      .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    if (!items.length) ul.append(el("li", "hempty", "Nothing yet. Each time you tap Spent it, it shows up here."));
+    items.forEach((x) => ul.append(meRow(x)));
+    if (st.prev) {
+      pv.textContent = "Last week you spent " + money(Math.max(0, st.prev.spent)) + " of " + money(st.prev.allow) + ".";
+      pv.hidden = false;
+    }
+  }
+  function meRow(x) {
+    const li = el("li", "hitem");
+    const btn = el("button", "hrow");
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", meOpen === x.id ? "true" : "false");
+    const left = el("div", "hleft");
+    left.append(el("span", "htitle", x.note || (x.kind === "in" ? "Money in" : "Spent")), el("span", "hsub", niceDate(x.date)));
+    const right = el("div", "hright");
+    right.append(el("span", "hamt" + (x.kind === "in" ? " in" : ""), (x.kind === "in" ? "+" : "") + money(x.amount)), el("span", "hdir", x.kind === "in" ? "in" : "spent"));
+    btn.append(left, right);
+    btn.addEventListener("click", () => { meOpen = meOpen === x.id ? null : x.id; renderMe(); });
+    li.append(btn);
+    if (meOpen === x.id) {
+      const d = el("div", "hdetail");
+      const del = el("button", "btn small danger", "Delete");
+      del.type = "button";
+      del.addEventListener("click", () => {
+        meOpen = null;
+        guarded(() => { delete state.personal.spends[x.id]; }).then(() => toast("Deleted.")).catch(failToast);
+      });
+      d.append(del);
+      li.append(d);
+    }
+    return li;
+  }
+
+  function renderMeBills() {
+    const ul = $("meBills");
+    ul.textContent = "";
+    const t = today();
+    const pd = mePayDay();
+    const r = meRoom();
+    const list = r ? r.coming : billsBetween(t, nextPayday(pd, false)).map((o) => Object.assign({ state: paidAt(o) ? "paid" : o.date === t ? "today" : "soon" }, o));
+    $("meBillsHint").hidden = !list.length;
+    if (!list.length) { ul.append(el("li", "hempty", "Nothing due before payday.")); return; }
+    const whenOf = (d, late) => (late ? "Not gone yet" : d === t ? "Today" : d === addDays(t, 1) ? "Tomorrow" : niceDate(d));
+    const payday = (d) => (parseYmd(d).getDay() === pd ? " · payday" : "");
+    // Bills still to come out are grouped by day. Tap a row and each bill in it gets an I've paid it button.
+    // A ticked bill gets a row of its own that says paid, until its day has passed. Tap that row to undo.
+    const groups = {}, done = {};
+    list.forEach((b) => {
+      if (b.state === "paid") (done[b.date] = done[b.date] || []).push(b);
+      else { const k = b.state === "late" ? "0" : b.date; (groups[k] = groups[k] || []).push(b); }
+    });
+    const row = (id, title, sub, amt, paid) => {
+      const li = el("li", "hitem");
+      const btn = el("button", "hrow");
+      btn.type = "button";
+      btn.setAttribute("aria-expanded", billOpen === id ? "true" : "false");
+      const left = el("div", "hleft");
+      left.append(el("span", "htitle", title), el("span", "hsub", sub));
+      btn.append(left, el("span", "hamt" + (paid ? " done" : ""), amt));
+      btn.addEventListener("click", () => { billOpen = billOpen === id ? null : id; renderMeBills(); });
+      li.append(btn);
+      return li;
+    };
+    const tick = (b, on) => {
+      const x = el("button", on ? "btn primary small" : "link", on ? "I've paid it" : "Not paid yet? Undo");
+      x.type = "button";
+      x.dataset.bill = occKey(b);
+      x.addEventListener("click", () => billTick(b, on));
+      return x;
+    };
+    Array.from(new Set(Object.keys(groups).concat(Object.keys(done)))).sort().forEach((k) => {
+      const g = groups[k];
+      if (g) {
+        const late = k === "0";
+        const d = g[0].date;
+        const id = "g|" + k;
+        const li = row(id, g.map((x) => x.name).join(", "), whenOf(d, late) + (late ? "" : payday(d)), money(sumAmt(g)), false);
+        if (billOpen === id) {
+          const det = el("div", "hdetail");
+          g.forEach((b) => {
+            if (g.length === 1) { det.append(tick(b, true)); return; }
+            const ln = el("div", "bline");
+            ln.append(el("span", null, b.name + " " + money(b.amount)), tick(b, true));
+            det.append(ln);
+          });
+          li.append(det);
+        }
+        ul.append(li);
+      }
+      (done[k] || []).forEach((b) => {
+        const id = "p|" + occKey(b);
+        const li = row(id, b.name, whenOf(b.date, false) + payday(b.date) + " · paid", money(b.amount), true);
+        if (billOpen === id) { const det = el("div", "hdetail"); det.append(tick(b, false)); li.append(det); }
+        ul.append(li);
+      });
+    });
+  }
+  // Ticking a bill as paid, or unticking it. No money is logged. Ticks older than two months are cleared out as it goes.
+  // A second tap straight after the first is ignored, so a double tap can't tick it and untick it again.
+  function billTick(o, on) {
+    if (tickHold) return;
+    tickHold = true;
+    setTimeout(() => { tickHold = false; }, 1200);
+    const k = occKey(o);
+    billOpen = null;
+    guarded(() => {
+      const paid = Object.assign({}, state.personal.paid || {});
+      if (on) paid[k] = new Date().toISOString(); else delete paid[k];
+      const old = addDays(today(), -60);
+      Object.keys(paid).forEach((x) => { if (x.slice(x.lastIndexOf("|") + 1) < old) delete paid[x]; });
+      if (Object.keys(paid).length) state.personal.paid = paid; else delete state.personal.paid;
+    }).then(() => toast(on ? "Done. " + o.name + " is ticked as paid." : "OK. " + o.name + " is back to not paid.")).catch(failToast);
+  }
+
+  function renderMeCheck(st) {
+    const c = P().check;
+    const r = meRoom();
+    const pdName = DAYS[mePayDay()];
+    const sh = $("meShould");
+    sh.textContent = "";
+    if (r) {
+      sh.append(document.createTextNode(BKc() + " should have about "), el("b", null, money(r.est)), document.createTextNode(" now."));
+      sh.hidden = false;
+    } else sh.hidden = true;
+    const raw = $("meBal").value.trim();
+    const typed = raw ? parseBal(raw) : null;
+    const rows = typed !== null ? meAsk() : [];
+    const ask = $("meAsk");
+    ask.textContent = "";
+    if (rows.length) {
+      ask.append(el("p", "hint", "Due lately. Tap any that haven't gone through yet."));
+      rows.forEach((x) => {
+        const btn = el("button", "askrow");
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", x.done ? "true" : "false");
+        const left = el("div", "hleft");
+        left.append(el("span", "htitle", x.name), el("span", "hsub", (x.date === today() ? "Today" : niceDate(x.date)) + " · " + money(x.amount)));
+        btn.append(left, el("span", "pill", x.done ? (x.pay ? "Landed" : "Gone") : "Not yet"));
+        btn.addEventListener("click", () => {
+          if (meWait[x.key]) delete meWait[x.key];
+          else meWait[x.key] = true;
+          renderMe();
+        });
+        ask.append(btn);
+      });
+    }
+    ask.hidden = !rows.length;
+    const draft = typed !== null ? meDraftCheck(typed, rows) : null;
+    if (draft) bankStamp(draft, typed);
+    const bank = draft ? meBank(draft) : r;
+    const out = $("meCheckOut");
+    out.textContent = "";
+    if (bank) {
+      const room = bank.room;
+      if (room < 0) out.append(document.createTextNode("You're "), el("b", null, money(-room)), document.createTextNode(" short for bills before " + pdName + ". Don't spend."));
+      else if (!st.pre && room < st.left) out.append(document.createTextNode("Careful. Going by " + BK() + " you've only got "), el("b", null, money(room)), document.createTextNode(" to spend till " + pdName + "."));
+      else out.append(document.createTextNode("All good. Bills before " + pdName + " are covered."));
+    }
+    $("meSaveBal").disabled = typed === null;
+    $("meCheckHint").textContent = (c && c.date ? "Last saved " + niceDate(c.date) + ". " : "") + "Use the big number on your card account, not the Balance under it.";
+  }
+  function meSaveBal() {
+    const raw = $("meBal").value.trim();
+    const bal = raw ? parseBal(raw) : null;
+    if (bal === null) { toast("Type " + BKof("balance") + ", like 123.45."); return; }
+    const d = meDraftCheck(bal, meAsk());
+    const check = { bal: bal, date: today(), at: new Date().toISOString() };
+    bankStamp(check, bal);
+    if (d.wait.length) check.wait = d.wait;
+    if (d.payWait) check.payWait = true;
+    guarded(() => { state.personal.check = check; })
+      .then(() => { $("meBal").value = ""; meWait = {}; meBankAt = null; renderMe(); toast("Saved. " + BKc() + " has " + money(bal) + "."); })
+      .catch(failToast);
+  }
+
+  function renderMeSetup() {
+    const p = P();
+    const note = $("meFixNote");
+    const show = !!(p.fixNote && p.was && p.was.at && today() <= addDays(p.was.at, 30));
+    note.textContent = show ? p.fixNote : "";
+    note.hidden = !show;
+    if (meDirty) return;
+    meDraft = clone(P().bills || []);
+    $("mePay").value = centsToInput(mePay());
+    drawMeBills();
+    meHint();
+  }
+  function meHint() {
+    const pay = parseMoney($("mePay").value) || 0;
+    const raw = meRaw(meDraft || [], pay);
+    $("meAllowHint").textContent = raw < 0
+      ? "Your bills come to more than your pay."
+      : "That leaves " + money(Math.floor(raw / 500) * 500) + " a week for food, fun and anything not on this list.";
+  }
+  function drawMeBills() {
+    const box = $("meBillEdit");
+    box.textContent = "";
+    (meDraft || []).forEach((b, i) => {
+      const row = el("div", "billrow");
+      const mk = (label, id, input) => { const f = el("div", "field"); const l = el("label", null, label); l.htmlFor = id; input.id = id; f.append(l, input); return f; };
+      const ni = el("input");
+      ni.value = b.name || "";
+      ni.maxLength = 30;
+      ni.autocomplete = "off";
+      ni.addEventListener("input", () => { b.name = ni.value; meDirty = true; });
+      const ai = el("input");
+      ai.inputMode = "decimal";
+      ai.autocomplete = "off";
+      ai.value = centsToInput(Number(b.amount) || 0);
+      ai.addEventListener("input", () => { b.amount = parseMoney(ai.value) || 0; meDirty = true; meHint(); });
+      const os = el("select");
+      [["week", "Weekly"], ["fortnight", "Fortnightly"], ["month", "Monthly"], ["quarter", "3 monthly"]].forEach((o) => { const op = el("option", null, o[1]); op.value = o[0]; os.append(op); });
+      os.value = b.often || "month";
+      os.addEventListener("change", () => {
+        b.often = os.value;
+        if (b.often === "week" && !Number.isInteger(Number(b.wd))) b.wd = mePayDay();
+        if ((b.often === "fortnight" || b.often === "quarter") && !b.from) b.from = today();
+        if (b.often === "month" && !b.dom) b.dom = 1;
+        meDirty = true;
+        drawMeBills();
+        meHint();
+      });
+      const two = el("div", "two");
+      two.append(mk("Amount", "mba-" + b.id, ai), mk("How often", "mbo-" + b.id, os));
+      let when;
+      if (b.often === "week") {
+        const ws = el("select");
+        WD_LIST.forEach((o) => { const op = el("option", null, o[1]); op.value = String(o[0]); ws.append(op); });
+        ws.value = String(Number.isInteger(Number(b.wd)) ? Number(b.wd) : mePayDay());
+        ws.addEventListener("change", () => { b.wd = Number(ws.value); meDirty = true; });
+        when = mk("Day", "mbw-" + b.id, ws);
+      } else if (b.often === "fortnight" || b.often === "quarter") {
+        const di = el("input");
+        di.type = "date";
+        di.value = b.from || "";
+        const upd = () => { b.from = di.value; meDirty = true; };
+        di.addEventListener("input", upd);
+        di.addEventListener("change", upd);
+        when = mk("Next one", "mbw-" + b.id, di);
+      } else {
+        const mi = el("input");
+        mi.inputMode = "numeric";
+        mi.autocomplete = "off";
+        mi.placeholder = "1 to 31";
+        mi.value = b.dom ? String(b.dom) : "";
+        mi.addEventListener("input", () => { b.dom = Number(mi.value) || 0; meDirty = true; });
+        when = mk("Day of the month", "mbw-" + b.id, mi);
+      }
+      const rm = el("button", "link danger", "Remove " + (b.name || "this bill"));
+      rm.type = "button";
+      rm.addEventListener("click", () => { meDraft.splice(i, 1); meDirty = true; drawMeBills(); meHint(); });
+      row.append(mk("Bill", "mbn-" + b.id, ni), two, when, rm);
+      box.append(row);
+    });
+  }
+  function meAddBill() {
+    if (!meDraft) meDraft = clone(P().bills || []);
+    const id = "b" + Date.now().toString(36);
+    meDraft.push({ id: id, name: "", amount: 0, often: "month", dom: 1 });
+    meDirty = true;
+    drawMeBills();
+    meHint();
+    const n = $("mbn-" + id);
+    if (n) n.focus();
+  }
+  function meSaveSetup() {
+    const err = $("meSetupErr");
+    err.hidden = true;
+    const fail = (m) => { err.textContent = m; err.hidden = false; };
+    const pay = parseMoney($("mePay").value.trim());
+    if (!pay || pay <= 0) return fail("Weekly pay needs to be a number, like 1000.");
+    const bills = [];
+    for (const b of meDraft || []) {
+      const name = String(b.name || "").trim().slice(0, 30);
+      const amount = Math.round(Number(b.amount) || 0);
+      if (!name) return fail("Give every bill a name.");
+      if (!(amount > 0)) return fail(name + " needs an amount.");
+      const nb = { id: b.id, name: name, amount: amount, often: b.often };
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(b.since || ""))) nb.since = b.since;
+      if (b.often === "week") {
+        const wd = Number(b.wd);
+        if (!Number.isInteger(wd) || wd < 0 || wd > 6) return fail("Pick a day for " + name + ".");
+        nb.wd = wd;
+      } else if (b.often === "fortnight" || b.often === "quarter") {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(b.from || ""))) return fail("Pick the next date for " + name + ".");
+        nb.from = b.from;
+      } else {
+        const dom = Number(b.dom);
+        if (!Number.isInteger(dom) || dom < 1 || dom > 31) return fail(name + " needs a day of the month from 1 to 31.");
+        nb.dom = dom;
+      }
+      bills.push(nb);
+    }
+    if (meRaw(bills, pay) < 0) return fail("Your bills come to more than your pay.");
+    guarded(() => {
+      state.setup.plan = Object.assign({}, state.setup.plan || {}, { take: pay });
+      state.personal.bills = bills;
+      const ws = weekStartOf(today());
+      if (ws >= state.personal.start) {
+        state.personal.weeks = state.personal.weeks || {};
+        state.personal.weeks[ws] = { allow: meAllow(bills, pay) };
+      }
+    }).then(() => { meDirty = false; renderMe(); toast("Setup saved."); }).catch(failToast);
+  }
+  function meLog(kind) {
+    const st = meWeek();
+    if (st.pre) return;
+    const amt = parseMoney($("meAmt").value);
+    if (!amt || amt <= 0) return;
+    const id = newId();
+    const rec = { date: today(), at: new Date().toISOString(), kind: kind, amount: amt, note: $("meWhat").value.trim().slice(0, 60) };
+    guarded(() => { state.personal.spends[id] = rec; })
+      .then(() => {
+        $("meAmt").value = "";
+        $("meWhat").value = "";
+        renderMe();
+        const s = meShown(meWeek());
+        const n = s.shown;
+        toast((kind === "in" ? "Added. " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : s.byBank ? BKc() + " is " + money(-n) + " short for bills." : money(-n) + " over this week."));
+      })
+      .catch(failToast);
+  }
+  function showTab(which) {
+    const mine = which !== "biz";
+    $("meView").hidden = !mine;
+    $("bizView").hidden = mine;
+    $("tabMe").setAttribute("aria-selected", mine ? "true" : "false");
+    $("tabBiz").setAttribute("aria-selected", mine ? "false" : "true");
+    try { localStorage.setItem(KEY + ".tab", mine ? "me" : "biz"); } catch (e) {}
+  }
+
+  $("btnIn").addEventListener("click", () => {
+    $("panelOut").hidden = true;
+    const p = $("panelIn");
+    p.hidden = !p.hidden;
+    if (!p.hidden) { renderIn(); $("inAmt").focus(); }
+  });
+  $("btnOut").addEventListener("click", () => {
+    $("panelIn").hidden = true;
+    const p = $("panelOut");
+    p.hidden = !p.hidden;
+    if (!p.hidden) { renderOut(); }
+  });
+  $("inCancel").addEventListener("click", () => { $("panelIn").hidden = true; });
+  $("outCancel").addEventListener("click", () => { $("panelOut").hidden = true; });
+  $("inAmt").addEventListener("input", renderIn);
+  $("outAmt").addEventListener("input", renderOut);
+  $("outBiz").addEventListener("change", renderOut);
+  $("costAmt").addEventListener("input", renderCost);
+  $("bizSaver").addEventListener("input", renderBizCheck);
+  $("panelIn").addEventListener("submit", (e) => { e.preventDefault(); saveIn(); });
+  $("panelOut").addEventListener("submit", (e) => { e.preventDefault(); saveOut(); });
+  $("histMore").addEventListener("click", () => { showAll = !showAll; renderHist(); });
+  $("payAmt").addEventListener("input", () => { setupDirty = true; updateSetupHints(); });
+  ["planTake", "planTax", "planLump", "planWtax"].forEach((id) => $(id).addEventListener("input", () => { setupDirty = true; }));
+  $("payDay").addEventListener("change", () => { setupDirty = true; updateSetupHints(); });
+  $("addPot").addEventListener("click", addPot);
+  $("saveSetup").addEventListener("click", saveSetup);
+
+  $("copyBackup").addEventListener("click", copyBackup);
+  $("meCopyAll").addEventListener("click", copyAll);
+  $("bizCopyAll").addEventListener("click", copyAll);
+  $("appVer").textContent = "App updated " + APP_VERSION + ".";
+  $("doRestore").addEventListener("click", restoreBackup);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || !movesCol) return;
+    setTimeout(() => { ensureWeek(); runAuto(); render(); if (cloud.kind && cloud.phase === "on") { if (cloudDirty()) cloudLater(); if (cloud.poll) cloud.poll(); } else if (cloud.kind === "gh" && cloud.phase === "off" && !cloud.why) cloudBoot(); }, 0);
+  });
+
+  // Lock: Face ID first, 4 digit code as backup. The code is set on the phone and only a salted hash is kept there.
+  // Face ID in a web app always goes through Apple's own "use your passkey?" box, which can't be skipped.
+  // So the app asks once a day: after a real unlock it stays open on this phone for STAY_OPEN_MS, even if it's closed and reopened.
+  const LOCK_KEY = KEY + ".lock";
+  const OPEN_KEY = KEY + ".open";
+  const STAY_OPEN_MS = 24 * 60 * 60 * 1000;
+  function openRecently() {
+    try { const t = Number(localStorage.getItem(OPEN_KEY)) || 0; const d = Date.now() - t; return t > 0 && d >= 0 && d < STAY_OPEN_MS; } catch (e) { return false; }
+  }
+  let pendingToast = null, lockCfg = null, lockMode = "unlock", lockEntry = "", lockFirst = "", lockFails = 0, lockUntil = 0;
+  let lockBusy = false, faceBusy = false, faceOk = false, unlocked = false, lockFromSetup = false;
+  const b64 = (buf) => btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+  const unb64 = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+  function readLock() {
+    try { const v = JSON.parse(localStorage.getItem(LOCK_KEY) || "null"); return v && v.salt && v.hash ? v : null; } catch (e) { return null; }
+  }
+  function writeLock(v) { try { localStorage.setItem(LOCK_KEY, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  async function hashCode(code, salt) {
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: unb64(salt), iterations: 250000, hash: "SHA-256" }, key, 256);
+    return b64(bits);
+  }
+  async function faceAvailable() {
+    try { return !!(window.PublicKeyCredential && navigator.credentials && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (e) { return false; }
+  }
+  async function faceRegister() {
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: "Pay Day Pots" },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: "Pay Day Pots", displayName: "Pay Day Pots" },
+      pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required", residentKey: "preferred" },
+      timeout: 60000,
+      attestation: "none"
+    } });
+    if (!cred) throw new Error("no credential");
+    return b64(cred.rawId);
+  }
+  async function faceCheck(id) {
+    const a = await navigator.credentials.get({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials: [{ type: "public-key", id: unb64(id), transports: ["internal"] }],
+      userVerification: "required",
+      timeout: 60000
+    } });
+    if (!a || b64(a.rawId) !== id) return false;
+    const ad = new Uint8Array(a.response.authenticatorData);
+    return ad.length > 32 && (ad[32] & 4) !== 0;
+  }
+  function drawDots() { Array.from($("lockDots").children).forEach((d, i) => d.classList.toggle("on", i < lockEntry.length)); }
+  function lockUI(mode, msg) {
+    lockMode = mode;
+    lockEntry = "";
+    $("lockMsg").textContent = msg;
+    $("lockErr").textContent = "";
+    $("lockFace").hidden = !(mode === "unlock" && lockCfg && lockCfg.face);
+    $("lockPad").hidden = mode === "offer" || mode === "gate";
+    $("lockDots").hidden = mode === "offer" || mode === "gate";
+    $("lockAlt").hidden = mode !== "offer";
+    $("lockGate").hidden = mode !== "gate";
+    $("lockCancel").hidden = !(lockFromSetup && (mode === "set" || mode === "confirm"));
+    drawDots();
+  }
+  function showLock() {
+    unlocked = false;
+    $("lock").hidden = false;
+    $("app").hidden = true;
+    $("toast").hidden = true;
+  }
+  function hideLock(fresh) {
+    if (fresh !== false) { try { localStorage.setItem(OPEN_KEY, String(Date.now())); } catch (e) {} }
+    unlocked = true;
+    lockFromSetup = false;
+    $("lock").hidden = true;
+    $("app").hidden = false;
+    lockSettingsUI();
+    if (pendingToast) { const m = pendingToast; pendingToast = null; toast(m); }
+  }
+  function lockErr(msg) {
+    $("lockErr").textContent = msg;
+    const d = $("lockDots");
+    d.classList.remove("shake");
+    void d.offsetWidth;
+    d.classList.add("shake");
+    lockEntry = "";
+    drawDots();
+  }
+  async function onKey(k) {
+    if (lockMode === "offer" || lockMode === "gate" || lockBusy) return;
+    if (k === "del") { lockEntry = lockEntry.slice(0, -1); drawDots(); return; }
+    if (lockEntry.length >= 4) return;
+    lockEntry += k;
+    drawDots();
+    if (lockEntry.length < 4) return;
+    const code = lockEntry;
+    lockBusy = true;
+    try {
+      if (lockMode === "set") { lockFirst = code; lockUI("confirm", "Enter it again"); return; }
+      if (lockMode === "confirm") {
+        if (code !== lockFirst) { lockFirst = ""; lockUI("set", "Set a 4 digit code"); lockErr("Codes didn't match. Try again."); return; }
+        const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
+        const hash = await hashCode(code, salt);
+        const face = lockCfg && lockCfg.face ? lockCfg.face : null;
+        lockCfg = { salt: salt, hash: hash, face: face };
+        lockFirst = "";
+        if (!writeLock(lockCfg)) { lockErr("Couldn't save the code on this phone."); return; }
+        if (!face && faceOk) { lockUI("offer", "Use Face ID to unlock next time?"); return; }
+        hideLock();
+        toast("Code set.");
+        return;
+      }
+      if (Date.now() < lockUntil) { lockErr("Too many tries. Wait a bit."); return; }
+      if ((await hashCode(code, lockCfg.salt)) === lockCfg.hash) { lockFails = 0; hideLock(); return; }
+      lockFails += 1;
+      if (lockFails >= 5) { lockFails = 0; lockUntil = Date.now() + 30000; lockErr("Wrong code. Wait 30 seconds."); }
+      else lockErr("Wrong code.");
+    } finally {
+      lockBusy = false;
+    }
+  }
+  async function tryFace(tapped) {
+    if (!lockCfg || !lockCfg.face || faceBusy || unlocked) return;
+    faceBusy = true;
+    try {
+      if (await faceCheck(lockCfg.face)) hideLock();
+      else if (tapped) $("lockErr").textContent = "Face ID didn't work. Use your code.";
+    } catch (e) {
+      if (tapped) $("lockErr").textContent = "Face ID didn't work. Use your code.";
+    }
+    faceBusy = false;
+  }
+  function lockStart() {
+    lockCfg = readLock();
+    showLock();
+    if (!owner()) { lockUI("gate", "This app is private."); return; }
+    if (!lockCfg) { lockUI("set", "Set a 4 digit code"); return; }
+    lockUI("unlock", lockCfg.face ? "Use Face ID or enter your code" : "Enter your code");
+    if (lockCfg.face) tryFace(false);
+  }
+  // A phone that isn't set up yet. The only way in is the key to the private cloud copy. A good key turns the cloud on,
+  // the pots come down from it, and then this phone sets a code of its own. Without the key there is no code to make.
+  let gateBusy = false;
+  async function gateGo() {
+    if (gateBusy || lockMode !== "gate") return;
+    const v = $("gateKey").value.trim();
+    const no = (msg) => { $("lockErr").textContent = msg; };
+    if (v.length < 20 || /\s/.test(v)) { no("That key didn't work."); return; }
+    gateBusy = true;
+    $("gateGo").disabled = true;
+    no("");
+    cloud.gh = { token: v, repo: GH_REPO };
+    let ok = false, why = "";
+    try { ok = !!(await ghCall("GET", "")); } catch (e) { why = (e && e.code) || "error"; }
+    gateBusy = false;
+    $("gateGo").disabled = false;
+    if (!ok) {
+      cloud.gh = null;
+      no(why === "offline" || why === "unavailable" ? "Can't reach the cloud right now. Try again in a bit." : "That key didn't work.");
+      return;
+    }
+    try { localStorage.setItem(GH_KEY, JSON.stringify({ token: v, repo: GH_REPO })); localStorage.setItem(OWN_KEY, "1"); }
+    catch (e) { cloud.gh = null; no("Couldn't save the key on this phone."); return; }
+    $("gateKey").value = "";
+    cloud.gh = ghCfg();
+    cloud.kind = "gh";
+    cloud.sent = -1;
+    cloudBoot();
+    lockStart();
+  }
+  function lockSettingsUI() {
+    const b = $("lockFaceToggle");
+    b.hidden = !faceOk && !(lockCfg && lockCfg.face);
+    b.textContent = lockCfg && lockCfg.face ? "Turn off Face ID" : "Turn on Face ID";
+  }
+  async function bootLock() {
+    // Inside Claude the app sits behind the Claude login, and Face ID isn't offered to a page there, so there's no lock.
+    if (CLOUD) { hideLock(false); $("lockSet").hidden = true; return; }
+    lockCfg = readLock();
+    if (owner() && lockCfg && openRecently()) hideLock(false);
+    else lockStart();
+    faceOk = await faceAvailable();
+    lockSettingsUI();
+  }
+
+  $("tabMe").addEventListener("click", () => { showTab("me"); window.scrollTo(0, 0); });
+  $("tabBiz").addEventListener("click", () => { showTab("biz"); window.scrollTo(0, 0); });
+  $("meAmt").addEventListener("input", () => renderMeVerdict(meWeek()));
+  $("meSpendForm").addEventListener("submit", (e) => { e.preventDefault(); meLog("spend"); });
+  $("meGot").addEventListener("click", () => meLog("in"));
+  $("meBal").addEventListener("input", () => { if (!$("meBal").value.trim()) meWait = {}; renderMeCheck(meWeek()); });
+  $("meSaveBal").addEventListener("click", meSaveBal);
+  $("meBankUse").addEventListener("click", bankUse);
+  $("meBankCheck").addEventListener("click", bankCheck);
+  $("cloudOn").addEventListener("click", ghTurnOn);
+  $("cloudOff").addEventListener("click", ghTurnOff);
+  $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
+  $("meAddBill").addEventListener("click", meAddBill);
+  $("meSaveSetup").addEventListener("click", meSaveSetup);
+
+  $("lockPad").addEventListener("click", (e) => { const b = e.target.closest("button[data-k]"); if (b) onKey(b.dataset.k); });
+  document.addEventListener("keydown", (e) => {
+    if ($("lock").hidden) return;
+    if (/^[0-9]$/.test(e.key)) onKey(e.key);
+    else if (e.key === "Backspace") onKey("del");
+  });
+  $("lockFace").addEventListener("click", () => tryFace(true));
+  $("gateGo").addEventListener("click", gateGo);
+  $("gateKey").addEventListener("keydown", (e) => { if (e.key === "Enter") gateGo(); });
+  $("lockFaceOn").addEventListener("click", async () => {
+    try { lockCfg.face = await faceRegister(); writeLock(lockCfg); hideLock(); toast("Face ID is on."); }
+    catch (e) { hideLock(); toast("Face ID didn't set up. Your code still works."); }
+  });
+  $("lockFaceSkip").addEventListener("click", () => { hideLock(); toast("Code set."); });
+  $("lockCancel").addEventListener("click", () => { lockFirst = ""; hideLock(false); });
+  $("lockChange").addEventListener("click", () => { lockFromSetup = true; showLock(); lockUI("set", "Set a new 4 digit code"); });
+  $("lockFaceToggle").addEventListener("click", async () => {
+    if (!lockCfg) return;
+    if (lockCfg.face) { lockCfg.face = null; writeLock(lockCfg); lockSettingsUI(); toast("Face ID is off. Your code still works."); return; }
+    try { lockCfg.face = await faceRegister(); writeLock(lockCfg); lockSettingsUI(); toast("Face ID is on."); }
+    catch (e) { toast("Face ID didn't set up. Your code still works."); }
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (CLOUD) return;
+    if (document.hidden) { if (unlocked) $("app").hidden = true; return; }
+    if (!unlocked) return;
+    if (!openRecently()) lockStart();
+    else $("app").hidden = false;
+  });
+
+  init();
+  if (!CLOUD) chkBoot();
+  bootLock();
+  cloudBoot();
+})();
+</script>
+</body>
+</html>
