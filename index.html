@@ -185,6 +185,16 @@ textarea{font-size:15px;resize:vertical}
 .bank{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--tintsoft);border-radius:14px}
 .bank p{margin:0;min-width:0;font-size:15px;line-height:1.35}
 .bank .btn{flex:none;align-self:center}
+.roll{flex-direction:column;align-items:stretch}
+.roll .row .btn{flex:1 1 140px}
+.roll .btn.ghost{background:var(--card)}
+.gline{grid-column:2/4;margin:2px 0 0;font-size:13px;line-height:1.4;color:var(--label2);text-wrap:pretty}
+.gline b{font-weight:600;color:var(--label);font-variant-numeric:tabular-nums}
+.gline b.behind{color:var(--red)}
+.rules{list-style:none;margin:0;padding:0;background:var(--fill);border-radius:10px;overflow:hidden}
+.rules li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;min-height:48px;position:relative}
+.rules li+li::before{content:"";position:absolute;top:0;left:14px;right:0;height:.5px;background:var(--sep)}
+.rules .link{padding:6px 0;font-size:15px;align-self:center;flex:none}
 .bankgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .bankgo .btn{flex:none;align-self:center}
 .bankgo .hint{flex:1;min-width:150px}
@@ -295,6 +305,12 @@ details[open] summary::after{transform:rotate(45deg)}
       <p class="menote" id="meNote" hidden></p>
     </header>
 
+    <div class="bank roll" id="meRoll" hidden>
+      <p id="meRollText"></p>
+      <div class="row" id="meRollBtns"></div>
+      <p class="hint" id="meRollHint" hidden></p>
+    </div>
+
     <div class="bank" id="meBank" hidden>
       <p id="meBankText"></p>
       <button class="btn primary small" id="meBankUse" type="button">Use it</button>
@@ -325,6 +341,7 @@ details[open] summary::after{transform:rotate(45deg)}
     <section class="hist-wrap" id="meWeekWrap" aria-labelledby="meWeekH">
       <h2 class="h" id="meWeekH">This week</h2>
       <ul class="hist" id="meWeek"></ul>
+      <p class="hint prev" id="meCats" hidden></p>
       <p class="hint prev" id="mePrev" hidden></p>
     </section>
 
@@ -361,6 +378,35 @@ details[open] summary::after{transform:rotate(45deg)}
         <h3 class="h" id="meBillsEditH">Bills that come out of your bank</h3>
         <div id="meBillEdit"></div>
         <button class="btn ghost small" id="meAddBill" type="button">Add a bill</button>
+        <div class="lockset" id="rollSet">
+          <h3 class="h">Money left at payday</h3>
+          <div class="field">
+            <label for="meRollHow">What happens to what's left of your week</label>
+            <select id="meRollHow">
+              <option value="">Ask me at payday</option>
+              <option value="carry">Carry it into next week</option>
+              <option value="move">Tell me what to move to backup</option>
+            </select>
+          </div>
+          <p class="hint" id="meRollSetHint"></p>
+        </div>
+        <div class="lockset" id="ruleSet">
+          <h3 class="h">Spending rules</h3>
+          <p class="hint">When a spend has the word in it, it goes in that category by itself. This week shows a total for each one.</p>
+          <ul class="rules" id="meRules" hidden></ul>
+          <div class="two">
+            <div class="field">
+              <label for="ruleWord">Word</label>
+              <input id="ruleWord" autocomplete="off" maxlength="30" placeholder="Zinnow">
+            </div>
+            <div class="field">
+              <label for="ruleCat">Category</label>
+              <input id="ruleCat" autocomplete="off" maxlength="20" placeholder="Snacks">
+            </div>
+          </div>
+          <p class="err" id="ruleErr" hidden></p>
+          <button class="btn ghost small" id="ruleAdd" type="button">Add rule</button>
+        </div>
         <div class="lockset" id="lockSet">
           <h3 class="h">Lock</h3>
           <div class="row">
@@ -633,6 +679,32 @@ details[open] summary::after{transform:rotate(45deg)}
     parts.forEach((p) => { if (p.fl > 0) res[p.id] = p.fl; });
     return res;
   }
+  // How Split across pots fills each pot. A pot takes either a percent or a fixed amount, pot.fix in cents.
+  // Fixed amounts come off first, top to bottom, then whatever is left is shared by percent the same way as before.
+  // The parts always add up to the amount typed. With no fixed pots this is exactly the old split.
+  // Null means some money has nowhere to go, because no pot takes a percent.
+  const fixOf = (p) => Math.max(0, Math.round(Number(p && p.fix) || 0));
+  const hasFixed = (list) => list.some((p) => fixOf(p) > 0);
+  function splitRule(cents, list) {
+    const res = {};
+    let rest = cents;
+    list.forEach((p) => {
+      const f = fixOf(p);
+      if (!(f > 0) || rest <= 0) return;
+      const take = Math.min(f, rest);
+      res[p.id] = take;
+      rest -= take;
+    });
+    if (rest > 0) {
+      const share = splitAmount(rest, list.filter((p) => !(fixOf(p) > 0)));
+      if (!Object.keys(share).length) return null;
+      Object.keys(share).forEach((k) => { res[k] = (res[k] || 0) + share[k]; });
+    }
+    return res;
+  }
+  const fixedTotal = (list) => list.reduce((a, p) => a + fixOf(p), 0);
+  // In Setup a pot can be switched to a fixed amount before the amount is typed, so the editor keeps the choice in p.mode until it's saved.
+  const isFixedDraft = (p) => p.mode === "fix" || (p.mode !== "pct" && fixOf(p) > 0);
   function balances() {
     const b = {};
     pots().forEach((p) => { b[p.id] = 0; });
@@ -877,8 +949,67 @@ details[open] summary::after{transform:rotate(45deg)}
   function potMeta(p) {
     const wk = (setup && setup.weekly) || {};
     if (weeklyTarget() === p.id && wk.pay > 0) return money(wk.pay) + " every " + DAYS[payDayOf(wk)];
-    return Number(p.pct) > 0 ? fmtPct(Number(p.pct)) + " of each top up" : "Top up by hand";
+    if (fixOf(p) > 0) return money(fixOf(p)) + " from each top up";
+    return Number(p.pct) > 0 ? fmtPct(Number(p.pct)) + (hasFixed(pots()) ? " of the rest of each top up" : " of each top up") : "Top up by hand";
   }
+
+  // A target with a date. pot.goal is the target in cents and pot.by the date. pot.start is what the pot had, and how many big payments
+  // were still to come, on the day the date was set. Big payments land once a month around cfg.lumpDay, the 15th if that isn't set.
+  // This month's one counts as still to come until pot money shows up in Money in from five days before that day.
+  // On track means the pot has at least what it would have if it had been filled evenly at every big payment since the date was set.
+  const lumpDay = () => { const d = Math.round(Number(cfg.lumpDay)); return d >= 1 && d <= 28 ? d : 15; };
+  const lumpMany = () => nm("many", LP());
+  const lumpOne = () => nm("one", LP().replace(/s$/, ""));
+  const isYmd = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || ""));
+  function potMoneySince(from) {
+    const t = today();
+    return moves.some((m) => !m.void && m.kind === "in" && m.date >= from && m.date <= t && Object.keys(m.split || {}).some((k) => k !== TAX_ID && k !== weeklyTarget()));
+  }
+  function lumpsLeft(by) {
+    const t = today();
+    if (!isYmd(by) || by < t) return 0;
+    const d0 = parseYmd(t);
+    const first = ymd(new Date(d0.getFullYear(), d0.getMonth(), lumpDay()));
+    let n = 0;
+    for (let k = potMoneySince(addDays(first, -5)) ? 1 : 0; n < 240; k++) {
+      let d = ymd(new Date(d0.getFullYear(), d0.getMonth() + k, lumpDay()));
+      if (k === 0 && d < t) d = t;
+      if (d > by) break;
+      n++;
+    }
+    return n;
+  }
+  function tgtInfo(p, bal) {
+    const goal = Math.round(Number(p.goal) || 0);
+    if (!(goal > 0) || !isYmd(p.by)) return null;
+    const need = goal - bal;
+    if (need <= 0) return { kind: "done" };
+    if (p.by < today()) return { kind: "past", need: need, by: p.by };
+    const n = lumpsLeft(p.by);
+    if (n === 0) return { kind: "none", need: need, by: p.by };
+    let gap = null;
+    const s = p.start && typeof p.start === "object" ? p.start : null;
+    if (s && Number.isFinite(Number(s.bal)) && Number(s.n) > 0) {
+      const sn = Math.round(Number(s.n)), sb = Math.round(Number(s.bal));
+      const done = Math.min(sn, Math.max(0, sn - n));
+      gap = Math.max(0, Math.round(sb + ((goal - sb) * done) / sn) - bal);
+    }
+    return { kind: "due", need: need, by: p.by, n: n, per: Math.ceil(need / n), gap: gap };
+  }
+  // The words for a pot with a target date, as plain text and amounts. bad marks an amount that is short.
+  function tgtParts(p, bal) {
+    const g = tgtInfo(p, bal);
+    if (!g) return null;
+    if (g.kind === "done") return ["Target reached."];
+    if (g.kind === "past") return ["Was due " + niceDate(g.by) + ". Short by ", { b: money(g.need), bad: true }, "."];
+    if (g.kind === "none") return ["By " + niceDate(g.by) + ". No " + lumpOne() + " lands before then, so it's ", { b: money(g.need), bad: true }, " short."];
+    const out = ["By " + niceDate(g.by) + ". Needs ", { b: money(g.per) }, g.n === 1 ? " from the next " + lumpOne() + "." : " from each of the next " + g.n + " " + lumpMany() + "."];
+    if (g.gap === null) return out;
+    if (g.gap > 0) out.push(" Behind by ", { b: money(g.gap), bad: true }, ".");
+    else out.push(" On track.");
+    return out;
+  }
+  const tgtText = (p, bal) => { const t = tgtParts(p, bal); return t ? t.map((x) => (typeof x === "string" ? x : x.b)).join("") : ""; };
 
   function renderCost() {
     const box = $("costBox");
@@ -917,6 +1048,12 @@ details[open] summary::after{transform:rotate(45deg)}
         tr.append(f);
         g.append(tr, el("span", "gtext", money(bal) + " of " + money(p.goal)));
         li.append(g);
+        const tp = tgtParts(p, bal);
+        if (tp) {
+          const gl = el("p", "gline");
+          tp.forEach((x) => gl.append(typeof x === "string" ? document.createTextNode(x) : el("b", x.bad ? "behind" : null, x.b)));
+          li.append(gl);
+        }
       }
       ul.append(li);
     });
@@ -1022,16 +1159,24 @@ details[open] summary::after{transform:rotate(45deg)}
     const save = $("inSave");
     save.textContent = "Add to pots";
     if (!amt || amt <= 0) { save.disabled = true; return; }
-    const split = inWhere === "split" ? splitAmount(amt, list) : { [inWhere]: amt };
-    const keys = Object.keys(split);
+    const split = inWhere === "split" ? splitRule(amt, list) : { [inWhere]: amt };
+    const keys = Object.keys(split || {});
+    if (!split && hasFixed(list)) { pv.append(el("p", "err", money(amt - fixedTotal(list)) + " is more than your fixed amounts and no pot takes a percent. Give a pot a percent in Setup, or pick one pot.")); save.disabled = true; return; }
     if (!keys.length) { pv.append(el("p", "err", "None of your pots take a share of pay. Pick one pot instead.")); save.disabled = true; return; }
-    keys.forEach((k) => {
+    // In pot order, so fixed amounts read top to bottom the way they fill.
+    const order = list.map((p) => p.id).filter((k) => keys.includes(k)).concat(keys.filter((k) => !list.find((p) => p.id === k)));
+    order.forEach((k) => {
       const r = el("div", "prow");
       const l = el("span", "pl");
       l.append(dotFor(potColor(k)), document.createTextNode(potName(k)));
       r.append(l, el("span", null, money(split[k])));
       pv.append(r);
     });
+    if (inWhere === "split" && hasFixed(list)) {
+      pv.append(el("p", "hint", amt < fixedTotal(list)
+        ? "Not enough for every fixed amount, so they fill top to bottom."
+        : "Fixed amounts come off first. The rest is shared by percent."));
+    }
     save.disabled = false;
     save.textContent = inWhere === "split" ? "Add " + money(amt) + " to pots" : "Add " + money(amt) + " to " + potName(inWhere);
   }
@@ -1084,8 +1229,8 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!movesCol) return;
     const amt = parseMoney($("inAmt").value);
     if (!amt || amt <= 0) return;
-    const split = inWhere === "split" ? splitAmount(amt, pots()) : { [inWhere]: amt };
-    if (!Object.keys(split).length) return;
+    const split = inWhere === "split" ? splitRule(amt, pots()) : { [inWhere]: amt };
+    if (!split || !Object.keys(split).length) return;
     const btn = $("inSave");
     btn.disabled = true;
     try {
@@ -1167,19 +1312,45 @@ details[open] summary::after{transform:rotate(45deg)}
       ni.addEventListener("input", () => { p.name = ni.value; setupDirty = true; });
       nf.append(nl, ni);
 
+      // How the pot fills when money is split: a percent of what's left, or a fixed amount that comes off first.
+      const fixed = isFixedDraft(p);
       const two = el("div", "two");
+      const sf = el("div", "field");
+      const sl = el("label", null, "Each top up");
+      sl.htmlFor = "ps-" + p.id;
+      const ss = el("select");
+      ss.id = "ps-" + p.id;
+      [["pct", "Percent"], ["fix", "Fixed"]].forEach((o) => { const op = el("option", null, o[1]); op.value = o[0]; ss.append(op); });
+      ss.value = fixed ? "fix" : "pct";
+      ss.addEventListener("change", () => {
+        p.mode = ss.value;
+        if (p.mode === "fix") p.pct = 0; else p.fix = 0;
+        setupDirty = true;
+        drawPotEditor();
+        updateSetupHints();
+      });
+      sf.append(sl, ss);
       const pf = el("div", "field");
-      const pl = el("label", null, "Share of top ups");
+      const pl = el("label", null, fixed ? "Amount" : "Percent");
       pl.htmlFor = "pp-" + p.id;
       const pi = el("input");
       pi.id = "pp-" + p.id;
       pi.inputMode = "decimal";
       pi.autocomplete = "off";
-      pi.value = String(Number(p.pct) || 0);
-      pi.addEventListener("input", () => { p.pct = Number(pi.value) || 0; setupDirty = true; updateSetupHints(); });
+      if (fixed) {
+        pi.placeholder = "$0.00";
+        pi.value = centsToInput(fixOf(p));
+        pi.addEventListener("input", () => { p.fix = parseMoney(pi.value) || 0; setupDirty = true; updateSetupHints(); });
+      } else {
+        pi.value = String(Number(p.pct) || 0);
+        pi.addEventListener("input", () => { p.pct = Number(pi.value) || 0; setupDirty = true; updateSetupHints(); });
+      }
       pf.append(pl, pi);
+      two.append(sf, pf);
+
+      const two2 = el("div", "two");
       const gf = el("div", "field");
-      const gl = el("label", null, "Goal");
+      const gl = el("label", null, "Target");
       gl.htmlFor = "pg-" + p.id;
       const gi = el("input");
       gi.id = "pg-" + p.id;
@@ -1189,13 +1360,25 @@ details[open] summary::after{transform:rotate(45deg)}
       gi.value = centsToInput(Number(p.goal) || 0);
       gi.addEventListener("input", () => { p.goal = parseMoney(gi.value) || 0; setupDirty = true; });
       gf.append(gl, gi);
-      two.append(pf, gf);
+      const df = el("div", "field");
+      const dl = el("label", null, "By ");
+      dl.append(el("span", "opt", "optional"));
+      dl.htmlFor = "pd-" + p.id;
+      const di = el("input");
+      di.id = "pd-" + p.id;
+      di.type = "date";
+      di.value = isYmd(p.by) ? p.by : "";
+      const upd = () => { p.by = di.value; setupDirty = true; };
+      di.addEventListener("input", upd);
+      di.addEventListener("change", upd);
+      df.append(dl, di);
+      two2.append(gf, df);
 
       const rm = el("button", "link danger", "Remove " + (p.name || "this pot"));
       rm.type = "button";
       rm.addEventListener("click", () => removePot(i));
 
-      fields.append(nf, two, rm);
+      fields.append(nf, two, two2, rm);
       row.append(sw, fields);
       box.append(row);
     });
@@ -1228,8 +1411,11 @@ details[open] summary::after{transform:rotate(45deg)}
 
   function updateSetupHints() {
     if (!draft) return;
-    const pct = Math.round(pctTotal(draft.pots) * 100) / 100;
-    $("pctHint").textContent = pct === 100 ? "Shares add up to 100%." : "Shares add up to " + fmtPct(pct) + ". Make them 100%.";
+    const fx = draft.pots.some(isFixedDraft);
+    const pct = Math.round(pctTotal(draft.pots.filter((p) => !isFixedDraft(p))) * 100) / 100;
+    $("pctHint").textContent = !fx
+      ? (pct === 100 ? "Shares add up to 100%." : "Shares add up to " + fmtPct(pct) + ". Make them 100%.")
+      : "Fixed amounts come off first, top to bottom. The percents share the rest" + (pct === 100 ? " and add up to 100%." : ". They add up to " + fmtPct(pct) + ". Make them 100%.");
     const pay = parseMoney($("payAmt").value) || 0;
     const day = Number($("payDay").value);
     if (pay > 0) {
@@ -1252,16 +1438,36 @@ details[open] summary::after{transform:rotate(45deg)}
   async function saveSetup() {
     if (!setupRef || !draft) return;
     $("setupErr").hidden = true;
-    const list = draft.pots.map((p) => ({
-      id: p.id,
-      name: String(p.name || "").trim().slice(0, 30),
-      pct: Math.max(0, Math.round((Number(p.pct) || 0) * 100) / 100),
-      goal: Math.max(0, Math.round(Number(p.goal) || 0)),
-      color: COLORS.includes(p.color) ? p.color : "green"
-    }));
+    // New fields are only written when they're used, so a pot without them is saved exactly as before.
+    const was = (setup && Array.isArray(setup.pots)) ? setup.pots : [];
+    const bal0 = balances();
+    let bad = "";
+    const list = draft.pots.map((p) => {
+      const fixed = isFixedDraft(p);
+      const o = {
+        id: p.id,
+        name: String(p.name || "").trim().slice(0, 30),
+        pct: fixed ? 0 : Math.max(0, Math.round((Number(p.pct) || 0) * 100) / 100),
+        goal: Math.max(0, Math.round(Number(p.goal) || 0)),
+        color: COLORS.includes(p.color) ? p.color : "green"
+      };
+      if (fixed) {
+        if (!(fixOf(p) > 0)) bad = bad || "Give " + (o.name || "that pot") + " a fixed amount, or set it back to Percent.";
+        o.fix = fixOf(p);
+      }
+      if (isYmd(p.by)) {
+        if (!(o.goal > 0)) bad = bad || "Give " + (o.name || "that pot") + " a target to go with the date.";
+        o.by = p.by;
+        // The day the date was set, what the pot had then and how many big payments were left. Kept while the target and date stay the same.
+        const w = was.find((x) => x.id === p.id);
+        o.start = w && w.by === o.by && Number(w.goal) === o.goal && w.start && typeof w.start === "object" ? clone(w.start) : { date: today(), bal: bal0[p.id] || 0, n: lumpsLeft(o.by) };
+      }
+      return o;
+    });
     if (!list.length) return showSetupErr("Add at least one pot.");
     if (list.some((p) => !p.name)) return showSetupErr("Give every pot a name.");
-    if (Math.abs(pctTotal(list) - 100) > 0.01) return showSetupErr("Your pot shares need to add up to 100%.");
+    if (bad) return showSetupErr(bad);
+    if (Math.abs(pctTotal(list) - 100) > 0.01) return showSetupErr(hasFixed(list) ? "The percents need to add up to 100%. Fixed amounts don't count in that." : "Your pot shares need to add up to 100%.");
     const take = parseMoney($("planTake").value.trim() || "0");
     const taxw = parseMoney($("planTax").value.trim() || "0");
     const lumpRaw = $("planLump").value.trim().replace("%", "");
@@ -1870,8 +2076,10 @@ details[open] summary::after{transform:rotate(45deg)}
         const at = typeof t === "string" && !Number.isNaN(Date.parse(t)) ? new Date(t).toISOString() : new Date().toISOString();
         const date = /^\d{4}-\d{2}-\d{2}$/.test(String(o.date || "")) ? o.date : ymd(new Date(at));
         const k = o.kind === "in" ? "in" : "spend";
+        // Spending rules sort these too, the same as a spend typed on the phone.
+        const cat = k === "in" ? "" : catOf(note.slice(0, 60));
         return opSave(() => { state.personal.spends = state.personal.spends || {}; state.personal.spends["c" + id] = { date: date, at: at, kind: k, amount: amt, note: note.slice(0, 60) }; },
-          "Claude logged " + money(amt) + (k === "in" ? " in" : " spent") + (note ? ", " + note.slice(0, 60) : "") + ".");
+          "Claude logged " + money(amt) + (k === "in" ? " in" : " spent") + (note ? ", " + note.slice(0, 60) : "") + "." + (cat ? " It's in " + cat + "." : ""));
       }
       if (kind === "due") {
         const mth = String(o.month || "");
@@ -2007,7 +2215,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "20 Nov 2026, v16";
+  const APP_VERSION = "21 Nov 2026, v17";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2029,7 +2237,9 @@ details[open] summary::after{transform:rotate(45deg)}
       add([tx("meEyebrow"), tx("meLeft")].filter(Boolean).join(": "));
       add(tx("meSub"));
       add(tx("meNote"));
+      add(tx("meRollText"));
       add("This week: " + (rows("meWeek").join(" // ") || "nothing"));
+      add(tx("meCats"));
       add(tx("mePrev"));
       add("Coming out of " + BK() + ": " + (rows("meBills").join(" // ") || "nothing"));
       add(tx("meShould"));
@@ -2043,11 +2253,16 @@ details[open] summary::after{transform:rotate(45deg)}
       else add("No balance saved.");
       if (sh.bank) add(BKc() + " worked out now: " + money(sh.bank.est) + ". Still to come out before " + DAYS[mePayDay()] + ": " + money(sh.bank.due) + ". Pay still to land: " + money(sh.bank.payDue) + ". Spare in the bank: " + money(sh.bank.room) + ".");
       add("Top number comes from " + (st.pre ? "before the start date" : sh.byBank ? "the bank" : "the week's money") + ".");
+      const rp = rollPlan();
+      if (rp.length) add("Money left at payday: " + rp.map((x) => (x.how === "carry" ? "carries into next week" : "gets moved to backup") + " from " + niceDate(x.from)).join(", then ") + ".");
+      const rmv = p.roll && p.roll.moved && typeof p.roll.moved === "object" ? Object.keys(p.roll.moved).sort() : [];
+      if (rmv.length) add("Moved to backup: " + rmv.map((k) => niceDate(k) + " " + (movedAmt(p.roll.moved[k]) > 0 ? money(movedAmt(p.roll.moved[k])) : "kept it")).join(" // ") + ".");
+      if (rules().length) add("Spending rules: " + rules().map((r) => r.w.trim() + " goes in " + r.c.trim()).join(" // ") + ".");
       add(tx("meAllowHint"));
       if (p.fixNote) add("App note: " + p.fixNote);
       add("Bills: " + (p.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b) + (b.often === "week" ? " on " + DAYS[Number(b.wd)] : b.often === "month" ? " on day " + b.dom : " from " + b.from) + (b.since ? " counting from " + b.since : "")).join(" // "));
       const sp = Object.keys(p.spends || {}).map((k) => p.spends[k]).sort((a, b) => String(b.at).localeCompare(String(a.at)));
-      add("Everything logged, newest first: " + (sp.map((x) => x.date + " " + (x.kind === "in" ? "money in " : "spent ") + money(x.amount) + (x.note ? " " + x.note : "")).join(" // ") || "nothing"));
+      add("Everything logged, newest first: " + (sp.map((x) => { const c = x.kind === "in" ? "" : catOf(x.note); return x.date + " " + (x.kind === "in" ? "money in " : "spent ") + money(x.amount) + (x.note ? " " + x.note : "") + (c ? ", " + c : ""); }).join(" // ") || "nothing"));
       add("Weeks: " + (Object.keys(p.weeks || {}).sort().map((k) => k + " " + money(p.weeks[k].allow)).join(" // ") || "none"));
       if (p.toBiz && Array.isArray(p.toBiz.bills) && p.toBiz.bills.length) add("Moved to the business on " + p.toBiz.at + ": " + p.toBiz.bills.map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") + ".");
       if (p.was) add("Before the reset on " + p.was.at + ": pay " + money(p.was.take) + ", week " + (p.was.allow == null ? "not set" : money(p.was.allow)) + ", bills " + ((p.was.bills || []).map((b) => b.name + " " + money(b.amount) + billPer(b)).join(" // ") || "not kept") + ".");
@@ -2058,7 +2273,7 @@ details[open] summary::after{transform:rotate(45deg)}
       add("BUSINESS, WHAT THE SCREEN SHOWS");
       add("In savings: " + tx("total"));
       Array.from($("rule").children).forEach((x) => { if (x.tagName !== "BUTTON") add(x.textContent.replace(/\s+/g, " ").trim()); });
-      add("Pots: " + pots().map((x) => x.name + " " + money(b[x.id] || 0) + " (" + potMeta(x) + (Number(x.goal) > 0 ? ", goal " + money(x.goal) : "") + ")").join(" // "));
+      add("Pots: " + pots().map((x) => { const tg = tgtText(x, b[x.id] || 0); return x.name + " " + money(b[x.id] || 0) + " (" + potMeta(x) + (Number(x.goal) > 0 ? ", goal " + money(x.goal) : "") + (tg ? ". " + tg.replace(/\.$/, "") : "") + ")"; }).join(" // "));
       const mv = moves.slice().sort((x, y) => String(y.at).localeCompare(String(x.at)));
       add("History, newest first: " + (mv.map((m) => m.date + " " + m.kind + " " + money(m.amount) + " " + Object.keys(m.split || {}).map((k) => potName(k) + " " + money(m.split[k])).join(", ") + (m.taxMove && Number(m.taxMove.amount) > 0 ? ", tax moved " + money(m.taxMove.amount) : "") + (m.note ? ", " + m.note : "") + (m.void ? ", UNDONE" : "")).join(" // ") || "nothing"));
     } catch (e) { add("Business part failed: " + (e && e.message)); }
@@ -2244,21 +2459,38 @@ details[open] summary::after{transform:rotate(45deg)}
     Object.values(P().spends || {}).forEach((x) => { if (x.date >= from && x.date <= to) n += signed(x); });
     return n;
   }
+  // Money left at the end of a week. Going over always comes off the next week. What's left over only carries on from the payday
+  // he picks Carry, kept in personal.roll.plan as the payday it starts from and the choice, carry or move. Before any choice a week keeps
+  // only what was overspent, as it always has. personal.roll.moved holds, by payday, what he said he moved to his backup account and when,
+  // or 0 if he kept it. The app never moves money, it only says how much and notes it once he says it's done.
+  function rollPlan() {
+    const r = P().roll;
+    return (r && Array.isArray(r.plan) ? r.plan : []).filter((x) => x && isYmd(x.from) && (x.how === "carry" || x.how === "move")).slice().sort((a, b) => a.from.localeCompare(b.from));
+  }
+  function rollHow(ws) { let h = ""; rollPlan().forEach((x) => { if (x.from <= ws) h = x.how; }); return h; }
+  const rollMoved = (ws) => { const r = P().roll; const m = r && r.moved && typeof r.moved === "object" ? r.moved[ws] : null; return m && typeof m === "object" ? m : null; };
+  const movedAmt = (m) => (m ? Math.max(0, Math.round(Number(m.amt) || 0)) : 0);
   function meWeek() {
     const p = P();
     const t = today();
     if (t < p.start) return { pre: true, start: p.start, allow: meAllow(p.bills, mePay()) };
     const first = weekStartOf(p.start);
     const ws = weekStartOf(t);
-    let carry = 0;
+    let carry = 0, lastLeft = 0;
     for (let w = first, n = 0; w < ws && n < 600; w = addDays(w, 7), n++) {
-      carry = Math.min(0, allowFor(w) + carry - netSpent(w, addDays(w, 6)));
+      const x = allowFor(w) + carry - netSpent(w, addDays(w, 6));
+      const nx = addDays(w, 7);
+      lastLeft = x;
+      if (x < 0) carry = x;
+      else if (rollHow(nx) === "carry") carry = Math.max(0, x - movedAmt(rollMoved(nx)));
+      else carry = 0;
     }
     const allow = allowFor(ws);
     const spent = netSpent(ws, addDays(ws, 6));
     const pw = addDays(ws, -7);
     const prev = pw >= first ? { allow: allowFor(pw), spent: netSpent(pw, addDays(pw, 6)) } : null;
-    return { pre: false, ws: ws, next: addDays(ws, 7), allow: allow, carry: carry, spent: spent, left: allow + carry - spent, prev: prev };
+    const roll = { left: prev ? Math.max(0, lastLeft) : 0, how: rollHow(ws), moved: rollMoved(ws) };
+    return { pre: false, ws: ws, next: addDays(ws, 7), allow: allow, carry: carry, spent: spent, left: allow + carry - spent, prev: prev, roll: roll };
   }
   // Where the bank account stands, worked forward from a saved balance.
   // Bills dated on or before the day the balance was saved count as already out of it, unless they were marked "not yet" when it was saved (check.wait).
@@ -2293,7 +2525,46 @@ details[open] summary::after{transform:rotate(45deg)}
     });
     const skip = Array.isArray(c.skip) ? c.skip : [];
     Object.entries(P().spends || {}).forEach((e) => { if (String(e[1].at) > String(c.at) && !skip.includes(e[0])) est -= signed(e[1]); });
+    // Money he said he moved to his backup account after this balance was saved has left the account since.
+    const rm = P().roll && P().roll.moved;
+    if (rm && typeof rm === "object") Object.keys(rm).forEach((k) => { const m = rm[k]; if (m && typeof m.at === "string" && String(m.at) > String(c.at)) est -= movedAmt(m); });
     return { est: est, due: due, payDue: payDue, room: est + payDue - due, coming: coming };
+  }
+  // How much the bank can spare right now without going under at any point in the next six weeks, if each week's money is spent the day
+  // the week starts and every bill comes out on its day. Null when no balance has been saved.
+  function spareAhead(st) {
+    const r = meRoom();
+    if (!r) return null;
+    const t = today();
+    const pd = mePayDay();
+    let bal = r.est + r.payDue - Math.max(0, st.left);
+    r.coming.forEach((o) => { if (o.state === "late") bal -= o.amount; });
+    let low = bal;
+    for (let d = addDays(t, 1), n = 0; n < 42; d = addDays(d, 1), n++) {
+      if (parseYmd(d).getDay() === pd) bal += mePay() - allowFor(d);
+      billsBetween(d, d).forEach((o) => { if (!paidAt(o)) bal -= o.amount; });
+      if (bal < low) low = bal;
+    }
+    return low;
+  }
+  // What to move this week: what was left of last week, but never more than the bank can spare.
+  function rollAmt(st) {
+    const sp = spareAhead(st);
+    return { amt: sp === null ? st.roll.left : Math.min(st.roll.left, Math.max(0, sp)), known: sp !== null };
+  }
+
+  // Spending rules. personal.rules lists a word and a category. A spend whose note has the word in it, in any case, goes in that category.
+  // When more than one word fits, the longest wins. Nothing is written on the spend itself, so a new rule also sorts what's already logged.
+  function rules() {
+    const r = P() && P().rules;
+    return (Array.isArray(r) ? r : []).filter((x) => x && typeof x.w === "string" && x.w.trim() && typeof x.c === "string" && x.c.trim());
+  }
+  function catOf(note) {
+    const n = String(note || "").toLowerCase();
+    if (!n) return "";
+    let best = null;
+    rules().forEach((r) => { const w = r.w.trim().toLowerCase(); if (n.includes(w) && (!best || w.length > best.w.trim().length)) best = r; });
+    return best ? best.c.trim() : "";
   }
   const meRoom = () => meBank(P().check);
   // Pay and bills from the last couple of days that might not have gone through yet when a balance is typed.
@@ -2368,6 +2639,7 @@ details[open] summary::after{transform:rotate(45deg)}
       }
       sub.textContent = money(st.allow) + " a week. Resets " + niceDate(st.next) + ".";
       if (st.carry < 0) notes.push("Less " + money(-st.carry) + " you went over last week.");
+      else if (st.carry > 0) notes.push("Includes " + money(st.carry) + " left from last week.");
       if (s.byBank && s.shown >= 0) notes.push("Going by what's in " + BK() + ".");
       const budget = Math.max(0, st.allow + st.carry);
       const used = budget > 0 ? Math.min(1, Math.max(0, (budget - s.shown) / budget)) : 1;
@@ -2375,6 +2647,7 @@ details[open] summary::after{transform:rotate(45deg)}
     }
     note.textContent = notes.join(" ");
     note.hidden = !notes.length;
+    renderRoll(st);
     const bo = st.pre ? null : bankOffer();
     $("meBank").hidden = !bo;
     if (bo) $("meBankText").textContent = BKc() + " says " + money(bo.avail) + " available at " + niceTime(new Date(bo.at)) + ".";
@@ -2384,6 +2657,98 @@ details[open] summary::after{transform:rotate(45deg)}
     renderMeBills();
     renderMeCheck(st);
     renderMeSetup();
+  }
+
+  // The card about last week's leftover. It asks once which way he wants it. With Move, each payday week it says how much to move until he says
+  // it's done or keeps it. On the day he does either it shows what he said, with an Undo.
+  const BU = () => (nm("backup", "") ? "your " + nm("backup", "") : "your backup account");
+  function rollBtn(label, cls, fn, id) {
+    const b = el("button", "btn small " + cls, label);
+    b.type = "button";
+    if (id) b.id = id;
+    b.addEventListener("click", fn);
+    return b;
+  }
+  function renderRoll(st) {
+    const box = $("meRoll"), txt = $("meRollText"), btns = $("meRollBtns"), hint = $("meRollHint");
+    btns.textContent = "";
+    hint.hidden = true;
+    let show = false;
+    const r = st.pre ? null : st.roll;
+    if (r && !r.how && r.left >= 100) {
+      show = true;
+      txt.textContent = "Last week you had " + money(r.left) + " left. What should happen to money left at payday?";
+      btns.append(rollBtn("Carry it over", "primary", () => rollSet("carry"), "rollCarry"), rollBtn("Move to backup", "ghost", () => rollSet("move"), "rollMove"));
+      hint.textContent = "You only pick once. Change it any time in Setup.";
+      hint.hidden = false;
+    } else if (r && r.how === "move" && r.moved) {
+      // Only on the day he said so, so a wrong tap can be undone.
+      if (typeof r.moved.at === "string" && ymd(new Date(r.moved.at)) === today()) {
+        show = true;
+        txt.textContent = movedAmt(r.moved) > 0 ? "Moved " + money(movedAmt(r.moved)) + " to " + BU() + "." : "Kept last week's leftover in " + BK() + ".";
+        btns.append(rollBtn("Undo", "ghost", rollUndo, "rollUndo"));
+      }
+    } else if (r && r.how === "move" && r.left > 0) {
+      const a = rollAmt(st);
+      if (a.amt >= 100) {
+        show = true;
+        txt.textContent = "Last week you had " + money(r.left) + " left. Move " + money(a.amt) + " from " + BK() + " to " + BU() + "."
+          + (!a.known ? " Check " + BK() + " has it first." : a.amt < r.left ? " " + BKc() + " needs the rest for bills." : "");
+        btns.append(rollBtn("Done, I moved it", "primary", () => rollDone(a.amt), "rollDone"), rollBtn("Not this week", "ghost", () => rollDone(0), "rollKeep"));
+      }
+    }
+    box.hidden = !show;
+  }
+  // A second tap straight after the first is ignored, as with the bill ticks.
+  let rollHold = false;
+  const rollGo = () => { if (rollHold) return false; rollHold = true; setTimeout(() => { rollHold = false; }, 1200); return true; };
+  function rollSet(how) {
+    if (!rollGo()) return;
+    const ws = weekStartOf(today());
+    const was = rollHow(ws);
+    if (how === was) return;
+    guarded(() => {
+      const r = Object.assign({}, state.personal.roll || {});
+      const plan = rollPlan().filter((x) => x.from < ws);
+      let before = "";
+      plan.forEach((x) => { before = x.how; });
+      if (how !== before) plan.push({ from: ws, how: how });
+      r.plan = plan;
+      state.personal.roll = r;
+    }).then(() => {
+      const st = meWeek();
+      if (how === "carry") toast("Done. What's left at payday now carries into the next week." + (st.carry > 0 ? " " + money(st.carry) + " added to this week." : ""));
+      else {
+        const a = st.roll.left > 0 && !st.roll.moved ? rollAmt(st).amt : 0;
+        toast("Done. Each payday the app says what to move to " + BU() + "." + (a >= 100 ? " This week it's " + money(a) + "." : " Nothing to move this week."));
+      }
+    }).catch(failToast);
+  }
+  function rollDone(amt) {
+    if (!rollGo()) return;
+    const ws = weekStartOf(today());
+    guarded(() => {
+      const r = Object.assign({}, state.personal.roll || {});
+      r.moved = Object.assign({}, r.moved || {}, { [ws]: { amt: Math.max(0, Math.round(amt)), at: new Date().toISOString() } });
+      // Only the last few months are kept.
+      const old = addDays(today(), -120);
+      Object.keys(r.moved).forEach((k) => { if (k < old) delete r.moved[k]; });
+      state.personal.roll = r;
+    }).then(() => {
+      const b = meRoom();
+      toast(amt > 0 ? "Noted. " + (b ? BKc() + " should have about " + money(b.est) + " now." : "") : "OK. It stays in " + BK() + ".");
+    }).catch(failToast);
+  }
+  function rollUndo() {
+    if (!rollGo()) return;
+    const ws = weekStartOf(today());
+    guarded(() => {
+      const r = Object.assign({}, state.personal.roll || {});
+      const m = Object.assign({}, r.moved || {});
+      delete m[ws];
+      if (Object.keys(m).length) r.moved = m; else delete r.moved;
+      state.personal.roll = r;
+    }).then(() => toast("OK. Undone.")).catch(failToast);
   }
 
   function renderMeVerdict(st) {
@@ -2427,6 +2792,25 @@ details[open] summary::after{transform:rotate(45deg)}
       .sort((a, b) => String(b.at).localeCompare(String(a.at)));
     if (!items.length) ul.append(el("li", "hempty", "Nothing yet. Each time you tap Spent it, it shows up here."));
     items.forEach((x) => ul.append(meRow(x)));
+    // Totals for each category, biggest first, then whatever no rule caught, then money in. Only once there's a rule.
+    const cats = $("meCats");
+    cats.hidden = true;
+    if (rules().length && items.length) {
+      const tot = {}, name = {};
+      let other = 0, inn = 0;
+      items.forEach((x) => {
+        if (x.kind === "in") { inn += Number(x.amount) || 0; return; }
+        const c = catOf(x.note);
+        const k = c.toLowerCase();
+        if (!c || k === "other") { other += Number(x.amount) || 0; return; }
+        if (!name[k]) name[k] = c;
+        tot[k] = (tot[k] || 0) + (Number(x.amount) || 0);
+      });
+      const parts = Object.keys(tot).sort((a, b) => tot[b] - tot[a] || a.localeCompare(b)).map((k) => name[k] + " " + money(tot[k]));
+      if (other > 0) parts.push("Other " + money(other));
+      if (inn > 0) parts.push("Money in " + money(inn));
+      if (parts.length) { cats.textContent = "By category: " + parts.join(" · "); cats.hidden = false; }
+    }
     if (st.prev) {
       pv.textContent = "Last week you spent " + money(Math.max(0, st.prev.spent)) + " of " + money(st.prev.allow) + ".";
       pv.hidden = false;
@@ -2438,7 +2822,8 @@ details[open] summary::after{transform:rotate(45deg)}
     btn.type = "button";
     btn.setAttribute("aria-expanded", meOpen === x.id ? "true" : "false");
     const left = el("div", "hleft");
-    left.append(el("span", "htitle", x.note || (x.kind === "in" ? "Money in" : "Spent")), el("span", "hsub", niceDate(x.date)));
+    const cat = x.kind === "in" ? "" : catOf(x.note);
+    left.append(el("span", "htitle", x.note || (x.kind === "in" ? "Money in" : "Spent")), el("span", "hsub", niceDate(x.date) + (cat ? " · " + cat : "")));
     const right = el("div", "hright");
     right.append(el("span", "hamt" + (x.kind === "in" ? " in" : ""), (x.kind === "in" ? "+" : "") + money(x.amount)), el("span", "hdir", x.kind === "in" ? "in" : "spent"));
     btn.append(left, right);
@@ -2606,6 +2991,16 @@ details[open] summary::after{transform:rotate(45deg)}
     const show = !!(p.fixNote && p.was && p.was.at && today() <= addDays(p.was.at, 30));
     note.textContent = show ? p.fixNote : "";
     note.hidden = !show;
+    // These two save as soon as they're changed, apart from the bills and Save setup.
+    const how = rollHow(weekStartOf(today())) || (rollPlan().length ? rollPlan()[rollPlan().length - 1].how : "");
+    const sel = $("meRollHow");
+    sel.options[0].hidden = !!how;
+    sel.options[0].disabled = !!how;
+    sel.value = how;
+    $("meRollSetHint").textContent = how === "carry" ? "What's left of your week is added to the next week's money."
+      : how === "move" ? "Each payday the app says how much of last week's money to move from " + BK() + " to " + BU() + ". It never moves money itself."
+      : "The first payday there's money left, the app asks what you want.";
+    drawRules();
     if (meDirty) return;
     meDraft = clone(P().bills || []);
     $("mePay").value = centsToInput(mePay());
@@ -2680,6 +3075,50 @@ details[open] summary::after{transform:rotate(45deg)}
       box.append(row);
     });
   }
+  function drawRules() {
+    const ul = $("meRules");
+    ul.textContent = "";
+    const list = rules();
+    list.forEach((r) => {
+      const li = el("li");
+      const left = el("div", "hleft");
+      left.append(el("span", "htitle", r.w.trim()), el("span", "hsub", r.c.trim()));
+      const rm = el("button", "link danger", "Remove");
+      rm.type = "button";
+      rm.setAttribute("aria-label", "Remove " + r.w.trim());
+      rm.addEventListener("click", () => ruleRemove(r.w));
+      li.append(left, rm);
+      ul.append(li);
+    });
+    ul.hidden = !list.length;
+  }
+  function ruleAdd() {
+    const err = $("ruleErr");
+    err.hidden = true;
+    const fail = (m) => { err.textContent = m; err.hidden = false; };
+    const w = $("ruleWord").value.trim().replace(/\s+/g, " ").slice(0, 30);
+    const c = $("ruleCat").value.trim().replace(/\s+/g, " ").slice(0, 20);
+    if (w.length < 2) return fail("Type a word, two letters or more.");
+    if (!c) return fail("Type a category for " + w + ".");
+    // The same word again changes its category.
+    guarded(() => {
+      const list = rules().filter((x) => x.w.trim().toLowerCase() !== w.toLowerCase()).map((x) => ({ w: x.w, c: x.c }));
+      list.push({ w: w, c: c });
+      state.personal.rules = list.slice(-80);
+    }).then(() => {
+      $("ruleWord").value = "";
+      $("ruleCat").value = "";
+      const n = Object.values(P().spends || {}).filter((x) => x.kind !== "in" && catOf(x.note) === c).length;
+      toast("Rule added. Anything with " + w + " goes in " + c + "." + (n ? " " + n + (n === 1 ? " spend is" : " spends are") + " in it now." : ""));
+    }).catch(failToast);
+  }
+  function ruleRemove(w) {
+    const k = String(w).trim().toLowerCase();
+    guarded(() => {
+      const list = rules().filter((x) => x.w.trim().toLowerCase() !== k).map((x) => ({ w: x.w, c: x.c }));
+      if (list.length) state.personal.rules = list; else delete state.personal.rules;
+    }).then(() => toast("Rule removed.")).catch(failToast);
+  }
   function meAddBill() {
     if (!meDraft) meDraft = clone(P().bills || []);
     const id = "b" + Date.now().toString(36);
@@ -2743,7 +3182,8 @@ details[open] summary::after{transform:rotate(45deg)}
         renderMe();
         const s = meShown(meWeek());
         const n = s.shown;
-        toast((kind === "in" ? "Added. " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : s.byBank ? BKc() + " is " + money(-n) + " short for bills." : money(-n) + " over this week."));
+        const cat = kind === "in" ? "" : catOf(rec.note);
+        toast((kind === "in" ? "Added. " : cat ? "Logged under " + cat + ". " : "Logged. ") + (n >= 0 ? money(n) + " left till " + DAYS[mePayDay()] + "." : s.byBank ? BKc() + " is " + money(-n) + " short for bills." : money(-n) + " over this week."));
       })
       .catch(failToast);
   }
@@ -2992,6 +3432,9 @@ details[open] summary::after{transform:rotate(45deg)}
   $("mePay").addEventListener("input", () => { meDirty = true; meHint(); });
   $("meAddBill").addEventListener("click", meAddBill);
   $("meSaveSetup").addEventListener("click", meSaveSetup);
+  $("meRollHow").addEventListener("change", () => { const v = $("meRollHow").value; if (v === "carry" || v === "move") rollSet(v); });
+  $("ruleAdd").addEventListener("click", ruleAdd);
+  ["ruleWord", "ruleCat"].forEach((id) => $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); ruleAdd(); } }));
 
   $("lockPad").addEventListener("click", (e) => { const b = e.target.closest("button[data-k]"); if (b) onKey(b.dataset.k); });
   document.addEventListener("keydown", (e) => {
