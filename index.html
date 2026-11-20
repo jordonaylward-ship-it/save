@@ -1439,6 +1439,7 @@ details[open] summary::after{transform:rotate(45deg)}
   // The page applies each item once, oldest first by its at field, and records the result.
   //   replace: json holds the whole saved state. With baseRev it only goes in if the app is still at that rev.
   //   bank: avail in cents and alertAt, the time of a bank alert. Shows on Personal with a Use it button.
+  //         wait, if there, lists what had not gone through yet, like rent|2026-11-20 or pay|2026-11-20. Use it starts those as Not yet.
   //   spend: amount in cents, note, kind spend or in, and spentAt if it wasn't just now. Logs it on Personal.
   //   note: a message that pops up.
   //   due: month like 2026-12, and paid true or false. Ticks or unticks the monthly bill on the Business tab.
@@ -1852,7 +1853,9 @@ details[open] summary::after{transform:rotate(45deg)}
         if (cur && Date.parse(cur.at) >= Date.parse(t)) return "skipped: an alert as new as that is already there";
         // dep is the deposit the alert was about, in cents, when it was one. It stops the same money being counted twice, see bankStamp.
         const dep = Math.round(Number(o.dep));
-        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; if (dep > 0) state.personal.bank.dep = dep; }, null);
+        // wait lists the pay and the bills, each as id|date, that had not gone through yet when the bank sent that number.
+        const wait = Array.isArray(o.wait) ? o.wait.filter((k) => typeof k === "string" && /^[A-Za-z0-9_-]{1,40}\|\d{4}-\d{2}-\d{2}$/.test(k)).slice(0, 30) : [];
+        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; if (dep > 0) state.personal.bank.dep = dep; if (wait.length) state.personal.bank.wait = wait; }, null);
       }
       if (kind === "checked") {
         // Claude's answer to Check the bank. It lands after the bank's number, when there was a new one.
@@ -1989,16 +1992,22 @@ details[open] summary::after{transform:rotate(45deg)}
     if (!b) { renderMe(); return; }
     $("meBal").value = (b.avail / 100).toFixed(2);
     meWait = {};
+    // What the bank had not put through yet starts as Not yet. Everything else starts as gone, as before.
+    const said = Array.isArray(b.wait) ? b.wait : [];
+    said.forEach((k) => { meWait[k] = true; });
     meBankAt = b.at;
-    if (!meAsk().length) { meSaveBal(); return; }
+    const rows = meAsk();
+    if (!rows.length) { meSaveBal(); return; }
     $("meCheckBox").open = true;
     renderMe();
     try { $("meCheckBox").scrollIntoView({ block: "start" }); } catch (e) {}
-    toast("Tap any bill that hasn't gone through yet, then Save balance.");
+    const late = rows.filter((x) => said.includes(x.key)).map((x) => x.name);
+    toast(late.length ? late.join(", ") + (late.length > 1 ? " haven't" : " hasn't") + " gone through yet, so " + (late.length > 1 ? "they're" : "it's") + " set to Not yet. Check the rest, then Save balance."
+      : "Tap any bill that hasn't gone through yet, then Save balance.");
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "20 Nov 2026, v15";
+  const APP_VERSION = "20 Nov 2026, v16";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
