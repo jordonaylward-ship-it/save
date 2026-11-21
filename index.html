@@ -1983,6 +1983,9 @@ details[open] summary::after{transform:rotate(45deg)}
             }
           } catch (e) {}
           cloud.polling = false;
+          // A matched number that waited while a balance was being typed goes in now, and a fresh one is asked for when it's due.
+          try { const bo = bankOffer(); if (bo && bo.matched && !$("meBal").value.trim()) guarded(() => { bankTake(); }).catch(() => {}); } catch (e) {}
+          try { chkAuto(); } catch (e) {}
         };
         cloud.poll();
         clearInterval(cloud.pollTimer);
@@ -2061,7 +2064,15 @@ details[open] summary::after{transform:rotate(45deg)}
         const dep = Math.round(Number(o.dep));
         // wait lists the pay and the bills, each as id|date, that had not gone through yet when the bank sent that number.
         const wait = Array.isArray(o.wait) ? o.wait.filter((k) => typeof k === "string" && /^[A-Za-z0-9_-]{1,40}\|\d{4}-\d{2}-\d{2}$/.test(k)).slice(0, 30) : [];
-        return opSave(() => { state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note }; if (dep > 0) state.personal.bank.dep = dep; if (wait.length) state.personal.bank.wait = wait; }, null);
+        // matched means Claude's side matched every email against pay and the bills, so wait is the whole list of what hadn't gone through.
+        // Then the number goes straight in as the balance, no questions, see bankTake.
+        const matched = o.matched === true;
+        return opSave(() => {
+          state.personal.bank = { avail: avail, at: new Date(t).toISOString(), note: note };
+          if (dep > 0) state.personal.bank.dep = dep;
+          if (wait.length) state.personal.bank.wait = wait;
+          if (matched) { state.personal.bank.matched = true; bankTake(); }
+        }, null);
       }
       if (kind === "checked") {
         // Claude's answer to Check the bank. It lands after the bank's number, when there was a new one.
@@ -2103,15 +2114,28 @@ details[open] summary::after{transform:rotate(45deg)}
   // Check the bank. The app can't read email, so it asks Claude. Making a release in the private repo is the knock on the door: a Claude task set to run on that
   // reads the bank's emails and leaves what it finds in the inbox. The app then looks every few seconds until the answer is there.
   const CHK_KEY = KEY + ".chk", CHK_SAID = KEY + ".chkd", CHK_WAIT = 240000;
-  let chk = null, chkTimer = null;
+  // CHK_LAST is when the app last asked, by a tap or by itself. bankFreshAt is when a matched number last went in.
+  const CHK_LAST = KEY + ".chka", CHK_GAP = 3 * 3600000;
+  let chk = null, chkTimer = null, bankFreshAt = 0;
   function chkRead() { try { const c = JSON.parse(localStorage.getItem(CHK_KEY) || "null"); return c && Number.isFinite(c.at) && typeof c.tag === "string" ? c : null; } catch (e) { return null; } }
-  function chkWrite() { try { if (chk) localStorage.setItem(CHK_KEY, JSON.stringify({ tag: chk.tag, at: chk.at })); else localStorage.removeItem(CHK_KEY); } catch (e) {} }
+  function chkWrite() { try { if (chk) localStorage.setItem(CHK_KEY, JSON.stringify({ tag: chk.tag, at: chk.at, auto: !!chk.auto })); else localStorage.removeItem(CHK_KEY); } catch (e) {} }
   function chkSay(text) { try { localStorage.setItem(CHK_SAID, JSON.stringify({ at: Date.now(), text: text })); } catch (e) {} }
+  // The time of the bank's number the app is going by, when it's a matched one from today, or null.
+  function bankInUse() {
+    const p = P();
+    const b = p && p.bank, c = p && p.check;
+    return b && b.matched && c && c.at === b.at && ymd(new Date(b.at)) === today() ? new Date(b.at) : null;
+  }
   function chkSaid() {
+    const used = bankInUse();
     try {
       const c = JSON.parse(localStorage.getItem(CHK_SAID) || "null");
-      if (c && Number.isFinite(c.at) && ymd(new Date(c.at)) === today()) return "Checked at " + niceTime(new Date(c.at)) + ". " + c.text;
+      if (c && Number.isFinite(c.at) && ymd(new Date(c.at)) === today()) {
+        if (used) return "Going by " + BK() + " at " + niceTime(used) + ". Checked at " + niceTime(new Date(c.at)) + ".";
+        return "Checked at " + niceTime(new Date(c.at)) + ". " + c.text;
+      }
     } catch (e) {}
+    if (used) return "Going by " + BK() + " at " + niceTime(used) + ".";
     return "Claude reads " + BK() + "'s emails. About a minute.";
   }
   function bankGoUI() {
@@ -2122,17 +2146,21 @@ details[open] summary::after{transform:rotate(45deg)}
     $("meBankCheck").textContent = chk ? "Checking" : "Check the bank";
     $("meBankLine").textContent = chk ? "Asking Claude to read " + BK() + "'s emails. About a minute." : chkSaid();
   }
-  async function bankCheck() {
+  // auto is true only when the app asks by itself, see chkAuto. A tap passes the click, which isn't true.
+  async function bankCheck(auto) {
     if (chk || cloud.kind !== "gh" || cloud.phase !== "on") return;
     const now = Date.now();
-    chk = { tag: "check-" + new Date(now).toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z"), at: now, last: false };
+    chk = { tag: "check-" + new Date(now).toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z"), at: now, last: false, auto: auto === true };
+    try { localStorage.setItem(CHK_LAST, String(now)); } catch (e) {}
     bankGoUI();
     try {
-      const r = await ghCall("POST", "releases", { tag_name: chk.tag, name: "Bank check", body: "Asked from the app." }, true);
+      const r = await ghCall("POST", "releases", { tag_name: chk.tag, name: "Bank check", body: chk.auto ? "Asked by the app when it was opened." : "Asked from the app." }, true);
       if (!r) throw { code: "notfound" };
     } catch (e) {
+      const quiet = chk && chk.auto;
       chk = null;
       bankGoUI();
+      if (quiet) return;
       const c = e && e.code;
       toast(c === "offline" ? "No signal. Try again in a minute." : c === "auth" || c === "denied" || c === "notfound" ? "Your key couldn't ask. Tell Claude." : "Couldn't ask Claude just now. Try again in a minute.");
       return;
@@ -2158,13 +2186,47 @@ details[open] summary::after{transform:rotate(45deg)}
   }
   function chkAnswer() {
     clearTimeout(chkTimer);
-    const asked = !!chk;
+    const asked = chk;
     chk = null; chkWrite();
     const bo = bankOffer();
-    chkSay(bo ? BKc() + "'s number is in." : "Nothing new from " + BK() + ".");
+    // A matched number has already gone in by the time the answer lands.
+    const fresh = !!asked && bankFreshAt >= asked.at;
+    chkSay(bo || fresh ? BKc() + "'s number is in." : "Nothing new from " + BK() + ".");
     renderMe();
-    if (!asked) return;
-    if (bo) bankUse(); else toast("Nothing new from " + BK() + ".");
+    if (!asked || asked.auto) return;
+    if (bo) bankUse(); else toast(fresh ? BKc() + "'s number is in." : "Nothing new from " + BK() + ".");
+  }
+  // With autoCheck in his private settings, the app asks for a fresh number by itself when it's open and the newest one, or the last ask,
+  // is more than three hours old, from 6am to 10pm. No messages, the line beside the button says when it last checked. A tap still works any time.
+  function chkAuto() {
+    if (CLOUD || chk || cfg.autoCheck !== true || cloud.kind !== "gh" || cloud.phase !== "on" || !(mePay() > 0) || document.hidden || $("app").hidden) return;
+    const now = new Date();
+    if (now.getHours() < 6 || now.getHours() >= 22) return;
+    let last = 0;
+    try { last = Number(localStorage.getItem(CHK_LAST)) || 0; } catch (e) {}
+    const p = P();
+    [p.bank && p.bank.at, p.check && p.check.at].forEach((x) => { const v = Date.parse(x || ""); if (v > last) last = v; });
+    if (now.getTime() - last < CHK_GAP) return;
+    bankCheck(true);
+  }
+  // A matched number from today, newer than the saved balance, becomes the balance. Pay and bills on its wait list count as still to come,
+  // everything else as gone, the same as Save balance with nothing tapped. Not while a balance is being typed by hand. Runs inside a save.
+  function bankTake() {
+    const b = bankOffer();
+    if (!b || !b.matched || $("meBal").value.trim()) return false;
+    const t = today();
+    const w = Array.isArray(b.wait) ? b.wait : [];
+    const check = { bal: b.avail, date: t, at: b.at };
+    const bills = w.filter((k) => !/^pay\|/.test(k));
+    if (bills.length) check.wait = bills;
+    if (w.includes("pay|" + t)) check.payWait = true;
+    if (b.dep > 0) {
+      const skip = Object.entries(P().spends || {}).filter((e) => e[1].kind === "in" && e[1].amount === b.dep && String(e[1].at) > check.at).map((e) => e[0]);
+      if (skip.length) check.skip = skip;
+    }
+    state.personal.check = check;
+    bankFreshAt = Date.now();
+    return true;
   }
   function chkBoot() {
     chk = chkRead();
@@ -2198,6 +2260,11 @@ details[open] summary::after{transform:rotate(45deg)}
   function bankUse() {
     const b = bankOffer();
     if (!b) { renderMe(); return; }
+    if (b.matched) {
+      $("meBal").value = "";
+      guarded(() => { bankTake(); }).then(() => { renderMe(); toast("Saved. " + BKc() + " has " + money(b.avail) + "."); }).catch(failToast);
+      return;
+    }
     $("meBal").value = (b.avail / 100).toFixed(2);
     meWait = {};
     // What the bank had not put through yet starts as Not yet. Everything else starts as gone, as before.
@@ -2215,7 +2282,7 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   // Everything the app shows and everything it holds, as text, so it can be pasted into a chat in one go instead of screenshots.
-  const APP_VERSION = "21 Nov 2026, v17";
+  const APP_VERSION = "21 Nov 2026, v18";
   function allText(noData) {
     const out = [];
     const add = (x) => { if (x != null && String(x).trim() !== "") out.push(String(x)); };
@@ -2925,6 +2992,9 @@ details[open] summary::after{transform:rotate(45deg)}
   }
 
   function renderMeCheck(st) {
+    // With today's number from the bank in there's nothing to check by hand. The box is back once that number is old, or it's open or typed in.
+    const cb = $("meCheckBox");
+    cb.hidden = !!bankInUse() && !cb.open && !$("meBal").value.trim();
     const c = P().check;
     const r = meRoom();
     const pdName = DAYS[mePayDay()];
